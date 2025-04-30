@@ -2,18 +2,674 @@
 //  ViewController.swift
 //  Candyfloss
 //
-//  Created by Shihab Mehboob on 21/10/2024.
+//  Created by Shihab Mehboob on 07/03/2025.
 //
 
 import UIKit
+import ATProtoKit
+import AVFAudio
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating, UISearchBarDelegate {
+    
+    let config = ATProtocolConfiguration(handle: GlobalStruct.userHandle, appPassword: GlobalStruct.userAppPassword)
+    
+    var tableView = UITableView()
+    var tempScrollPosition: CGFloat = 0
+    let refreshControl = UIRefreshControl()
+    var allPosts: [AppBskyLexicon.Feed.FeedViewPostDefinition] = []
+    var currentCursor: String? = nil
+    var isFetching: Bool = false
+    
+    // feeds
+    var currentFeedCursor: String? = nil
+    var fromFeedPush: Bool = false
+    
+    // lists
+    var listName: String = ""
+    var listURI: String = ""
+    var fromListPush: Bool = false
+    
+    // inline search
+    var searchView: UIView = UIView()
+    var searchController = UISearchController()
+    var searchResults: [AppBskyLexicon.Feed.FeedViewPostDefinition] = []
+    var isSearching: Bool = false
+    var searchFirstTime: Bool = true
+    
+    override func viewDidLayoutSubviews() {
+        tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
+        tableView.tableHeaderView?.frame.size.height = 56
+        searchController.searchBar.sizeToFit()
+        searchController.searchBar.frame.size.width = searchView.frame.size.width
+        searchController.searchBar.frame.size.height = searchView.frame.size.height
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        if searchResults.isEmpty {} else {
+            allPosts = searchResults
+        }
+        if let theText = searchController.searchBar.text?.lowercased() {
+            if theText.isEmpty {
+                isSearching = false
+                if searchFirstTime {
+                    searchFirstTime = false
+                    searchResults = allPosts
+                } else {
+                    allPosts = searchResults
+                    tableView.reloadData()
+                }
+            } else {
+                let z = allPosts.filter({
+                    let matchingAccount: Bool = ($0.post.author.displayName ?? "").lowercased().contains(theText)
+                    if let record = $0.post.record.getRecord(ofType: AppBskyLexicon.Feed.PostRecord.self) {
+                        return record.text.lowercased().contains(theText) || matchingAccount
+                    } else {
+                        return false
+                    }
+                })
+                allPosts = z
+                tableView.reloadData()
+                isSearching = true
+            }
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        isSearching = false
+        if !searchResults.isEmpty {
+            allPosts = self.searchResults
+            tableView.reloadData()
+        }
+        searchFirstTime = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        GlobalStruct.currentTab = 0
+    }
+    
+    @objc func scrollUp() {
+        if allPosts.isEmpty {} else {
+            if tableView.contentOffset.y <= 60 {
+                tableView.setContentOffset(CGPoint(x: 0, y: tempScrollPosition), animated: true)
+                tempScrollPosition = tableView.contentOffset.y
+            } else {
+                tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+                tempScrollPosition = tableView.contentOffset.y
+            }
+        }
+    }
+    
+    @objc func reloadTables() {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    @objc func updateTint() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.searchController.searchBar.backgroundColor = GlobalStruct.backgroundTint
+            self.searchController.searchBar.barTintColor = GlobalStruct.backgroundTint
+            let appearance = UINavigationBarAppearance()
+            self.view.backgroundColor = GlobalStruct.backgroundTint
+            appearance.backgroundColor = self.view.backgroundColor
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+            self.navigationController?.navigationBar.standardAppearance = appearance
+            self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+            self.navigationController?.navigationBar.compactAppearance = appearance
+            let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
+            let smallestFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize - 2
+            for x in self.tableView.visibleCells {
+                if let y = x as? PostsCell {
+                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.time.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.username.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .bold)
+                    y.usertag.font = UIFont.systemFont(ofSize: smallestFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.text.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.repost.titleLabel?.font = UIFont.systemFont(ofSize: smallestFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.text.mentionColor = GlobalStruct.baseTint
+                    y.text.hashtagColor = GlobalStruct.baseTint
+                    y.text.URLColor = GlobalStruct.baseTint
+                    y.text.emailColor = GlobalStruct.baseTint
+                    y.text.lineSpacing = GlobalStruct.customLineSize
+                    y.text.numberOfLines = GlobalStruct.maxLines
+                    if let text = y.text.text {
+                        y.text.text = nil
+                        y.text.text = text
+                    }
+                    y.uriLabel.textColor = GlobalStruct.baseTint
+                }
+            }
+            self.tableView.reloadData()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        view.backgroundColor = GlobalStruct.backgroundTint
+        navigationItem.title = listName != "" ? listName : GlobalStruct.currentFeedDisplayName
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.scrollUp), name: NSNotification.Name(rawValue: "scrollUp0"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadTables), name: NSNotification.Name(rawValue: "reloadTables"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.setUpNavigationBar), name: NSNotification.Name(rawValue: "setUpNavigationBar"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.fetchLatest), name: NSNotification.Name(rawValue: "fetchLatest"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.goToFeeds), name: NSNotification.Name(rawValue: "goToFeeds"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.switchFeed), name: NSNotification.Name(rawValue: "switchFeed"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.switchList), name: NSNotification.Name(rawValue: "switchList"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .mixWithOthers)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                try? AVAudioSession.sharedInstance().setActive(true)
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+        
+        setUpNavigationBar()
+        
+        if fromFeedPush {
+            switchFeed(false)
+        } else if fromListPush {
+            switchList(false)
+        } else {
+            if let x = UserDefaults.standard.value(forKey: "isShowingFeeds") as? Bool {
+                GlobalStruct.isShowingFeeds = x
+            }
+            if let x = UserDefaults.standard.value(forKey: "currentFeedURI") as? String {
+                GlobalStruct.currentFeedURI = x
+            }
+            if let x = UserDefaults.standard.value(forKey: "currentFeedDisplayName") as? String {
+                GlobalStruct.currentFeedDisplayName = x
+            }
+            if let x = UserDefaults.standard.value(forKey: "listURI") as? String {
+                GlobalStruct.listURI = x
+            }
+            if let x = UserDefaults.standard.value(forKey: "listName") as? String {
+                GlobalStruct.listName = x
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if GlobalStruct.currentFeedURI != "" {
+                    self.switchFeed(false)
+                } else if GlobalStruct.listURI != "" {
+                    self.switchList(false)
+                } else {
+                    self.fetchTimeline(false)
+                    self.setUpTable()
+                }
+            }
+        }
     }
-
+    
+    @objc func setUpNavigationBar() {
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = GlobalStruct.backgroundTint
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+        appearance.shadowColor = UIColor.separator
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        
+        if !fromFeedPush && !fromListPush {
+            let feedsButton = CustomButton(type: .system)
+            feedsButton.setImage(UIImage(systemName: "list.bullet.below.rectangle"), for: .normal)
+            feedsButton.addTarget(self, action: #selector(self.goToFeeds), for: .touchUpInside)
+            let navigationBarFeedButtonItem = UIBarButtonItem(customView: feedsButton)
+            navigationBarFeedButtonItem.accessibilityLabel = "Feeds"
+            navigationItem.leftBarButtonItem = navigationBarFeedButtonItem
+        }
+        if listName == "" {
+            navigationItem.rightBarButtonItems = []
+        } else {
+            let moreButton = CustomButton(type: .system)
+            moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+            var menuActions: [UIAction] = []
+            let viewPeople = UIAction(title: "People", image: UIImage(systemName: "person"), identifier: nil) { action in
+                let vc = FriendsViewController()
+                vc.fromList = true
+                vc.listName = self.listName
+                vc.listURI = self.listURI
+                UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+            }
+            menuActions.append(viewPeople)
+            let editList = UIAction(title: "Edit List", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
+                
+            }
+            menuActions.append(editList)
+            let menu = UIMenu(title: "", options: [.displayInline], children: menuActions)
+            moreButton.menu = menu
+            moreButton.showsMenuAsPrimaryAction = true
+            let navigationBarButtonItem = UIBarButtonItem(customView: moreButton)
+            navigationBarButtonItem.accessibilityLabel = "More"
+            if GlobalStruct.isPostButtonInNavBar {
+                navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
+            } else {
+                navigationItem.rightBarButtonItems = [navigationBarButtonItem]
+            }
+        }
+    }
+    
+    @objc func goToFeeds() {
+        defaultHaptics()
+        let vc = FeedsListsViewController()
+        vc.currentFeedCursor = currentFeedCursor
+        let nvc = SloppySwipingNav(rootViewController: vc)
+        show(nvc, sender: self)
+    }
+    
+    @objc func switchFeed(_ hasAuthenticated: Bool = true) {
+        DispatchQueue.main.async {
+            self.navigationItem.title = GlobalStruct.currentFeedDisplayName
+            self.listURI = ""
+            self.listName = ""
+            self.allPosts = []
+            self.currentCursor = nil
+            self.tableView.reloadData()
+            self.setUpTable()
+            self.fetchTimeline(hasAuthenticated)
+            self.setUpNavigationBar()
+        }
+    }
+    
+    @objc func switchList(_ hasAuthenticated: Bool = true) {
+        DispatchQueue.main.async {
+            self.navigationItem.title = GlobalStruct.listName
+            self.listURI = GlobalStruct.listURI
+            self.listName = GlobalStruct.listName
+            self.allPosts = []
+            self.currentCursor = nil
+            self.tableView.reloadData()
+            self.setUpTable()
+            self.fetchTimeline(hasAuthenticated)
+            self.setUpNavigationBar()
+        }
+    }
+    
+    func fetchTimeline(_ hasAuthenticated: Bool = true) {
+        Task {
+            do {
+                if hasAuthenticated {
+                    if let atProto = GlobalStruct.atProto {
+                        if currentCursor == nil {
+                            let y = try await atProto.getProfile(for: GlobalStruct.userHandle)
+                            GlobalStruct.currentUser = y
+                        }
+                        
+                        if listName != "" {
+                            let x = try await atProto.getListFeed(from: listURI)
+                            
+                            // filter out posts that are replies (except replies to own posts)
+                            allPosts += x.feed.filter({ post in
+                                var toReturn: Bool = false
+                                if let parent = post.reply?.parent {
+                                    switch parent  {
+                                    case .postView(let parents):
+                                        if parents.author.actorDID == post.post.author.actorDID {
+                                            toReturn = true
+                                        } else {
+                                            toReturn = false
+                                        }
+                                    default:
+                                        toReturn = false
+                                    }
+                                } else {
+                                    toReturn = false
+                                }
+                                return toReturn || (post.reply == nil)
+                            })
+                            
+                            currentCursor = x.cursor
+                            DispatchQueue.main.async {
+                                self.tableView.reloadData()
+                                self.isFetching = false
+                            }
+                            
+                            // prefetch feeds
+                            fetchFeeds()
+                        } else if GlobalStruct.currentFeedURI == "" {
+                            let x = try await atProto.getTimeline(limit: 50, cursor: currentCursor)
+                            
+                            // filter out posts that are replies (except replies to own posts)
+                            allPosts += x.feed.filter({ post in
+                                var toReturn: Bool = false
+                                if let parent = post.reply?.parent {
+                                    switch parent  {
+                                    case .postView(let parents):
+                                        if parents.author.actorDID == post.post.author.actorDID {
+                                            toReturn = true
+                                        } else {
+                                            toReturn = false
+                                        }
+                                    default:
+                                        toReturn = false
+                                    }
+                                } else {
+                                    toReturn = false
+                                }
+                                return toReturn || (post.reply == nil)
+                            })
+                            
+                            currentCursor = x.cursor
+                            DispatchQueue.main.async {
+                                self.tableView.reloadData()
+                                self.isFetching = false
+                            }
+                            
+                            // prefetch feeds
+                            fetchFeeds()
+                        } else {
+                            let x = try await atProto.getFeed(by: GlobalStruct.currentFeedURI, limit: 50, cursor: currentCursor)
+                            
+                            // filter out posts that are replies (except replies to own posts)
+                            allPosts += x.feed.filter({ post in
+                                var toReturn: Bool = false
+                                if let parent = post.reply?.parent {
+                                    switch parent  {
+                                    case .postView(let parents):
+                                        if parents.author.actorDID == post.post.author.actorDID {
+                                            toReturn = true
+                                        } else {
+                                            toReturn = false
+                                        }
+                                    default:
+                                        toReturn = false
+                                    }
+                                } else {
+                                    toReturn = false
+                                }
+                                return toReturn || (post.reply == nil)
+                            })
+                            
+                            currentCursor = x.cursor
+                            DispatchQueue.main.async {
+                                self.tableView.reloadData()
+                                self.isFetching = false
+                            }
+                            
+                            // prefetch feeds
+                            fetchFeeds()
+                        }
+                    }
+                } else {
+                    Task {
+                        await authenticate()
+                    }
+                }
+            } catch {
+                print("Error fetching feed, refresh token and retry: \(error.localizedDescription)")
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let refreshed = try await atProto.refreshSession(refreshToken: UserDefaults.standard.value(forKey: "refreshToken") as? String ?? "", pdsURL: atProto.session?.pdsURL ?? "")
+                        UserDefaults.standard.set(refreshed.refreshToken, forKey: "refreshToken")
+                        Task {
+                            await authenticate()
+                        }
+                    }
+                } catch {
+                    print("Error fetching session: \(error.localizedDescription)")
+                }
+                DispatchQueue.main.async {
+                    self.isFetching = false
+                }
+            }
+        }
+    }
+    
+    @objc func fetchLatest() {
+        guard !isSearching else {
+            refreshControl.endRefreshing()
+            return
+        }
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    if listName != "" {
+                        let x = try await atProto.getListFeed(from: listURI, limit: 100)
+                        
+                        // filter out posts that are replies (except replies to own posts)
+                        allPosts = x.feed.filter({ post in
+                            var toReturn: Bool = false
+                            if let parent = post.reply?.parent {
+                                switch parent  {
+                                case .postView(let parents):
+                                    if parents.author.actorDID == post.post.author.actorDID {
+                                        toReturn = true
+                                    } else {
+                                        toReturn = false
+                                    }
+                                default:
+                                    toReturn = false
+                                }
+                            } else {
+                                toReturn = false
+                            }
+                            return toReturn || (post.reply == nil)
+                        }) + allPosts
+                        
+                        allPosts = allPosts.removingDuplicates()
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                            self.refreshControl.endRefreshing()
+                        }
+                    } else if GlobalStruct.currentFeedURI == "" {
+                        let x = try await atProto.getTimeline(limit: 100)
+                        
+                        // filter out posts that are replies (except replies to own posts)
+                        allPosts = x.feed.filter({ post in
+                            var toReturn: Bool = false
+                            if let parent = post.reply?.parent {
+                                switch parent  {
+                                case .postView(let parents):
+                                    if parents.author.actorDID == post.post.author.actorDID {
+                                        toReturn = true
+                                    } else {
+                                        toReturn = false
+                                    }
+                                default:
+                                    toReturn = false
+                                }
+                            } else {
+                                toReturn = false
+                            }
+                            return toReturn || (post.reply == nil)
+                        }) + allPosts
+                        
+                        allPosts = allPosts.removingDuplicates()
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                            self.refreshControl.endRefreshing()
+                        }
+                    } else {
+                        let x = try await atProto.getFeed(by: GlobalStruct.currentFeedURI, limit: 100)
+                        
+                        // filter out posts that are replies (except replies to own posts)
+                        allPosts = x.feed.filter({ post in
+                            var toReturn: Bool = false
+                            if let parent = post.reply?.parent {
+                                switch parent  {
+                                case .postView(let parents):
+                                    if parents.author.actorDID == post.post.author.actorDID {
+                                        toReturn = true
+                                    } else {
+                                        toReturn = false
+                                    }
+                                default:
+                                    toReturn = false
+                                }
+                            } else {
+                                toReturn = false
+                            }
+                            return toReturn || (post.reply == nil)
+                        }) + allPosts
+                        
+                        allPosts = allPosts.removingDuplicates()
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                            self.refreshControl.endRefreshing()
+                        }
+                    }
+                }
+            } catch {
+                print("Error fetching feed, refresh token and retry: \(error.localizedDescription)")
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let refreshed = try await atProto.refreshSession(refreshToken: UserDefaults.standard.value(forKey: "refreshToken") as? String ?? "", pdsURL: atProto.session?.pdsURL ?? "")
+                        UserDefaults.standard.set(refreshed.refreshToken, forKey: "refreshToken")
+                        Task {
+                            await authenticate(false)
+                        }
+                    }
+                } catch {
+                    print("Error fetching session: \(error.localizedDescription)")
+                }
+                refreshControl.endRefreshing()
+            }
+        }
+    }
+    
+    func authenticate(_ fetchNextimeline: Bool = true) async {
+        do {
+            try await config.authenticate()
+            GlobalStruct.atProto = await ATProtoKit(sessionConfiguration: config)
+            UserDefaults.standard.set(config.session?.refreshToken ?? "", forKey: "refreshToken")
+            if fetchNextimeline {
+                fetchTimeline()
+            } else {
+                fetchLatest()
+            }
+        } catch {
+            print("Error fetching: \(error.localizedDescription)")
+        }
+    }
+    
+    func fetchFeeds() {
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let x = try await atProto.getSuggestedFeeds()
+                    GlobalStruct.allFeeds = x.feeds
+                    currentFeedCursor = x.cursor
+                }
+            } catch {
+                print("Error fetching feeds: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func setUpTable() {
+        tableView.removeFromSuperview()
+        tableView.register(PostsCell.self, forCellReuseIdentifier: "PostsCell")
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.backgroundColor = UIColor.clear
+        tableView.layer.masksToBounds = true
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.tableHeaderView = UIView()
+        tableView.tableFooterView = UIView(frame: .zero)
+        tableView.refreshControl = refreshControl
+        refreshControl.backgroundColor = .clear
+        refreshControl.addTarget(self, action: #selector(self.fetchLatest), for: .valueChanged)
+        self.searchController = ({
+            let controller = UISearchController(searchResultsController: nil)
+            controller.searchResultsUpdater = self
+            controller.obscuresBackgroundDuringPresentation = false
+            controller.hidesNavigationBarDuringPresentation = false
+            controller.searchBar.backgroundImage = UIImage()
+            controller.searchBar.backgroundColor = GlobalStruct.backgroundTint
+            controller.searchBar.barTintColor = GlobalStruct.backgroundTint
+            controller.searchBar.sizeToFit()
+            controller.searchBar.delegate = self
+            controller.definesPresentationContext = true
+            controller.searchBar.placeholder = "Search \(listName != "" ? listName : GlobalStruct.currentFeedDisplayName)"
+            self.definesPresentationContext = true
+            searchView.addSubview(controller.searchBar)
+            tableView.tableHeaderView = searchView
+            return controller
+        })()
+        view.addSubview(tableView)
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return allPosts.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell
+        let post = allPosts[indexPath.row].post
+        configurePostCell(cell, with: post, reason: allPosts[indexPath.row].reason)
+        
+        cell.avatar.tag = indexPath.row
+        cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
+        cell.repost.tag = indexPath.row
+        cell.repost.addTarget(self, action: #selector(repostTapped(_:)), for: .touchUpInside)
+        cell.layoutIfNeeded()
+        
+        if !isSearching {
+            if isFetching == false && currentCursor != nil {
+                if indexPath.row == allPosts.count - 1 || indexPath.row == allPosts.count - 5 {
+                    isFetching = true
+                    fetchTimeline()
+                }
+            }
+        }
+        
+        if indexPath.row == allPosts.count - 1 {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+        } else {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+        }
+        cell.accessoryView = nil
+        let bgColorView = UIView()
+        bgColorView.backgroundColor = UIColor.clear
+        cell.selectedBackgroundView = bgColorView
+        cell.backgroundColor = GlobalStruct.backgroundTint
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let vc = DetailsViewController()
+        vc.detailPost = allPosts[indexPath.row].post
+        navigationController?.pushViewController(vc, animated: true)
+        if isSearching {
+            searchController.isActive = false
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            return makePostContextMenu(indexPath.row, post: self.allPosts[indexPath.row].post, reason: self.allPosts[indexPath.row].reason)
+        }
+    }
+    
+    @objc func profileTapped(_ sender: UIButton) {
+        defaultHaptics()
+        let vc = ProfileViewController()
+        vc.profile = allPosts[sender.tag].post.author.actorDID
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc func repostTapped(_ sender: UIButton) {
+        defaultHaptics()
+        if let reason = allPosts[sender.tag].reason {
+            switch reason {
+            case .reasonRepost(let repost):
+                let vc = ProfileViewController()
+                vc.profile = repost.by.actorDID
+                navigationController?.pushViewController(vc, animated: true)
+            default:
+                break
+            }
+        }
+    }
 
 }
 

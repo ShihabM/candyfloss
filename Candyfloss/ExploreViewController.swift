@@ -348,7 +348,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func setUpTable() {
         tableView.removeFromSuperview()
-        tableView = UITableView(frame: .zero, style: .grouped)
+        tableView = UITableView(frame: .zero, style: .plain)
         tableView.register(TrendingTopicsCell.self, forCellReuseIdentifier: "TrendingTopicsCell")
         tableView.register(TrendingFeedCell.self, forCellReuseIdentifier: "WhoToFollowCell")
         tableView.register(UserCell.self, forCellReuseIdentifier: "UserCell")
@@ -534,8 +534,8 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
                 cell.configureCell(followsYou, bioText: bioText, defaultProfile: user)
                 
-                if indexPath.row == suggestedUsers.count - 1 {
-                    cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                if indexPath.row == suggestedUsers.count {
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
                 } else {
                     cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
                 }
@@ -581,8 +581,8 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
                 cell.theDescription.numberOfLines = 2
                 
-                if indexPath.row == starterPacks.count - 1 {
-                    cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                if indexPath.row == starterPacks.count {
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
                 } else {
                     cell.separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
                 }

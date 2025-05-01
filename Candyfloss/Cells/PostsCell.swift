@@ -603,7 +603,19 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
                             mediaView.layer.masksToBounds = true
                             mediaView.sd_imageTransition = .fade
                             if let link = URL(string: "\(externalEmbed.external.uri)") {
-                                mediaView.sd_setImage(with: link)
+                                SDWebImageManager.shared.loadImage(
+                                    with: link,
+                                    options: [],
+                                    progress: nil
+                                ) { image, _, error, _, _, _ in
+                                    if let image = image {
+                                        mediaView.image = image
+                                        imageWidth = Int(image.size.width)
+                                        imageHeight = Int(image.size.height)
+                                    } else {
+                                        print("Failed to load image: \(error?.localizedDescription ?? "unknown error")")
+                                    }
+                                }
                                 media.append(link)
                             }
                             mediaViews.append(mediaView)
@@ -880,7 +892,19 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
                                 mediaView.layer.masksToBounds = true
                                 mediaView.sd_imageTransition = .fade
                                 if let link = URL(string: "\(externalEmbed.external.uri)") {
-                                    mediaView.sd_setImage(with: link)
+                                    SDWebImageManager.shared.loadImage(
+                                        with: link,
+                                        options: [],
+                                        progress: nil
+                                    ) { image, _, error, _, _, _ in
+                                        if let image = image {
+                                            mediaView.image = image
+                                            imageWidth = Int(image.size.width)
+                                            imageHeight = Int(image.size.height)
+                                        } else {
+                                            print("Failed to load image: \(error?.localizedDescription ?? "unknown error")")
+                                        }
+                                    }
                                     media.append(link)
                                 }
                                 mediaViews.append(mediaView)

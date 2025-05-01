@@ -24,6 +24,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     var currentFeedCursor: String? = nil
     var fromFeedPush: Bool = false
     
+    // temp feed from explore
+    var currentFeedURI = ""
+    var currentFeedDisplayName = ""
+    
     // lists
     var listName: String = ""
     var listURI: String = ""
@@ -149,7 +153,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
-        navigationItem.title = listName != "" ? listName : GlobalStruct.currentFeedDisplayName
+        navigationItem.title = listName != "" ? listName : fromFeedPush ? currentFeedDisplayName : GlobalStruct.currentFeedDisplayName
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.scrollUp), name: NSNotification.Name(rawValue: "scrollUp0"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadTables), name: NSNotification.Name(rawValue: "reloadTables"), object: nil)
@@ -263,7 +267,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     @objc func switchFeed(_ hasAuthenticated: Bool = true) {
         DispatchQueue.main.async {
-            self.navigationItem.title = GlobalStruct.currentFeedDisplayName
+            self.navigationItem.title = self.fromFeedPush ? self.currentFeedDisplayName : GlobalStruct.currentFeedDisplayName
             self.listURI = ""
             self.listName = ""
             self.allPosts = []
@@ -330,7 +334,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             
                             // prefetch feeds
                             fetchFeeds()
-                        } else if GlobalStruct.currentFeedURI == "" {
+                        } else if GlobalStruct.currentFeedURI == "" && !fromFeedPush {
                             let x = try await atProto.getTimeline(limit: 50, cursor: currentCursor)
                             
                             // filter out posts that are replies (except replies to own posts)
@@ -362,7 +366,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             // prefetch feeds
                             fetchFeeds()
                         } else {
-                            let x = try await atProto.getFeed(by: GlobalStruct.currentFeedURI, limit: 50, cursor: currentCursor)
+                            var feedURI: String = GlobalStruct.currentFeedURI
+                            if fromFeedPush {
+                                feedURI = currentFeedURI
+                            }
+                            let x = try await atProto.getFeed(by: feedURI, limit: 50, cursor: currentCursor)
                             
                             // filter out posts that are replies (except replies to own posts)
                             allPosts += x.feed.filter({ post in
@@ -455,7 +463,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             self.tableView.reloadData()
                             self.refreshControl.endRefreshing()
                         }
-                    } else if GlobalStruct.currentFeedURI == "" {
+                    } else if GlobalStruct.currentFeedURI == "" && !fromFeedPush {
                         let x = try await atProto.getTimeline(limit: 100)
                         
                         // filter out posts that are replies (except replies to own posts)
@@ -484,7 +492,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             self.refreshControl.endRefreshing()
                         }
                     } else {
-                        let x = try await atProto.getFeed(by: GlobalStruct.currentFeedURI, limit: 100)
+                        var feedURI: String = GlobalStruct.currentFeedURI
+                        if fromFeedPush {
+                            feedURI = currentFeedURI
+                        }
+                        let x = try await atProto.getFeed(by: feedURI, limit: 100)
                         
                         // filter out posts that are replies (except replies to own posts)
                         allPosts = x.feed.filter({ post in
@@ -584,7 +596,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             controller.searchBar.sizeToFit()
             controller.searchBar.delegate = self
             controller.definesPresentationContext = true
-            controller.searchBar.placeholder = "Search \(listName != "" ? listName : GlobalStruct.currentFeedDisplayName)"
+            controller.searchBar.placeholder = "Search \(listName != "" ? listName : fromFeedPush ? currentFeedDisplayName : GlobalStruct.currentFeedDisplayName)"
             self.definesPresentationContext = true
             searchView.addSubview(controller.searchBar)
             tableView.tableHeaderView = searchView

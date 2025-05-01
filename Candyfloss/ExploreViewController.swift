@@ -693,10 +693,10 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             let rkey: String = "\(trendingTopics[indexPath.row].link.split(separator: "/").last ?? "")"
             GlobalStruct.listURI = ""
             GlobalStruct.listName = ""
-            GlobalStruct.currentFeedURI = "at://did:plc:qrz3lhbyuxbeilrc6nekdqme/app.bsky.feed.generator/\(rkey)"
-            GlobalStruct.currentFeedDisplayName = trendingTopics[indexPath.row].topic
             let vc = ViewController()
             vc.fromFeedPush = true
+            vc.currentFeedURI = "at://did:plc:qrz3lhbyuxbeilrc6nekdqme/app.bsky.feed.generator/\(rkey)"
+            vc.currentFeedDisplayName = trendingTopics[indexPath.row].topic
             navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.section == 1 {
             if indexPath.row == 0 {
@@ -734,10 +734,10 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 } ?? 0
                 GlobalStruct.listURI = ""
                 GlobalStruct.listName = ""
-                GlobalStruct.currentFeedURI = suggestedFeeds[indexToUse].feedURI
-                GlobalStruct.currentFeedDisplayName = suggestedFeeds[indexToUse].displayName
                 let vc = ViewController()
                 vc.fromFeedPush = true
+                vc.currentFeedURI = suggestedFeeds[indexToUse].feedURI
+                vc.currentFeedDisplayName = suggestedFeeds[indexToUse].displayName
                 navigationController?.pushViewController(vc, animated: true)
             } else {
                 let vc = DetailsViewController()

@@ -1150,7 +1150,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                 x.itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.gif.identifier) { data, error in
                     DispatchQueue.main.async { [weak self] in
                         guard let self else { return }
-                        
+                        self.hasGIF = true
                     }
                 }
             } else {
@@ -1224,13 +1224,13 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                     x.itemProvider.loadDataRepresentation(forTypeIdentifier: "public.movie") { data, error in
                         DispatchQueue.main.async { [weak self] in
                             guard let self else { return }
-                            
+                            self.hasVideo = true
                         }
                     }
                     x.itemProvider.loadItem(forTypeIdentifier: UTType.movie.identifier, options: [:]) { [self] (videoURL, error) in
                         DispatchQueue.main.async { [weak self] in
                             guard let self else { return }
-                            
+                            self.hasVideo = true
                         }
                     }
                 }

@@ -14,7 +14,6 @@ class TrendingTopicsCell: UITableViewCell {
     
     var theIcon = UIButton()
     var theTitle = UILabel()
-    var theSubtitle = UILabel()
     var time = UILabel()
     
     let defaultFontSize = UIFont.preferredFont(forTextStyle: .title3).pointSize
@@ -32,41 +31,33 @@ class TrendingTopicsCell: UITableViewCell {
         
         theIcon.translatesAutoresizingMaskIntoConstraints = false
         theIcon.backgroundColor = UIColor(named: "groupBG")
-        theIcon.layer.cornerRadius = 22
+        theIcon.layer.cornerRadius = 13
         theIcon.imageView?.contentMode = .scaleAspectFill
         theIcon.imageView?.layer.masksToBounds = true
         theIcon.layer.masksToBounds = true
         bgView.addSubview(theIcon)
         
-        theSubtitle.translatesAutoresizingMaskIntoConstraints = false
-        theSubtitle.textColor = .secondaryText
-        theSubtitle.textAlignment = .left
-        theSubtitle.font = UIFont.systemFont(ofSize: smallestFontSize + GlobalStruct.customTextSize, weight: .regular)
-        theSubtitle.isUserInteractionEnabled = false
-        bgView.addSubview(theSubtitle)
-        
         theTitle.translatesAutoresizingMaskIntoConstraints = false
         theTitle.textColor = .label
         theTitle.textAlignment = .left
-        theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .semibold)
+        theTitle.font = UIFont.systemFont(ofSize: defaultFontSize + GlobalStruct.customTextSize, weight: .semibold)
         theTitle.isUserInteractionEnabled = false
         bgView.addSubview(theTitle)
         
         let viewsDict = [
             "bgView" : bgView,
             "theIcon" : theIcon,
-            "theSubtitle" : theSubtitle,
             "theTitle" : theTitle
         ]
         
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[bgView]-0-|", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[bgView]-0-|", options: [], metrics: nil, views: viewsDict))
         
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-15-[theIcon(44)]-(>=15)-|", options: [], metrics: nil, views: viewsDict))
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[theTitle]-(>=10)-[theIcon]-18-|", options: [], metrics: nil, views: viewsDict))
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[theTitle]-12-|", options: [], metrics: nil, views: viewsDict))
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(>=2)-[theIcon(26)]-(>=2)-|", options: [], metrics: nil, views: viewsDict))
         
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[theIcon(44)]-12-[theSubtitle]-18-|", options: [], metrics: nil, views: viewsDict))
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[theIcon(44)]-12-[theTitle]-18-|", options: [], metrics: nil, views: viewsDict))
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[theSubtitle]-2-[theTitle]-12-|", options: [], metrics: nil, views: viewsDict))
+        theIcon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {

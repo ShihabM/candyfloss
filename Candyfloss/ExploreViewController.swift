@@ -116,14 +116,14 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
             self.navigationController?.navigationBar.compactAppearance = appearance
             let defaultFontSize = UIFont.preferredFont(forTextStyle: .title1).pointSize
+            let defaultFontSize2 = UIFont.preferredFont(forTextStyle: .title3).pointSize
             let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
             let smallestFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize - 2
             let mostSmallestFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize - 4
             for x in self.tableView.visibleCells {
                 if let y = x as? TrendingTopicsCell {
                     y.backgroundColor = GlobalStruct.backgroundTint
-                    y.theSubtitle.font = UIFont.systemFont(ofSize: smallestFontSize + GlobalStruct.customTextSize, weight: .bold)
-                    y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.theTitle.font = UIFont.systemFont(ofSize: defaultFontSize2 + GlobalStruct.customTextSize, weight: .regular)
                 }
                 if let y = x as? TrendingFeedCell {
                     y.backgroundColor = GlobalStruct.backgroundTint
@@ -220,7 +220,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             do {
                 if let atProto = GlobalStruct.atProto {
                     let x = try await atProto.getTrendingTopics()
-                    trendingTopics = Array(x.topics.prefix(3))
+                    trendingTopics = Array(x.topics.prefix(5))
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
                         self.refreshControl.endRefreshing()
@@ -421,23 +421,68 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "TrendingTopicsCell", for: indexPath) as! TrendingTopicsCell
-            let symbolConfigIcon = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
             
             if indexPath.row == 0 {
-                cell.theIcon.setImage(UIImage(systemName: "flame.fill", withConfiguration: symbolConfigIcon)?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
-                cell.theIcon.backgroundColor = .systemOrange
-                cell.theSubtitle.text = "Hot"
+                let attachment1 = NSTextAttachment()
+                attachment1.image = UIImage(systemName: "flame.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.white, renderingMode: .alwaysOriginal)
+                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
+                let attStringNewLine000 = NSMutableAttributedString()
+                let attString00 = NSAttributedString(attachment: attachment1)
+                attStringNewLine000.append(attString00)
+                let attributedString = NSMutableAttributedString(string: " Hot", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.white])
+                attStringNewLine000.append(attributedString)
+                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
+                cell.theIcon.backgroundColor = GlobalStruct.baseTint
             }
             if indexPath.row == 1 {
-                cell.theIcon.setImage(UIImage(systemName: "chart.bar.fill", withConfiguration: symbolConfigIcon)?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
-                cell.theIcon.backgroundColor = .systemPink
-                cell.theSubtitle.text = "Trending"
+                let attachment1 = NSTextAttachment()
+                attachment1.image = UIImage(systemName: "chart.bar.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.secondaryLabel, renderingMode: .alwaysOriginal)
+                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
+                let attStringNewLine000 = NSMutableAttributedString()
+                let attString00 = NSAttributedString(attachment: attachment1)
+                attStringNewLine000.append(attString00)
+                let attributedString = NSMutableAttributedString(string: " Trending", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
+                attStringNewLine000.append(attributedString)
+                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
+                cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
             }
             if indexPath.row == 2 {
-                cell.theIcon.setImage(UIImage(systemName: "arrowshape.up.fill", withConfiguration: symbolConfigIcon)?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
-                cell.theIcon.backgroundColor = .systemIndigo
-                cell.theSubtitle.text = "Rising"
+                let attachment1 = NSTextAttachment()
+                attachment1.image = UIImage(systemName: "star.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.secondaryLabel, renderingMode: .alwaysOriginal)
+                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
+                let attStringNewLine000 = NSMutableAttributedString()
+                let attString00 = NSAttributedString(attachment: attachment1)
+                attStringNewLine000.append(attString00)
+                let attributedString = NSMutableAttributedString(string: " Popular", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
+                attStringNewLine000.append(attributedString)
+                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
+                cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
             }
+            if indexPath.row == 3 {
+                let attachment1 = NSTextAttachment()
+                attachment1.image = UIImage(systemName: "arrowshape.up.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.secondaryLabel, renderingMode: .alwaysOriginal)
+                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
+                let attStringNewLine000 = NSMutableAttributedString()
+                let attString00 = NSAttributedString(attachment: attachment1)
+                attStringNewLine000.append(attString00)
+                let attributedString = NSMutableAttributedString(string: " Rising", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
+                attStringNewLine000.append(attributedString)
+                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
+                cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
+            }
+            if indexPath.row == 4 {
+                let attachment1 = NSTextAttachment()
+                attachment1.image = UIImage(systemName: "clock.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.secondaryLabel, renderingMode: .alwaysOriginal)
+                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
+                let attStringNewLine000 = NSMutableAttributedString()
+                let attString00 = NSAttributedString(attachment: attachment1)
+                attStringNewLine000.append(attString00)
+                let attributedString = NSMutableAttributedString(string: " New", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
+                attStringNewLine000.append(attributedString)
+                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
+                cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
+            }
+            cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 6, right: 10)
             cell.theTitle.text = trendingTopics[indexPath.row].topic
             
             if indexPath.row == trendingTopics.count - 1 {
@@ -445,7 +490,6 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             } else {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
             }
-            cell.accessoryType = .disclosureIndicator
             cell.accessoryView = nil
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear

@@ -113,7 +113,7 @@ extension ATProtoBluesky {
     }
 
     /// A list of rules used as an allowlist.
-    public enum ThreadgateAllowRule {
+    public enum ThreadgateAllowRule: Equatable, Hashable {
 
         /// A rule that allows users that were mentioned in the user account's post to reply to
         /// said post.

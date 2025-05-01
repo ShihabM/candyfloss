@@ -49,7 +49,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
     var videoData: Data = Data()
     var videoURL: URL = URL(string: "www.google.com")!
     
-//    var whoCanReply: [ATUnion.ThreadgateUnion] = [.mentionRule()]
+    var whoCanReply: [ATProtoBluesky.ThreadgateAllowRule] = [.allowMentions, .allowFollowing, .allowFollowers]
     var allowQuotes: Bool = true
     
     override func viewDidLayoutSubviews() {
@@ -251,6 +251,10 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                 locales: [Locale(identifier: currentLocale)],
                                 embed: .record(strongReference: strongReference)
                             )
+                            let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                postURI: post.recordURI,
+                                replyControls: whoCanReply
+                            )
                             DispatchQueue.main.async {
                                 print("Created quote: \(post)")
                                 NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
@@ -267,6 +271,10 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                     locales: [Locale(identifier: currentLocale)],
                                     replyTo: replyTo
                                 )
+                                let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                    postURI: post.recordURI,
+                                    replyControls: whoCanReply
+                                )
                                 DispatchQueue.main.async {
                                     print("Created reply: \(post)")
                                     NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
@@ -280,6 +288,10 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                         replyTo: replyTo,
                                         embed: .video(video: videoData, captions: nil, altText: mediaAltText.first ?? nil, aspectoRatio: nil)
                                     )
+                                    let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                        postURI: post.recordURI,
+                                        replyControls: whoCanReply
+                                    )
                                     DispatchQueue.main.async {
                                         print("Created reply with video: \(post)")
                                         NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
@@ -291,6 +303,10 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                         locales: [Locale(identifier: currentLocale)],
                                         replyTo: replyTo,
                                         embed: .images(images: allImages)
+                                    )
+                                    let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                        postURI: post.recordURI,
+                                        replyControls: whoCanReply
                                     )
                                     DispatchQueue.main.async {
                                         print("Created reply with media: \(post)")
@@ -306,6 +322,10 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                 text: currentPostText,
                                 locales: [Locale(identifier: currentLocale)]
                             )
+                            let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                postURI: post.recordURI,
+                                replyControls: whoCanReply
+                            )
                             DispatchQueue.main.async {
                                 print("Created post: \(post)")
                                 NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
@@ -318,6 +338,10 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                     locales: [Locale(identifier: currentLocale)],
                                     embed: .video(video: videoData, captions: nil, altText: mediaAltText.first ?? nil, aspectoRatio: nil)
                                 )
+                                let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                    postURI: post.recordURI,
+                                    replyControls: whoCanReply
+                                )
                                 DispatchQueue.main.async {
                                     print("Created post with video: \(post)")
                                     NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
@@ -328,6 +352,10 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                     text: currentPostText,
                                     locales: [Locale(identifier: currentLocale)],
                                     embed: .images(images: allImages)
+                                )
+                                let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                    postURI: post.recordURI,
+                                    replyControls: whoCanReply
                                 )
                                 DispatchQueue.main.async {
                                     print("Created post with media: \(post)")
@@ -752,47 +780,82 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         // visibility button
         
         let visibilityButton = UIBarButtonItem(image: UIImage(systemName: "questionmark.bubble", withConfiguration: symbolConfig)!.withTintColor(GlobalStruct.baseTint, renderingMode: .alwaysOriginal), style: .plain, target: self, action: nil)
-        visibilityButton.accessibilityLabel = "Post Visibility"
-        let visibilityOption1 = UIAction(title: "Allow Quotes", image: UIImage(systemName: ""), identifier: nil) { [weak self] action in
-            guard let self else { return }
-            
-        }
-        if allowQuotes {
-            visibilityOption1.state = .on
-        } else {
-            visibilityOption1.state = .off
-        }
-        let itemMenu2a = UIMenu(title: "", options: [.displayInline], children: [visibilityOption1])
+        visibilityButton.accessibilityLabel = "Who can reply?"
+        
         let visibilityOption2 = UIAction(title: "Mentioned Users", image: UIImage(systemName: ""), identifier: nil) { [weak self] action in
             guard let self else { return }
-            
+            if let index = whoCanReply.firstIndex(of: .allowMentions) {
+                whoCanReply.remove(at: index)
+            } else {
+                whoCanReply.append(.allowMentions)
+            }
+            createToolbar()
+        }
+        if let _ = whoCanReply.firstIndex(of: .allowMentions) {
+            visibilityOption2.state = .on
+        } else {
+            visibilityOption2.state = .off
         }
         let visibilityOption3 = UIAction(title: "Users You Follow", image: UIImage(systemName: ""), identifier: nil) { [weak self] action in
             guard let self else { return }
-            
+            if let index = whoCanReply.firstIndex(of: .allowFollowing) {
+                whoCanReply.remove(at: index)
+            } else {
+                whoCanReply.append(.allowFollowing)
+            }
+            createToolbar()
+        }
+        if let _ = whoCanReply.firstIndex(of: .allowFollowing) {
+            visibilityOption3.state = .on
+        } else {
+            visibilityOption3.state = .off
         }
         let visibilityOption4 = UIAction(title: "Your Followers", image: UIImage(systemName: ""), identifier: nil) { [weak self] action in
             guard let self else { return }
-            
+            if let index = whoCanReply.firstIndex(of: .allowFollowers) {
+                whoCanReply.remove(at: index)
+            } else {
+                whoCanReply.append(.allowFollowers)
+            }
+            createToolbar()
         }
-        let itemMenu2b = UIMenu(title: "Or any mix of...", options: [.displayInline], children: [visibilityOption2, visibilityOption3, visibilityOption4])
+        if let _ = whoCanReply.firstIndex(of: .allowFollowers) {
+            visibilityOption4.state = .on
+        } else {
+            visibilityOption4.state = .off
+        }
+        let itemMenu2b = UIMenu(title: "", options: [.displayInline], children: [visibilityOption2, visibilityOption3, visibilityOption4])
+        
         let visibilityOption5 = UIAction(title: "Everybody", image: UIImage(systemName: ""), identifier: nil) { [weak self] action in
             guard let self else { return }
-            
+            whoCanReply = [.allowMentions, .allowFollowing, .allowFollowers]
+            createToolbar()
+        }
+        if Set(whoCanReply) == Set([.allowMentions, .allowFollowing, .allowFollowers]) {
+            visibilityOption5.state = .on
+        } else {
+            visibilityOption5.state = .off
         }
         let visibilityOption6 = UIAction(title: "Nobody", image: UIImage(systemName: ""), identifier: nil) { [weak self] action in
             guard let self else { return }
-            
+            whoCanReply = []
+            createToolbar()
+        }
+        if whoCanReply == [] {
+            visibilityOption6.state = .on
+        } else {
+            visibilityOption6.state = .off
         }
         let itemMenu2c = UIMenu(title: "", options: [.displayInline, .singleSelection], children: [visibilityOption5, visibilityOption6])
-        itemMenu2c.preferredElementSize = .medium
-        let itemMenu2 = UIMenu(title: "Who can interact?", options: [.displayInline], children: [itemMenu2a, itemMenu2b, itemMenu2c])
+        let itemMenu2 = UIMenu(title: "Who can reply?", options: [.displayInline], children: [itemMenu2b, itemMenu2c])
+        
         visibilityButton.menu = itemMenu2
         
         // language button
         
         let languageButton = UIBarButtonItem(image: UIImage(systemName: "globe", withConfiguration: symbolConfig)!.withTintColor(GlobalStruct.baseTint, renderingMode: .alwaysOriginal), style: .plain, target: self, action: nil)
-        languageButton.accessibilityLabel = "Post Language"
+        languageButton.accessibilityLabel = "Post language"
+        
         let languageOption1 = UIAction(title: "English", image: UIImage(systemName: ""), identifier: nil) { [weak self] action in
             guard let self else { return }
             currentLocale = "en_EN"
@@ -833,7 +896,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         } else {
             languageOption4.state = .off
         }
-        let itemMenu3 = UIMenu(title: "", options: [.displayInline], children: [languageOption1, languageOption2, languageOption3, languageOption4])
+        let itemMenu3 = UIMenu(title: "Post language", options: [.displayInline], children: [languageOption1, languageOption2, languageOption3, languageOption4])
         languageButton.menu = itemMenu3
         
         // drafts button
@@ -857,7 +920,8 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         // layout toolbar
         
         var theItems: [UIBarButtonItem] = []
-        theItems.append(contentsOf: [photoButton, fixedSpacer, cameraButton, fixedSpacer, gifButton, fixedSpacer, languageButton, fixedSpacer])
+//        theItems.append(contentsOf: [photoButton, fixedSpacer, cameraButton, fixedSpacer, gifButton, fixedSpacer, visibilityButton, fixedSpacer, languageButton, fixedSpacer])
+        theItems.append(contentsOf: [photoButton, fixedSpacer, cameraButton, fixedSpacer, visibilityButton, fixedSpacer, languageButton, fixedSpacer])
         if GlobalStruct.drafts.count > 0 {
             theItems.append(contentsOf: [draftsButton, fixedSpacer])
         }

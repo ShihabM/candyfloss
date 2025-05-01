@@ -180,9 +180,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 1 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell1", for: indexPath) as! PlainCell
@@ -195,9 +193,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 2 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "SelectionCell", for: indexPath) as! SelectionCell
@@ -239,9 +235,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 3 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell2", for: indexPath) as! PlainCell
@@ -265,9 +259,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell3", for: indexPath) as! PlainCell
@@ -290,9 +282,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             }
         } else if indexPath.section == 1 {
@@ -305,9 +295,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = GlobalStruct.backgroundTint
-            if #available(iOS 17.0, *) {
-                cell.hoverStyle = .none
-            }
+            cell.hoverStyle = .none
             return cell
         } else if indexPath.section == 2 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell5", for: indexPath) as! PlainCell
@@ -321,9 +309,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = GlobalStruct.backgroundTint
-            if #available(iOS 17.0, *) {
-                cell.hoverStyle = .none
-            }
+            cell.hoverStyle = .none
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell6", for: indexPath) as! PlainCell
@@ -338,9 +324,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = GlobalStruct.backgroundTint
-            if #available(iOS 17.0, *) {
-                cell.hoverStyle = .none
-            }
+            cell.hoverStyle = .none
             return cell
         }
     }

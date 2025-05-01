@@ -91,6 +91,7 @@ struct GlobalStruct {
     
     static var fromComposerMedia: Bool = false
     static var composerMediaIndex: Int = 0
+    static var currentMediaAltText: String = ""
     
     // action buttons
     static var bookmarkImage1 = UIImage(systemName: "bookmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))?.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal)
@@ -131,6 +132,8 @@ struct GlobalStruct {
     
     // TODO: Remove sensitive information
     // Sign-in page hasn't been built yet, so hard coding values for now
-    static var userHandle: String = ""
-    static var userAppPassword: String = ""
+    static var userHandle: String = "jpeguin.bsky.social"
+    static var userAppPassword: String = "Xmnmfg123?"
+//    static var userHandle: String = ""
+//    static var userAppPassword: String = ""
 }

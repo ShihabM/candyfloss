@@ -22,6 +22,8 @@
 		5309C2102DC21AAC00380B93 /* DetailsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C20F2DC21A9E00380B93 /* DetailsSettingsViewController.swift */; };
 		5309C2122DC220A800380B93 /* ComposerSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C2112DC2209F00380B93 /* ComposerSettingsViewController.swift */; };
 		5309C2142DC22C0B00380B93 /* PostsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C2132DC22C0200380B93 /* PostsSettingsViewController.swift */; };
+		5309C2182DC36CEC00380B93 /* AddAltTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C2172DC36CE500380B93 /* AddAltTextViewController.swift */; };
+		5309C21A2DC36E0F00380B93 /* NoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C2192DC36E0C00380B93 /* NoteCell.swift */; };
 		531980982D96E5DA006C3D22 /* ComposeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531980972D96E5D7006C3D22 /* ComposeCell.swift */; };
 		5319809A2D96E5F3006C3D22 /* MultilineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531980992D96E5EF006C3D22 /* MultilineTextField.swift */; };
 		5319809C2D96E6BB006C3D22 /* ComposerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5319809B2D96E6B6006C3D22 /* ComposerViewController.swift */; };
@@ -121,6 +123,8 @@
 		5309C20F2DC21A9E00380B93 /* DetailsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsSettingsViewController.swift; sourceTree = "<group>"; };
 		5309C2112DC2209F00380B93 /* ComposerSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerSettingsViewController.swift; sourceTree = "<group>"; };
 		5309C2132DC22C0200380B93 /* PostsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsSettingsViewController.swift; sourceTree = "<group>"; };
+		5309C2172DC36CE500380B93 /* AddAltTextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAltTextViewController.swift; sourceTree = "<group>"; };
+		5309C2192DC36E0C00380B93 /* NoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCell.swift; sourceTree = "<group>"; };
 		531980972D96E5D7006C3D22 /* ComposeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeCell.swift; sourceTree = "<group>"; };
 		531980992D96E5EF006C3D22 /* MultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTextField.swift; sourceTree = "<group>"; };
 		5319809B2D96E6B6006C3D22 /* ComposerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerViewController.swift; sourceTree = "<group>"; };
@@ -237,6 +241,7 @@
 			children = (
 				5319809B2D96E6B6006C3D22 /* ComposerViewController.swift */,
 				5309C2032DC0D6D200380B93 /* DraftsViewController.swift */,
+				5309C2172DC36CE500380B93 /* AddAltTextViewController.swift */,
 			);
 			path = Composer;
 			sourceTree = "<group>";
@@ -273,6 +278,7 @@
 				531980972D96E5D7006C3D22 /* ComposeCell.swift */,
 				53C460E92D7B5F2C009F7C6B /* FooterCell.swift */,
 				53C465A32D8DC7BB009F7C6B /* PlainCell.swift */,
+				5309C2192DC36E0C00380B93 /* NoteCell.swift */,
 				5309C2092DC0F3A000380B93 /* SelectionCell.swift */,
 				5309C20B2DC0F3DC00380B93 /* TextSizeCell.swift */,
 			);
@@ -520,6 +526,7 @@
 				539B4D012CC7B6BA00CF6646 /* Disk+[UIImage].swift in Sources */,
 				539B4D022CC7B6BA00CF6646 /* Disk+Helpers.swift in Sources */,
 				539B4D032CC7B6BA00CF6646 /* Disk+VolumeInformation.swift in Sources */,
+				5309C2182DC36CEC00380B93 /* AddAltTextViewController.swift in Sources */,
 				539B4CDA2CC7A3E700CF6646 /* StringTrimExtension.swift in Sources */,
 				5309C1F62DB7CD7C00380B93 /* StarterPackViewController.swift in Sources */,
 				539B4CED2CC7A4A400CF6646 /* ExploreViewController.swift in Sources */,
@@ -580,6 +587,7 @@
 				539B4CE52CC7A3E700CF6646 /* SceneDelegate.swift in Sources */,
 				539B4CE62CC7A3E700CF6646 /* TabBarController.swift in Sources */,
 				539B4CE72CC7A3E700CF6646 /* ViewController.swift in Sources */,
+				5309C21A2DC36E0F00380B93 /* NoteCell.swift in Sources */,
 				53C465A42D8DC7BE009F7C6B /* PlainCell.swift in Sources */,
 				5309C1FA2DB8089D00380B93 /* StarterPackHeaderCell.swift in Sources */,
 			);

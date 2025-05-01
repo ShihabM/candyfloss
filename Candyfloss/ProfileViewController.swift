@@ -454,9 +454,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = GlobalStruct.backgroundTint
-            if #available(iOS 17.0, *) {
-                cell.hoverStyle = .none
-            }
+            cell.hoverStyle = .none
             cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
             return cell
         } else {

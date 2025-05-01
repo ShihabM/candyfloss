@@ -151,9 +151,7 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = GlobalStruct.backgroundTint
-            if #available(iOS 17.0, *) {
-                cell.hoverStyle = .none
-            }
+            cell.hoverStyle = .none
             return cell
         }
     }

@@ -164,9 +164,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = GlobalStruct.detailQuoteCell
-            if #available(iOS 17.0, *) {
-                cell.hoverStyle = .none
-            }
+            cell.hoverStyle = .none
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell2", for: indexPath) as! PlainCell
@@ -190,9 +188,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = GlobalStruct.detailQuoteCell
-            if #available(iOS 17.0, *) {
-                cell.hoverStyle = .none
-            }
+            cell.hoverStyle = .none
             return cell
         }
     }

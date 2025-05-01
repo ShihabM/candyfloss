@@ -30,7 +30,10 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
     var canPost: Bool = false
     var isQuote: Bool = false
     
+    var hasVideo: Bool = false
+    var hasGIF: Bool = false
     var attachedMedia: [UIImage] = []
+    var mediaAltText: [String?] = []
     var photoPickerView: PHPickerViewController!
     var mediaContainer1 = UIButton()
     var mediaImage1 = UIImageView()
@@ -113,6 +116,11 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
+    @objc func updateMediaAltText() {
+        mediaAltText[GlobalStruct.composerMediaIndex] = GlobalStruct.currentMediaAltText
+        GlobalStruct.currentMediaAltText = ""
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
@@ -121,6 +129,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         NotificationCenter.default.addObserver(self, selector: #selector(self.restoreFromDrafts), name: NSNotification.Name(rawValue: "restoreFromDrafts"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.createToolbar), name: NSNotification.Name(rawValue: "createToolbar"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.rotateComposerMedia), name: NSNotification.Name(rawValue: "rotateComposerMedia"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateMediaAltText), name: NSNotification.Name(rawValue: "updateMediaAltText"), object: nil)
         NotificationCenter.default.addObserver(self,selector: #selector(keyboardWillChange), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         
         do {
@@ -218,11 +227,11 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                     
                     // media
                     var allImages: [ATProtoTools.ImageQuery] = []
-                    for image in attachedMedia {
+                    for (index, image) in attachedMedia.enumerated() {
                         let image = ATProtoTools.ImageQuery(
                             imageData: image.jpegData(compressionQuality: 0.8) ?? Data(),
                             fileName: "image-\(UUID()).jpg",
-                            altText: nil,
+                            altText: mediaAltText[index],
                             aspectRatio: nil
                         )
                         allImages.append(image)
@@ -391,9 +400,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = UIColor.clear
-            if #available(iOS 17.0, *) {
-                cell.hoverStyle = .none
-            }
+            cell.hoverStyle = .none
             cell.separatorInset = UIEdgeInsets(top: 0, left: .greatestFiniteMagnitude, bottom: 0, right: 0)
             return cell
         }
@@ -943,11 +950,19 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         } else if index == 3 {
             imageView = mediaImage4
         }
-        let view01 = UIAction(title: "Add Description", image: UIImage(systemName: "applepencil.and.scribble"), identifier: nil) { [weak self] action in
-        guard let self else { return }
-            
+        let view01 = UIAction(title: "Alt Text", image: UIImage(systemName: "applepencil.and.scribble"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            let vc = AddAltTextViewController()
+            GlobalStruct.composerMediaIndex = index
+            vc.imageIndex = GlobalStruct.composerMediaIndex
+            vc.theImage = imageView.image
+            if mediaAltText[GlobalStruct.composerMediaIndex] != nil {
+                vc.fromEdit = true
+                vc.imageAltText = mediaAltText[GlobalStruct.composerMediaIndex] ?? ""
+            }
+            show(SloppySwipingNav(rootViewController: vc), sender: self)
         }
-        view01.accessibilityLabel = "Add Description"
+        view01.accessibilityLabel = "Alt Text"
         let view02 = UIAction(title: "View", image: UIImage(systemName: "eye"), identifier: nil) { [weak self] action in
         guard let self else { return }
             GlobalStruct.fromComposerMedia = true
@@ -1107,11 +1122,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                 guard let self else { return }
                 var configuration = PHPickerConfiguration()
                 configuration.selectionLimit = GlobalStruct.currentMaxMediaCount
-                if #available(iOS 16.0, *) {
-                    configuration.filter = .any(of: [.images, .screenshots, .depthEffectPhotos, .videos, .screenRecordings, .cinematicVideos, .slomoVideos, .timelapseVideos])
-                } else {
-                    configuration.filter = .any(of: [.videos, .images, .livePhotos])
-                }
+                configuration.filter = .any(of: [.images, .screenshots, .depthEffectPhotos, .videos, .screenRecordings, .cinematicVideos, .slomoVideos, .timelapseVideos])
                 self.photoPickerView = PHPickerViewController(configuration: configuration)
                 self.photoPickerView.modalPresentationStyle = .popover
                 self.photoPickerView.delegate = self
@@ -1119,10 +1130,8 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                     presenter.sourceView = self.view
                     presenter.sourceRect = self.view.bounds
                 }
-                if #available(iOS 15.0, *) {
-                    if let sheet = self.photoPickerView.popoverPresentationController?.adaptiveSheetPresentationController {
-                        sheet.detents = [.large()]
-                    }
+                if let sheet = self.photoPickerView.popoverPresentationController?.adaptiveSheetPresentationController {
+                    sheet.detents = [.large()]
                 }
                 self.present(self.photoPickerView, animated: true, completion: nil)
             }
@@ -1204,6 +1213,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                 }
                                 if attachedMedia.count < 4 {
                                     attachedMedia.append(photoToAttach)
+                                    mediaAltText.append(nil)
                                     createToolbar()
                                 }
                             }

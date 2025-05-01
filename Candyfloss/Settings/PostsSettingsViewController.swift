@@ -203,9 +203,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = GlobalStruct.backgroundTint
-            if #available(iOS 17.0, *) {
-                cell.hoverStyle = .none
-            }
+            cell.hoverStyle = .none
             cell.separatorInset = UIEdgeInsets(top: 0, left: .greatestFiniteMagnitude, bottom: 0, right: 0)
             return cell
         } else if indexPath.section == 1 {
@@ -223,9 +221,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "TextSizeCell", for: indexPath) as! TextSizeCell
@@ -238,9 +234,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 cell.accessoryView = .none
                 cell.selectionStyle = .none
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                if #available(iOS 15.0, *) {
-                    cell.focusEffect = UIFocusHaloEffect()
-                }
+                cell.focusEffect = UIFocusHaloEffect()
                 return cell
             }
         } else if indexPath.section == 2 {
@@ -258,9 +252,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "TextSizeCellb", for: indexPath) as! TextSizeCell
@@ -273,9 +265,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 cell.accessoryView = .none
                 cell.selectionStyle = .none
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                if #available(iOS 15.0, *) {
-                    cell.focusEffect = UIFocusHaloEffect()
-                }
+                cell.focusEffect = UIFocusHaloEffect()
                 return cell
             }
         } else {
@@ -321,9 +311,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 1 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "SelectionCell1", for: indexPath) as! SelectionCell
@@ -419,9 +407,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 2 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell3", for: indexPath) as! PlainCell
@@ -445,9 +431,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 3 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell17r", for: indexPath) as! PlainCell
@@ -471,9 +455,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 4 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell4", for: indexPath) as! PlainCell
@@ -497,9 +479,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 5 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell5", for: indexPath) as! PlainCell
@@ -523,9 +503,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 6 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell6", for: indexPath) as! PlainCell
@@ -549,9 +527,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell2", for: indexPath) as! PlainCell
@@ -575,9 +551,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
-                if #available(iOS 17.0, *) {
-                    cell.hoverStyle = .none
-                }
+                cell.hoverStyle = .none
                 return cell
             }
         }

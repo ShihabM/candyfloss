@@ -483,6 +483,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
             }
             cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 6, right: 10)
+            cell.theIcon.isUserInteractionEnabled = false
             cell.theTitle.text = trendingTopics[indexPath.row].topic
             
             if indexPath.row == trendingTopics.count - 1 {

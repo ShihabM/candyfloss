@@ -129,11 +129,4 @@ struct GlobalStruct {
         "at://did:plc:dpjtfmiav5v7fucsz6n3wr3y/app.bsky.graph.list/3ldwvl3twxg2a",
         "at://did:plc:na44tnnzcxmrmgxohiwueh4n/app.bsky.graph.list/3lawnq5azwn2e",
     ]
-    
-    // TODO: Remove sensitive information
-    // Sign-in page hasn't been built yet, so hard coding values for now
-    static var userHandle: String = "jpeguin.bsky.social"
-    static var userAppPassword: String = "Xmnmfg123?"
-//    static var userHandle: String = ""
-//    static var userAppPassword: String = ""
 }

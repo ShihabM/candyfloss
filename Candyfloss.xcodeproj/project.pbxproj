@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		5309C1EE2DB1549700380B93 /* TrendingTopicsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C1ED2DB1547500380B93 /* TrendingTopicsCell.swift */; };
 		5309C1F02DB2C34C00380B93 /* TrendingFeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C1EF2DB2C34800380B93 /* TrendingFeedCell.swift */; };
-		5309C1F22DB2C96A00380B93 /* WhoToFollowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C1F12DB2C96300380B93 /* WhoToFollowViewController.swift */; };
+		5309C1F22DB2C96A00380B93 /* SuggestedAccountsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C1F12DB2C96300380B93 /* SuggestedAccountsViewController.swift */; };
 		5309C1F62DB7CD7C00380B93 /* StarterPackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C1F52DB7CD7500380B93 /* StarterPackViewController.swift */; };
 		5309C1F82DB7F85000380B93 /* AllStarterPacksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C1F72DB7F84A00380B93 /* AllStarterPacksViewController.swift */; };
 		5309C1FA2DB8089D00380B93 /* StarterPackHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C1F92DB8089800380B93 /* StarterPackHeaderCell.swift */; };
@@ -111,7 +111,7 @@
 /* Begin PBXFileReference section */
 		5309C1ED2DB1547500380B93 /* TrendingTopicsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingTopicsCell.swift; sourceTree = "<group>"; };
 		5309C1EF2DB2C34800380B93 /* TrendingFeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingFeedCell.swift; sourceTree = "<group>"; };
-		5309C1F12DB2C96300380B93 /* WhoToFollowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoToFollowViewController.swift; sourceTree = "<group>"; };
+		5309C1F12DB2C96300380B93 /* SuggestedAccountsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestedAccountsViewController.swift; sourceTree = "<group>"; };
 		5309C1F52DB7CD7500380B93 /* StarterPackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarterPackViewController.swift; sourceTree = "<group>"; };
 		5309C1F72DB7F84A00380B93 /* AllStarterPacksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllStarterPacksViewController.swift; sourceTree = "<group>"; };
 		5309C1F92DB8089800380B93 /* StarterPackHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarterPackHeaderCell.swift; sourceTree = "<group>"; };
@@ -314,7 +314,7 @@
 				539B4CD42CC7A3E700CF6646 /* ViewController.swift */,
 				539B4CC92CC7A3E700CF6646 /* ActivityViewController.swift */,
 				539B4CEC2CC7A49F00CF6646 /* ExploreViewController.swift */,
-				5309C1F12DB2C96300380B93 /* WhoToFollowViewController.swift */,
+				5309C1F12DB2C96300380B93 /* SuggestedAccountsViewController.swift */,
 				5309C1F72DB7F84A00380B93 /* AllStarterPacksViewController.swift */,
 				5309C1F52DB7CD7500380B93 /* StarterPackViewController.swift */,
 				53CA75F72DA7D93E007E2361 /* BookmarksViewController.swift */,
@@ -523,7 +523,7 @@
 				539B4CFD2CC7B6BA00CF6646 /* Disk+InternalHelpers.swift in Sources */,
 				53C460EC2D7B60AB009F7C6B /* DetailActionBarCell.swift in Sources */,
 				539B4CFE2CC7B6BA00CF6646 /* Disk+Data.swift in Sources */,
-				5309C1F22DB2C96A00380B93 /* WhoToFollowViewController.swift in Sources */,
+				5309C1F22DB2C96A00380B93 /* SuggestedAccountsViewController.swift in Sources */,
 				539B4CFF2CC7B6BA00CF6646 /* Disk+UIImage.swift in Sources */,
 				539B4D002CC7B6BA00CF6646 /* Disk.swift in Sources */,
 				539B4D012CC7B6BA00CF6646 /* Disk+[UIImage].swift in Sources */,

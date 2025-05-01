@@ -502,7 +502,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 let cell = tableView.dequeueReusableCell(withIdentifier: "WhoToFollowCell", for: indexPath) as! TrendingFeedCell
                 
                 cell.configureCell(false)
-                cell.theTitle.text = "Who to Follow"
+                cell.theTitle.text = "Suggested Accounts"
                 cell.theAuthor.text = "Suggestions based on who you follow"
                 
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -586,7 +586,6 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
                 }
                 cell.accessoryView = nil
-                cell.accessoryType = .disclosureIndicator
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
@@ -701,7 +700,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.section == 1 {
             if indexPath.row == 0 {
-                let vc = WhoToFollowViewController()
+                let vc = SuggestedAccountsViewController()
                 vc.whoToFollow = whoToFollow
                 navigationController?.pushViewController(vc, animated: true)
             } else {

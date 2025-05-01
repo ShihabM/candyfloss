@@ -1,5 +1,5 @@
 //
-//  WhoToFollowViewController.swift
+//  SuggestedAccountsViewController.swift
 //  Candyfloss
 //
 //  Created by Shihab Mehboob on 18/04/2025.
@@ -8,7 +8,7 @@
 import UIKit
 import ATProtoKit
 
-class WhoToFollowViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating, UISearchBarDelegate {
+class SuggestedAccountsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating, UISearchBarDelegate {
     
     var tableView = UITableView()
     var whoToFollow: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
@@ -24,6 +24,7 @@ class WhoToFollowViewController: UIViewController, UITableViewDataSource, UITabl
     var searchFirstTime: Bool = true
     
     override func viewDidLayoutSubviews() {
+        tableView.tableHeaderView?.frame.size.height = 56
         searchController.searchBar.sizeToFit()
         searchController.searchBar.frame.size.width = searchView.frame.size.width
         searchController.searchBar.frame.size.height = searchView.frame.size.height
@@ -106,7 +107,7 @@ class WhoToFollowViewController: UIViewController, UITableViewDataSource, UITabl
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
-        navigationItem.title = "Who to Follow"
+        navigationItem.title = "Suggested Accounts"
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
         
@@ -136,7 +137,7 @@ class WhoToFollowViewController: UIViewController, UITableViewDataSource, UITabl
         tableView.layer.masksToBounds = true
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableHeaderView = UIView()
-        tableView.tableFooterView = UIView(frame: .zero)
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 56))
         view.addSubview(tableView)
         self.searchController = ({
             let controller = UISearchController(searchResultsController: nil)
@@ -149,7 +150,7 @@ class WhoToFollowViewController: UIViewController, UITableViewDataSource, UITabl
             controller.searchBar.sizeToFit()
             controller.searchBar.delegate = self
             controller.definesPresentationContext = true
-            controller.searchBar.placeholder = "Search Who to Follow"
+            controller.searchBar.placeholder = "Search Suggested Accounts"
             self.definesPresentationContext = true
             searchView.addSubview(controller.searchBar)
             tableView.tableHeaderView = searchView

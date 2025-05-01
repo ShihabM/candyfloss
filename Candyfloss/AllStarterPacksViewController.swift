@@ -24,6 +24,7 @@ class AllStarterPacksViewController: UIViewController, UITableViewDataSource, UI
     var searchFirstTime: Bool = true
     
     override func viewDidLayoutSubviews() {
+        tableView.tableHeaderView?.frame.size.height = 56
         searchController.searchBar.sizeToFit()
         searchController.searchBar.frame.size.width = searchView.frame.size.width
         searchController.searchBar.frame.size.height = searchView.frame.size.height
@@ -152,7 +153,7 @@ class AllStarterPacksViewController: UIViewController, UITableViewDataSource, UI
         tableView.layer.masksToBounds = true
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableHeaderView = UIView()
-        tableView.tableFooterView = UIView(frame: .zero)
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 56))
         view.addSubview(tableView)
         self.searchController = ({
             let controller = UISearchController(searchResultsController: nil)

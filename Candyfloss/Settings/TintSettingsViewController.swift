@@ -132,7 +132,7 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell", for: indexPath) as! PlainCell
             
-            cell.theTitle.text = "True-Black Dark Mode"
+            cell.theTitle.text = "Full-Black Dark Mode"
             
             let switchView = UISwitch(frame: .zero)
             if GlobalStruct.fullBlackBG {

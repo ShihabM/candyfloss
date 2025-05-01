@@ -7,9 +7,10 @@
 
 import UIKit
 import PhotosUI
+import AVKit
 import ATProtoKit
 
-class ComposerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, PHPickerViewControllerDelegate, SKPhotoBrowserDelegate {
+class ComposerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, PHPickerViewControllerDelegate, SKPhotoBrowserDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AVPlayerViewControllerDelegate {
     
     private var pendingRequestWorkItem: DispatchWorkItem?
     var work = DispatchWorkItem(block: {})
@@ -35,6 +36,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
     var attachedMedia: [UIImage] = []
     var mediaAltText: [String?] = []
     var photoPickerView: PHPickerViewController!
+    var photoPickerView2 = UIImagePickerController()
     var mediaContainer1 = UIButton()
     var mediaImage1 = UIImageView()
     var mediaContainer2 = UIButton()
@@ -43,6 +45,9 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
     var mediaImage3 = UIImageView()
     var mediaContainer4 = UIButton()
     var mediaImage4 = UIImageView()
+    var thumbnailAttempt: Int = 0
+    var videoData: Data = Data()
+    var videoURL: URL = URL(string: "www.google.com")!
     
 //    var whoCanReply: [ATUnion.ThreadgateUnion] = [.mentionRule()]
     var allowQuotes: Bool = true
@@ -268,16 +273,30 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                     self.dismiss(animated: true)
                                 }
                             } else {
-                                let post = try await atProtoBluesky.createPostRecord(
-                                    text: currentPostText,
-                                    locales: [Locale(identifier: currentLocale)],
-                                    replyTo: replyTo,
-                                    embed: .images(images: allImages)
-                                )
-                                DispatchQueue.main.async {
-                                    print("Created reply with media: \(post)")
-                                    NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
-                                    self.dismiss(animated: true)
+                                if hasVideo {
+                                    let post = try await atProtoBluesky.createPostRecord(
+                                        text: currentPostText,
+                                        locales: [Locale(identifier: currentLocale)],
+                                        replyTo: replyTo,
+                                        embed: .video(video: videoData, captions: nil, altText: mediaAltText.first ?? nil, aspectoRatio: nil)
+                                    )
+                                    DispatchQueue.main.async {
+                                        print("Created reply with video: \(post)")
+                                        NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
+                                        self.dismiss(animated: true)
+                                    }
+                                } else {
+                                    let post = try await atProtoBluesky.createPostRecord(
+                                        text: currentPostText,
+                                        locales: [Locale(identifier: currentLocale)],
+                                        replyTo: replyTo,
+                                        embed: .images(images: allImages)
+                                    )
+                                    DispatchQueue.main.async {
+                                        print("Created reply with media: \(post)")
+                                        NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
+                                        self.dismiss(animated: true)
+                                    }
                                 }
                             }
                         }
@@ -293,15 +312,28 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                 self.dismiss(animated: true)
                             }
                         } else {
-                            let post = try await atProtoBluesky.createPostRecord(
-                                text: currentPostText,
-                                locales: [Locale(identifier: currentLocale)],
-                                embed: .images(images: allImages)
-                            )
-                            DispatchQueue.main.async {
-                                print("Created post with media: \(post)")
-                                NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
-                                self.dismiss(animated: true)
+                            if hasVideo {
+                                let post = try await atProtoBluesky.createPostRecord(
+                                    text: currentPostText,
+                                    locales: [Locale(identifier: currentLocale)],
+                                    embed: .video(video: videoData, captions: nil, altText: mediaAltText.first ?? nil, aspectoRatio: nil)
+                                )
+                                DispatchQueue.main.async {
+                                    print("Created post with video: \(post)")
+                                    NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
+                                    self.dismiss(animated: true)
+                                }
+                            } else {
+                                let post = try await atProtoBluesky.createPostRecord(
+                                    text: currentPostText,
+                                    locales: [Locale(identifier: currentLocale)],
+                                    embed: .images(images: allImages)
+                                )
+                                DispatchQueue.main.async {
+                                    print("Created post with media: \(post)")
+                                    NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchLatest"), object: nil)
+                                    self.dismiss(animated: true)
+                                }
                             }
                         }
                     }
@@ -702,7 +734,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         var photoButton = UIBarButtonItem(image: UIImage(systemName: "photo.on.rectangle.angled", withConfiguration: symbolConfig)!.withTintColor(GlobalStruct.baseTint, renderingMode: .alwaysOriginal), style: .plain, target: self, action: #selector(self.galleryTapped))
         photoButton.accessibilityLabel = "Add Media"
         
-        var cameraButton = UIBarButtonItem(image: UIImage(systemName: "camera", withConfiguration: symbolConfig)!.withTintColor(GlobalStruct.baseTint, renderingMode: .alwaysOriginal), style: .plain, target: self, action: nil)
+        var cameraButton = UIBarButtonItem(image: UIImage(systemName: "camera", withConfiguration: symbolConfig)!.withTintColor(GlobalStruct.baseTint, renderingMode: .alwaysOriginal), style: .plain, target: self, action: #selector(self.cameraTapped))
         cameraButton.accessibilityLabel = "Add from Camera"
         
         var gifButton = UIBarButtonItem(image: UIImage(systemName: "paperclip", withConfiguration: symbolConfig)!.withTintColor(GlobalStruct.baseTint, renderingMode: .alwaysOriginal), style: .plain, target: self, action: nil)
@@ -960,71 +992,88 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                 vc.fromEdit = true
                 vc.imageAltText = mediaAltText[GlobalStruct.composerMediaIndex] ?? ""
             }
+            vc.fromVideo = hasVideo
             show(SloppySwipingNav(rootViewController: vc), sender: self)
         }
         view01.accessibilityLabel = "Alt Text"
         let view02 = UIAction(title: "View", image: UIImage(systemName: "eye"), identifier: nil) { [weak self] action in
         guard let self else { return }
-            GlobalStruct.fromComposerMedia = true
-            if index == 0 {
-                GlobalStruct.composerMediaIndex = 0
-                let resetRotation = CABasicAnimation(keyPath: "transform.rotation.z")
-                resetRotation.fromValue = mediaContainer1.layer.presentation()?.value(forKeyPath: "transform.rotation.z") ?? 0
-                resetRotation.toValue = 0
-                resetRotation.duration = 0.2
-                resetRotation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-                resetRotation.fillMode = .forwards
-                resetRotation.isRemovedOnCompletion = false
-                mediaContainer1.layer.add(resetRotation, forKey: "resetRotation")
-            } else if index == 1 {
-                GlobalStruct.composerMediaIndex = 1
-                let resetRotation = CABasicAnimation(keyPath: "transform.rotation.z")
-                resetRotation.fromValue = mediaContainer2.layer.presentation()?.value(forKeyPath: "transform.rotation.z") ?? 0
-                resetRotation.toValue = 0
-                resetRotation.duration = 0.2
-                resetRotation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-                resetRotation.fillMode = .forwards
-                resetRotation.isRemovedOnCompletion = false
-                mediaContainer2.layer.add(resetRotation, forKey: "resetRotation")
-            } else if index == 2 {
-                GlobalStruct.composerMediaIndex = 2
-                let resetRotation = CABasicAnimation(keyPath: "transform.rotation.z")
-                resetRotation.fromValue = mediaContainer3.layer.presentation()?.value(forKeyPath: "transform.rotation.z") ?? 0
-                resetRotation.toValue = 0
-                resetRotation.duration = 0.2
-                resetRotation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-                resetRotation.fillMode = .forwards
-                resetRotation.isRemovedOnCompletion = false
-                mediaContainer3.layer.add(resetRotation, forKey: "resetRotation")
-            } else if index == 3 {
-                GlobalStruct.composerMediaIndex = 3
-                let resetRotation = CABasicAnimation(keyPath: "transform.rotation.z")
-                resetRotation.fromValue = mediaContainer4.layer.presentation()?.value(forKeyPath: "transform.rotation.z") ?? 0
-                resetRotation.toValue = 0
-                resetRotation.duration = 0.2
-                resetRotation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-                resetRotation.fillMode = .forwards
-                resetRotation.isRemovedOnCompletion = false
-                mediaContainer4.layer.add(resetRotation, forKey: "resetRotation")
+            if hasVideo {
+                var player: AVPlayer?
+                player = AVPlayer(url: self.videoURL)
+                let playerView = PlayerView()
+                playerView.player = player
+                playerView.playerLayer?.videoGravity = .resizeAspectFill
+                let player2 = playerView.player
+                let playerViewController = AVPlayerViewController()
+                playerViewController.player = player2
+                playerViewController.allowsPictureInPicturePlayback = true
+                playerViewController.delegate = self
+                getTopMostViewController()?.present(playerViewController, animated: true) {
+                    player2?.play()
+                }
+            } else {
+                GlobalStruct.fromComposerMedia = true
+                if index == 0 {
+                    GlobalStruct.composerMediaIndex = 0
+                    let resetRotation = CABasicAnimation(keyPath: "transform.rotation.z")
+                    resetRotation.fromValue = mediaContainer1.layer.presentation()?.value(forKeyPath: "transform.rotation.z") ?? 0
+                    resetRotation.toValue = 0
+                    resetRotation.duration = 0.2
+                    resetRotation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                    resetRotation.fillMode = .forwards
+                    resetRotation.isRemovedOnCompletion = false
+                    mediaContainer1.layer.add(resetRotation, forKey: "resetRotation")
+                } else if index == 1 {
+                    GlobalStruct.composerMediaIndex = 1
+                    let resetRotation = CABasicAnimation(keyPath: "transform.rotation.z")
+                    resetRotation.fromValue = mediaContainer2.layer.presentation()?.value(forKeyPath: "transform.rotation.z") ?? 0
+                    resetRotation.toValue = 0
+                    resetRotation.duration = 0.2
+                    resetRotation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                    resetRotation.fillMode = .forwards
+                    resetRotation.isRemovedOnCompletion = false
+                    mediaContainer2.layer.add(resetRotation, forKey: "resetRotation")
+                } else if index == 2 {
+                    GlobalStruct.composerMediaIndex = 2
+                    let resetRotation = CABasicAnimation(keyPath: "transform.rotation.z")
+                    resetRotation.fromValue = mediaContainer3.layer.presentation()?.value(forKeyPath: "transform.rotation.z") ?? 0
+                    resetRotation.toValue = 0
+                    resetRotation.duration = 0.2
+                    resetRotation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                    resetRotation.fillMode = .forwards
+                    resetRotation.isRemovedOnCompletion = false
+                    mediaContainer3.layer.add(resetRotation, forKey: "resetRotation")
+                } else if index == 3 {
+                    GlobalStruct.composerMediaIndex = 3
+                    let resetRotation = CABasicAnimation(keyPath: "transform.rotation.z")
+                    resetRotation.fromValue = mediaContainer4.layer.presentation()?.value(forKeyPath: "transform.rotation.z") ?? 0
+                    resetRotation.toValue = 0
+                    resetRotation.duration = 0.2
+                    resetRotation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                    resetRotation.fillMode = .forwards
+                    resetRotation.isRemovedOnCompletion = false
+                    mediaContainer4.layer.add(resetRotation, forKey: "resetRotation")
+                }
+                var images = [SKPhoto]()
+                let photo = SKPhoto.photoWithImage(imageView.image ?? UIImage())
+                photo.shouldCachePhotoURLImage = true
+                photo.contentMode = .scaleAspectFill
+                images.append(photo)
+                let originImage = imageView.image ?? UIImage()
+                let browser = SKPhotoBrowser(originImage: originImage, photos: images, animatedFromView: imageView, imageText: "", imageText2: 0, imageText3: 0, imageText4: "")
+                browser.delegate = self
+                SKPhotoBrowserOptions.enableSingleTapDismiss = false
+                SKPhotoBrowserOptions.displayCounterLabel = false
+                SKPhotoBrowserOptions.displayBackAndForwardButton = false
+                SKPhotoBrowserOptions.displayAction = false
+                SKPhotoBrowserOptions.displayHorizontalScrollIndicator = false
+                SKPhotoBrowserOptions.displayVerticalScrollIndicator = false
+                SKPhotoBrowserOptions.displayCloseButton = false
+                SKPhotoBrowserOptions.displayStatusbar = false
+                browser.initializePageIndex(0)
+                getTopMostViewController()?.present(browser, animated: true, completion: {})
             }
-            var images = [SKPhoto]()
-            let photo = SKPhoto.photoWithImage(imageView.image ?? UIImage())
-            photo.shouldCachePhotoURLImage = true
-            photo.contentMode = .scaleAspectFill
-            images.append(photo)
-            let originImage = imageView.image ?? UIImage()
-            let browser = SKPhotoBrowser(originImage: originImage, photos: images, animatedFromView: imageView, imageText: "", imageText2: 0, imageText3: 0, imageText4: "")
-            browser.delegate = self
-            SKPhotoBrowserOptions.enableSingleTapDismiss = false
-            SKPhotoBrowserOptions.displayCounterLabel = false
-            SKPhotoBrowserOptions.displayBackAndForwardButton = false
-            SKPhotoBrowserOptions.displayAction = false
-            SKPhotoBrowserOptions.displayHorizontalScrollIndicator = false
-            SKPhotoBrowserOptions.displayVerticalScrollIndicator = false
-            SKPhotoBrowserOptions.displayCloseButton = false
-            SKPhotoBrowserOptions.displayStatusbar = false
-            browser.initializePageIndex(0)
-            getTopMostViewController()?.present(browser, animated: true, completion: {})
         }
         view02.accessibilityLabel = "View"
         let view03 = UIAction(title: "Remove", image: UIImage(systemName: "trash"), identifier: nil) { [weak self] action in
@@ -1048,24 +1097,35 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
             } else if attachedMedia.count == 1 {
                 mediaContainer1.layer.add(group, forKey: "rotateScaleFade")
             }
-            if index == 0 {
-                attachedMedia.remove(at: 0)
-                mediaImage1.image = mediaImage2.image
-                mediaImage2.image = mediaImage3.image
-                mediaImage3.image = mediaImage4.image
-                mediaImage4.image = UIImage()
-            } else if index == 1 {
-                attachedMedia.remove(at: 1)
-                mediaImage2.image = mediaImage3.image
-                mediaImage3.image = mediaImage4.image
-                mediaImage4.image = UIImage()
-            } else if index == 2 {
-                attachedMedia.remove(at: 2)
-                mediaImage3.image = mediaImage4.image
-                mediaImage4.image = UIImage()
-            } else if index == 3 {
-                attachedMedia.remove(at: 3)
-                mediaImage4.image = UIImage()
+            if hasVideo {
+                videoData = Data()
+                mediaAltText.removeAll()
+                mediaContainer1.layer.add(group, forKey: "rotateScaleFade")
+                mediaImage1.image = UIImage()
+            } else {
+                if index == 0 {
+                    attachedMedia.remove(at: 0)
+                    mediaAltText.remove(at: 0)
+                    mediaImage1.image = mediaImage2.image
+                    mediaImage2.image = mediaImage3.image
+                    mediaImage3.image = mediaImage4.image
+                    mediaImage4.image = UIImage()
+                } else if index == 1 {
+                    attachedMedia.remove(at: 1)
+                    mediaAltText.remove(at: 1)
+                    mediaImage2.image = mediaImage3.image
+                    mediaImage3.image = mediaImage4.image
+                    mediaImage4.image = UIImage()
+                } else if index == 2 {
+                    attachedMedia.remove(at: 2)
+                    mediaAltText.remove(at: 2)
+                    mediaImage3.image = mediaImage4.image
+                    mediaImage4.image = UIImage()
+                } else if index == 3 {
+                    attachedMedia.remove(at: 3)
+                    mediaAltText.remove(at: 3)
+                    mediaImage4.image = UIImage()
+                }
             }
             createToolbar()
         }
@@ -1151,6 +1211,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                     DispatchQueue.main.async { [weak self] in
                         guard let self else { return }
                         self.hasGIF = true
+                        self.hasVideo = false
                     }
                 }
             } else {
@@ -1158,6 +1219,8 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                     x.itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
                         DispatchQueue.main.async { [weak self] in
                             guard let self else { return }
+                            self.hasGIF = false
+                            self.hasVideo = false
                             if let photoToAttach = image as? UIImage {
                                 let rotation = CABasicAnimation(keyPath: "transform.rotation.z")
                                 rotation.fromValue = 0
@@ -1224,18 +1287,255 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                     x.itemProvider.loadDataRepresentation(forTypeIdentifier: "public.movie") { data, error in
                         DispatchQueue.main.async { [weak self] in
                             guard let self else { return }
+                            self.hasGIF = false
                             self.hasVideo = true
+                            self.videoData = data ?? Data()
+                            self.removeAllMedia()
+                            self.mediaAltText.append(nil)
+                            self.createToolbar()
+                            self.saveMovieDataToFile(dataRepresentation: data ?? Data()) { fileURL in
+                                if let url = fileURL {
+                                    self.videoURL = url
+                                    self.tryDisplayThumbnail(url: url as URL)
+                                }
+                            }
                         }
                     }
                     x.itemProvider.loadItem(forTypeIdentifier: UTType.movie.identifier, options: [:]) { [self] (videoURL, error) in
                         DispatchQueue.main.async { [weak self] in
                             guard let self else { return }
+                            self.hasGIF = false
                             self.hasVideo = true
+                            self.removeAllMedia()
+                            self.mediaAltText.append(nil)
+                            self.createToolbar()
+                            if let url = videoURL as? URL {
+                                self.videoURL = url
+                                Task {
+                                    do {
+                                        let videoData = try NSData(contentsOf: url as URL, options: .mappedIfSafe)
+                                        self.videoData = videoData as Data
+                                        self.tryDisplayThumbnail(url: url as URL)
+                                    } catch {
+                                        return
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
         })
+    }
+    
+    @objc func cameraTapped() {
+        AVCaptureDevice.requestAccess(for: AVMediaType.video) { response in
+            if response {
+                if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera) {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+                        self.photoPickerView2.delegate = self
+                        self.photoPickerView2.sourceType = .camera
+                        self.photoPickerView2.mediaTypes = [UTType.movie.identifier, UTType.image.identifier]
+                        self.photoPickerView2.allowsEditing = false
+                        self.photoPickerView2.videoQuality = .typeHigh
+                        self.present(self.photoPickerView2, animated: true, completion: nil)
+                    }
+                }
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    let alert = UIAlertController(title: "Oops!", message: "Looks like camera access is denied. Please enable it again via Settings to attach media via the camera.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                    alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url, options: [:], completionHandler: { _ in
+                                
+                            })
+                        }
+                    })
+                    self.present(alert, animated: true)
+                }
+            }
+        }
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        self.disablePosting()
+        if let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 1)) as? ComposeCell {
+            cell.post.becomeFirstResponder()
+        }
+        if let _ = info[UIImagePickerController.InfoKey.mediaType] as? String {
+            if let photoToAttach = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    self.hasGIF = false
+                    self.hasVideo = false
+                    let rotation = CABasicAnimation(keyPath: "transform.rotation.z")
+                    rotation.fromValue = 0
+                    if attachedMedia.count == 0 {
+                        rotation.toValue = -CGFloat.pi / 26
+                    } else if attachedMedia.count == 1 {
+                        rotation.toValue = CGFloat.pi / 20
+                    } else if attachedMedia.count == 2 {
+                        rotation.toValue = -CGFloat.pi / 44
+                    } else if attachedMedia.count == 3 {
+                        rotation.toValue = CGFloat.pi / 16
+                    }
+                    let scale = CABasicAnimation(keyPath: "transform.scale")
+                    scale.fromValue = 0.4
+                    scale.toValue = 1.0
+                    let fade = CABasicAnimation(keyPath: "opacity")
+                    fade.fromValue = 0.0
+                    fade.toValue = 1.0
+                    let group = CAAnimationGroup()
+                    group.animations = [rotation, scale, fade]
+                    group.duration = 0.5
+                    group.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                    group.fillMode = .forwards
+                    group.isRemovedOnCompletion = false
+                    if attachedMedia.count == 0 {
+                        mediaContainer1.layer.add(group, forKey: "rotateScaleFade")
+                        mediaImage1.image = photoToAttach
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.mediaContainer1.alpha = 1
+                            self.addMediaOptions(0)
+                        }
+                    } else if attachedMedia.count == 1 {
+                        mediaContainer2.layer.add(group, forKey: "rotateScaleFade")
+                        mediaImage2.image = photoToAttach
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.mediaContainer2.alpha = 1
+                            self.addMediaOptions(1)
+                        }
+                    } else if attachedMedia.count == 2 {
+                        mediaContainer3.layer.add(group, forKey: "rotateScaleFade")
+                        mediaImage3.image = photoToAttach
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.mediaContainer3.alpha = 1
+                            self.addMediaOptions(2)
+                        }
+                    } else if attachedMedia.count == 3 {
+                        mediaContainer4.layer.add(group, forKey: "rotateScaleFade")
+                        mediaImage4.image = photoToAttach
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.mediaContainer4.alpha = 1
+                            self.addMediaOptions(3)
+                        }
+                    }
+                    if attachedMedia.count < 4 {
+                        attachedMedia.append(photoToAttach)
+                        mediaAltText.append(nil)
+                        createToolbar()
+                    }
+                }
+            } else {
+                if let url = info[UIImagePickerController.InfoKey.mediaURL] as? NSURL {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+                        self.hasGIF = false
+                        self.hasVideo = true
+                        self.removeAllMedia()
+                        self.mediaAltText.append(nil)
+                        self.createToolbar()
+                        self.videoURL = url as URL
+                        do {
+                            let videoData = try NSData(contentsOf: url as URL, options: .mappedIfSafe)
+                            self.videoData = videoData as Data
+                            self.tryDisplayThumbnail(url: url as URL)
+                        } catch {
+                            return
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func removeAllMedia() {
+        let fade = CABasicAnimation(keyPath: "opacity")
+        fade.fromValue = 1.0
+        fade.toValue = 0.0
+        let group = CAAnimationGroup()
+        group.animations = [fade]
+        group.duration = 0.01
+        group.timingFunction = CAMediaTimingFunction(name: .default)
+        group.fillMode = .forwards
+        group.isRemovedOnCompletion = false
+        mediaContainer4.layer.add(group, forKey: "rotateScaleFade")
+        mediaContainer3.layer.add(group, forKey: "rotateScaleFade")
+        mediaContainer2.layer.add(group, forKey: "rotateScaleFade")
+        mediaContainer1.layer.add(group, forKey: "rotateScaleFade")
+        attachedMedia.removeAll()
+        mediaAltText.removeAll()
+        mediaImage1.image = UIImage()
+        mediaImage2.image = UIImage()
+        mediaImage3.image = UIImage()
+        mediaImage4.image = UIImage()
+    }
+    
+    func tryDisplayThumbnail(url: URL) {
+        thumbnailAttempt = 0
+        getThumbnailImageFromVideoUrl(url: url)
+    }
+    
+    func getThumbnailImageFromVideoUrl(url: URL) {
+        if thumbnailAttempt < 10 {
+            DispatchQueue.global().async {
+                let asset = AVAsset(url: url)
+                let avAssetImageGenerator = AVAssetImageGenerator(asset: asset)
+                avAssetImageGenerator.appliesPreferredTrackTransform = true
+                let thumnailTime = CMTimeMake(value: 1, timescale: 60)
+                do {
+                    let cgThumbImage = try avAssetImageGenerator.copyCGImage(at: thumnailTime, actualTime: nil)
+                    let thumbImage = UIImage(cgImage: cgThumbImage)
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+                        self.mediaImage1.image = thumbImage
+                        let rotation = CABasicAnimation(keyPath: "transform.rotation.z")
+                        rotation.fromValue = 0
+                        rotation.toValue = -CGFloat.pi / 26
+                        let scale = CABasicAnimation(keyPath: "transform.scale")
+                        scale.fromValue = 0.4
+                        scale.toValue = 1.0
+                        let fade = CABasicAnimation(keyPath: "opacity")
+                        fade.fromValue = 0.0
+                        fade.toValue = 1.0
+                        let group = CAAnimationGroup()
+                        group.animations = [rotation, scale, fade]
+                        group.duration = 0.5
+                        group.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                        group.fillMode = .forwards
+                        group.isRemovedOnCompletion = false
+                        mediaContainer1.layer.add(group, forKey: "rotateScaleFade")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.mediaContainer1.alpha = 1
+                            self.addMediaOptions(0)
+                        }
+                    }
+                } catch {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                        guard let self else { return }
+                        self.thumbnailAttempt += 1
+                        self.getThumbnailImageFromVideoUrl(url: url)
+                    }
+                }
+            }
+        }
+    }
+    
+    func saveMovieDataToFile(dataRepresentation: Data, completion: @escaping (URL?) -> Void) {
+        let temporaryDirectory = FileManager.default.temporaryDirectory
+        let uniqueFileName = UUID().uuidString + ".mov"
+        let fileURL = temporaryDirectory.appendingPathComponent(uniqueFileName)
+        do {
+            try dataRepresentation.write(to: fileURL)
+            completion(fileURL)
+        } catch {
+            print("Error saving movie data to file: \(error.localizedDescription)")
+            completion(nil)
+        }
     }
     
     @objc func draftsTapped() {

@@ -98,7 +98,11 @@ class AddAltTextViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        if fromVideo {
+            return 1
+        } else {
+            return 2
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -220,7 +224,11 @@ class AddAltTextViewController: UIViewController, UITableViewDataSource, UITable
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == 0 {
-            return "\nAlternate image text descriptions help provide more context regarding what's in the image, and helps with accessibility."
+            if fromVideo {
+                return "\nAlternate video text descriptions provide more context about the video, and helps with accessibility."
+            } else {
+                return "\nAlternate image text descriptions provide more context about the image, and helps with accessibility."
+            }
         } else {
             return nil
         }

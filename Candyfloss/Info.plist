@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow Candyfloss to use the camera to take pictures and attach images to your posts when composing them.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow Candyfloss to save media to Photos.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

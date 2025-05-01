@@ -484,6 +484,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             }
             cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 6, right: 10)
             cell.theIcon.isUserInteractionEnabled = false
+            cell.theSubtitle.text = "\(indexPath.row + 1)"
             cell.theTitle.text = trendingTopics[indexPath.row].topic
             
             if indexPath.row == trendingTopics.count - 1 {

@@ -194,7 +194,7 @@ class AllStarterPacksViewController: UIViewController, UITableViewDataSource, UI
             cell.avatar.setImage(UIImage(), for: .normal)
         }
         cell.avatar.backgroundColor = .systemBlue
-        cell.theAuthor.text = "by @\(starterPacks[indexPath.row].creator.actorHandle)"
+        cell.theAuthor.text = "@\(starterPacks[indexPath.row].creator.actorHandle)"
         if let record = starterPacks[indexPath.row].record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self) {
             cell.theTitle.text = record.name
             cell.theDescription.text = record.description

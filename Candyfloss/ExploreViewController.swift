@@ -603,7 +603,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.avatar.setImage(UIImage(), for: .normal)
                 }
                 cell.avatar.backgroundColor = .systemBlue
-                cell.theAuthor.text = "by @\(starterPacks[indexPath.row - 1].creator.actorHandle)"
+                cell.theAuthor.text = "@\(starterPacks[indexPath.row - 1].creator.actorHandle)"
                 if let record = starterPacks[indexPath.row - 1].record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self) {
                     cell.theTitle.text = record.name
                     cell.theDescription.text = record.description

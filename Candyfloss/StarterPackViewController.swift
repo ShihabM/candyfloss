@@ -124,7 +124,6 @@ class StarterPackViewController: UIViewController, UITableViewDataSource, UITabl
                     y.theTitle.font = UIFont.systemFont(ofSize: defaultFontSize + GlobalStruct.customTextSize, weight: .bold)
                     y.theAuthor.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                     y.theDescription.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
-                    y.usageLabel.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                     y.followAllButton.backgroundColor = GlobalStruct.baseTint
                 }
                 if let y = x as? UserCell {
@@ -357,7 +356,7 @@ class StarterPackViewController: UIViewController, UITableViewDataSource, UITabl
                         cell.avatar.setImage(UIImage(), for: .normal)
                     }
                     cell.avatar.backgroundColor = .systemBlue
-                    cell.theAuthor.text = "by @\(starterPack.creator.actorHandle)"
+                    cell.theAuthor.text = "@\(starterPack.creator.actorHandle)"
                     if let record = starterPack.record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self) {
                         cell.theTitle.text = record.name
                         cell.theDescription.text = record.description ?? "View all starter pack members below"
@@ -383,7 +382,6 @@ class StarterPackViewController: UIViewController, UITableViewDataSource, UITabl
                     let attString00 = NSAttributedString(attachment: attachment1)
                     attStringNewLine000.append(attString00)
                     attStringNewLine000.append(attStringNewLine00)
-                    cell.usageLabel.attributedText = attStringNewLine000
                     
                     cell.followAllButton.addTarget(self, action: #selector(followAllTapped(_:)), for: .touchUpInside)
                     cell.shareButton.addTarget(self, action: #selector(shareTapped(_:)), for: .touchUpInside)

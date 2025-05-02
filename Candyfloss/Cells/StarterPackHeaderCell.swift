@@ -15,7 +15,6 @@ class StarterPackHeaderCell: UITableViewCell {
     var avatar = UIButton()
     var theAuthor = UILabel()
     var theDescription = UILabel()
-    var usageLabel = UILabel()
     var followAllButton = UIButton()
     var shareButton = UIButton()
     
@@ -72,14 +71,6 @@ class StarterPackHeaderCell: UITableViewCell {
         theDescription.numberOfLines = 0
         bgView.addSubview(theDescription)
         
-        usageLabel.translatesAutoresizingMaskIntoConstraints = false
-        usageLabel.textColor = .secondaryText
-        usageLabel.textAlignment = .left
-        usageLabel.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
-        usageLabel.isUserInteractionEnabled = false
-        usageLabel.numberOfLines = 0
-        bgView.addSubview(usageLabel)
-        
         followAllButton.translatesAutoresizingMaskIntoConstraints = false
         followAllButton.backgroundColor = GlobalStruct.baseTint
         followAllButton.layer.cornerRadius = 10
@@ -108,7 +99,6 @@ class StarterPackHeaderCell: UITableViewCell {
             "avatar" : avatar,
             "theAuthor" : theAuthor,
             "theDescription" : theDescription,
-            "usageLabel" : usageLabel,
             "followAllButton" : followAllButton,
             "shareButton" : shareButton
         ]
@@ -122,12 +112,11 @@ class StarterPackHeaderCell: UITableViewCell {
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[theTitle]-18-|", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[avatar(avatarSize)]-8-[theAuthor]-18-|", options: [], metrics: metricsDict, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[theDescription]-18-|", options: [], metrics: nil, views: viewsDict))
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[usageLabel]-18-|", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[followAllButton]-12-[shareButton(44)]-18-|", options: [], metrics: nil, views: viewsDict))
         
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[theTitle]-8-[avatar(avatarSize)]", options: [], metrics: metricsDict, views: viewsDict))
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[theTitle]-5-[theAuthor]-6-[theDescription]-6-[usageLabel]-12-[followAllButton(40)]-16-|", options: [], metrics: nil, views: viewsDict))
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[theTitle]-5-[theAuthor]-6-[theDescription]-6-[usageLabel]-12-[shareButton(40)]-16-|", options: [], metrics: nil, views: viewsDict))
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[theTitle]-5-[theAuthor]-6-[theDescription]-12-[followAllButton(40)]-16-|", options: [], metrics: nil, views: viewsDict))
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[theTitle]-5-[theAuthor]-6-[theDescription]-12-[shareButton(40)]-16-|", options: [], metrics: nil, views: viewsDict))
     }
     
 }

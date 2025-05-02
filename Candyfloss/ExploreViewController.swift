@@ -13,6 +13,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     var tableView = UITableView()
     var tempScrollPosition: CGFloat = 0
     let refreshControl = UIRefreshControl()
+    var fetchedAreasCount: Int = 0
     
     // trending topics
     var trendingTopics: [AppBskyLexicon.Unspecced.TrendingTopic] = []
@@ -221,13 +222,17 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 if let atProto = GlobalStruct.atProto {
                     let x = try await atProto.getTrendingTopics()
                     trendingTopics = Array(x.topics.prefix(5))
+                    fetchedAreasCount += 1
                     DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                        self.refreshControl.endRefreshing()
+                        if self.fetchedAreasCount == 4 {
+                            self.tableView.reloadData()
+                            self.refreshControl.endRefreshing()
+                        }
                     }
                 }
             } catch {
                 print("Error fetching trending topics: \(error.localizedDescription)")
+                tableView.reloadData()
                 refreshControl.endRefreshing()
             }
         }
@@ -237,13 +242,17 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     let x = try await atProto.getSuggestedFollowsByActor(GlobalStruct.currentUser?.actorHandle ?? "")
                     suggestedUsers = Array(x.suggestions.prefix(3))
                     whoToFollow = x.suggestions
+                    fetchedAreasCount += 1
                     DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                        self.refreshControl.endRefreshing()
+                        if self.fetchedAreasCount == 4 {
+                            self.tableView.reloadData()
+                            self.refreshControl.endRefreshing()
+                        }
                     }
                 }
             } catch {
                 print("Error fetching suggested users: \(error.localizedDescription)")
+                tableView.reloadData()
                 refreshControl.endRefreshing()
             }
             do {
@@ -252,13 +261,17 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     if !whoToFollow.isEmpty {
                         whoToFollow += x.actors
                     }
+                    fetchedAreasCount += 1
                     DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                        self.refreshControl.endRefreshing()
+                        if self.fetchedAreasCount == 4 {
+                            self.tableView.reloadData()
+                            self.refreshControl.endRefreshing()
+                        }
                     }
                 }
             } catch {
                 print("Error fetching more suggested users: \(error.localizedDescription)")
+                tableView.reloadData()
                 refreshControl.endRefreshing()
             }
         }
@@ -272,13 +285,17 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                         let name2 = $1.record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self)?.name.lowercased() ?? ""
                         return name1 < name2
                     }
+                    fetchedAreasCount += 1
                     DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                        self.refreshControl.endRefreshing()
+                        if self.fetchedAreasCount == 4 {
+                            self.tableView.reloadData()
+                            self.refreshControl.endRefreshing()
+                        }
                     }
                 }
             } catch {
                 print("Error fetching starter packs: \(error.localizedDescription)")
+                tableView.reloadData()
                 refreshControl.endRefreshing()
             }
         }
@@ -293,8 +310,10 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     .prefix(5)
                     .map { $0 }
                     DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                        self.refreshControl.endRefreshing()
+                        if self.fetchedAreasCount == 4 {
+                            self.tableView.reloadData()
+                            self.refreshControl.endRefreshing()
+                        }
                     }
                     fetchFeedPosts()
                 }
@@ -327,8 +346,10 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                             feedPosts5 = x.feed
                         }
                         DispatchQueue.main.async {
-                            self.tableView.reloadData()
-                            self.refreshControl.endRefreshing()
+                            if self.fetchedAreasCount == 4 {
+                                self.tableView.reloadData()
+                                self.refreshControl.endRefreshing()
+                            }
                         }
                     }
                 } catch {
@@ -394,9 +415,17 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
         if section == 0 {
             return trendingTopics.count
         } else if section == 1 {
-            return suggestedUsers.count + 1
+            if suggestedUsers.isEmpty {
+                return 0
+            } else {
+                return suggestedUsers.count + 1
+            }
         } else if section == 2 {
-            return starterPacks.count + 1
+            if starterPacks.isEmpty {
+                return 0
+            } else {
+                return starterPacks.count + 1
+            }
         } else {
             return suggestedFeeds.count + feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count
         }

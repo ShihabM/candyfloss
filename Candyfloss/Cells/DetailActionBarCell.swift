@@ -267,6 +267,14 @@ class DetailActionBarCell: UITableViewCell, UISheetPresentationControllerDelegat
         
         actionButtonMore = createButtonWithMenu(image: "ellipsis", action: #selector(moreTapped), post: post)
         
+        if post?.viewer?.areRepliesDisabled ?? false {
+            actionButtonReply.alpha = 0.4
+            actionButtonReply.isUserInteractionEnabled = false
+        } else {
+            actionButtonReply.alpha = 1
+            actionButtonReply.isUserInteractionEnabled = true
+        }
+        
         stackView.removeFromSuperview()
         stackView = UIStackView(arrangedSubviews: [actionButtonReply, actionButtonRepost, actionButtonLike, actionButtonBookmark, actionButtonMore])
         stackView.axis = .horizontal

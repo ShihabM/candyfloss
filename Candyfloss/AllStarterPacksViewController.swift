@@ -207,7 +207,6 @@ class AllStarterPacksViewController: UIViewController, UITableViewDataSource, UI
             cell.separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
         }
         cell.accessoryView = nil
-        cell.accessoryType = .disclosureIndicator
         let bgColorView = UIView()
         bgColorView.backgroundColor = UIColor.clear
         cell.selectedBackgroundView = bgColorView

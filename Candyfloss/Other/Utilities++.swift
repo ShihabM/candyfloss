@@ -1033,7 +1033,11 @@ func createActionButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = n
         nvc.isModalInPresentation = true
         getTopMostViewController()?.present(nvc, animated: true, completion: nil)
     }
+    if post?.viewer?.areRepliesDisabled ?? false {
+        menuItem1.attributes = .disabled
+    }
     menuActions.append(menuItem1)
+    
     let menuItem2 = UIAction(title: "", image: UIImage(systemName: "quote.bubble"), identifier: nil) { action in
         defaultHaptics()
         let vc = ComposerViewController()
@@ -1044,6 +1048,9 @@ func createActionButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = n
         let nvc = SloppySwipingNav(rootViewController: vc)
         nvc.isModalInPresentation = true
         getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+    }
+    if post?.viewer?.isEmbeddingDisabled ?? false {
+        menuItem2.attributes = .disabled
     }
     menuActions.append(menuItem2)
     let menuItem3 = UIAction(title: "", image: UIImage(systemName: "arrow.2.squarepath"), identifier: nil) { action in
@@ -1075,6 +1082,9 @@ func createRepostButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = n
         let nvc = SloppySwipingNav(rootViewController: vc)
         nvc.isModalInPresentation = true
         getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+    }
+    if post?.viewer?.isEmbeddingDisabled ?? false {
+        menuItem2.attributes = .disabled
     }
     menuActions.append(menuItem2)
     let menu = UIMenu(title: "", options: [.displayInline], children: menuActions)

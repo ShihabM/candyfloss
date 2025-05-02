@@ -1384,6 +1384,14 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
             
             actionButtonsStackView.addArrangedSubview(actionButtonBookmark)
             actionButtonsStackView.addArrangedSubview(actionButtonMore)
+            
+            if post?.viewer?.areRepliesDisabled ?? false {
+                actionButtonReply.alpha = 0.4
+                actionButtonReply.isUserInteractionEnabled = false
+            } else {
+                actionButtonReply.alpha = 1
+                actionButtonReply.isUserInteractionEnabled = true
+            }
         }
         
         if let post = post {

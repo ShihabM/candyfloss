@@ -257,6 +257,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
         time.textColor = GlobalStruct.secondaryTextColor
         time.textAlignment = .left
         time.font = UIFont.systemFont(ofSize: smallestFontSize + GlobalStruct.customTextSize, weight: .regular)
+        time.numberOfLines = 0
         bgView.addSubview(time)
     }
     

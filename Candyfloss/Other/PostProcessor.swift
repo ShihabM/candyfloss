@@ -85,7 +85,42 @@ func configureDetailCell(_ cell: DetailCell, with post: AppBskyLexicon.Feed.Post
         dateFormatter.dateFormat = GlobalStruct.dateFormatter
         let createdDate = createdOn.toString(dateStyle: .long, timeStyle: .none)
         let createdTime = createdOn.toString(dateStyle: .none, timeStyle: .short)
-        cell.time.text = "\(createdDate) at \(createdTime)"
+        
+        // threadgate
+        if let threadgate = post.threadgate {
+            do {
+                let data = try threadgate.record.toJSON()
+                let json = try JSONDecoder().decode(AppBskyLexicon.Feed.ThreadgateRecord.self, from: data ?? Data())
+                DispatchQueue.main.async {
+                    var repliesText: String = ""
+                    if let allowedTypes = json.allow {
+                        if allowedTypes.isEmpty {
+                            repliesText = "Replies are disabled"
+                        } else {
+                            repliesText = "Replies allowed for "
+                            for rule in allowedTypes {
+                                switch rule {
+                                case .mentionRule(_):
+                                    repliesText = "\(repliesText)mentioned users, "
+                                case .followerRule(_):
+                                    repliesText = "\(repliesText)followers, "
+                                case .followingRule(_):
+                                    repliesText = "\(repliesText)followed users, "
+                                default:
+                                    break
+                                }
+                            }
+                            repliesText = "\(repliesText.dropLast(2))"
+                        }
+                    }
+                    cell.time.text = "\(createdDate) at \(createdTime)  •  \(repliesText)"
+                }
+            } catch {
+                cell.time.text = "\(createdDate) at \(createdTime)"
+            }
+        } else {
+            cell.time.text = "\(createdDate) at \(createdTime)"
+        }
     }
     
     // cell configuration

@@ -890,4 +890,61 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if indexPath.section > 2 {
+            let headerIndexPathRows: [Int] = [0, feedPosts1.count + 1, feedPosts1.count + feedPosts2.count + 2, feedPosts1.count + feedPosts2.count + feedPosts3.count + 3, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5]
+            if headerIndexPathRows.contains(indexPath.row) {
+                let indexToUse: Int = headerIndexPathRows.firstIndex { x in
+                    x == indexPath.row
+                } ?? 0
+                let contains = GlobalStruct.pinnedFeeds.contains { $0.name == self.suggestedFeeds[indexToUse].displayName }
+                if contains {
+                    let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                        GlobalStruct.pinnedFeeds = GlobalStruct.pinnedFeeds.filter({ x in
+                            x.name != self.suggestedFeeds[indexToUse].displayName
+                        })
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                        self.savePinnedFeedsToDisk()
+                        completionHandler(true)
+                    }
+                    let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                    let image = UIImage(systemName: "pin.slash.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemRed, renderingMode: .alwaysOriginal) ?? UIImage()
+                    if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                        pinAction.image = circularImage
+                    }
+                    pinAction.backgroundColor = GlobalStruct.backgroundTint
+                    let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                    return configuration
+                } else {
+                    let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                        GlobalStruct.pinnedFeeds.append(PinnedItems(name: self.suggestedFeeds[indexToUse].displayName, uri: self.suggestedFeeds[indexToUse].feedURI, feedItem: self.suggestedFeeds[indexToUse], listItem: nil))
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                        self.savePinnedFeedsToDisk()
+                        completionHandler(true)
+                    }
+                    let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                    let image = UIImage(systemName: "pin.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemOrange, renderingMode: .alwaysOriginal) ?? UIImage()
+                    if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                        pinAction.image = circularImage
+                    }
+                    pinAction.backgroundColor = GlobalStruct.backgroundTint
+                    let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                    return configuration
+                }
+            } else {
+                return nil
+            }
+        } else {
+            return nil
+        }
+    }
+    
+    func savePinnedFeedsToDisk() {
+        do {
+            try Disk.save(GlobalStruct.pinnedFeeds, to: .documents, as: "pinnedFeeds")
+        } catch {
+            print("error saving to Disk")
+        }
+    }
+    
 }

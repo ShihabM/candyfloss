@@ -513,8 +513,10 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     defaultHaptics()
                     GlobalStruct.listURI = ""
                     GlobalStruct.listName = ""
+                    GlobalStruct.currentList = nil
                     GlobalStruct.currentFeedURI = GlobalStruct.pinnedFeeds[indexPath.row].uri
                     GlobalStruct.currentFeedDisplayName = GlobalStruct.pinnedFeeds[indexPath.row].name
+                    GlobalStruct.currentFeed = GlobalStruct.pinnedFeeds[indexPath.row].feedItem
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
                     saveCurrentFeedAndList()
                     tableView.reloadData()
@@ -525,12 +527,15 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     defaultHaptics()
                     GlobalStruct.listURI = ""
                     GlobalStruct.listName = ""
+                    GlobalStruct.currentList = nil
                     if indexPath.row == 1 {
                         GlobalStruct.currentFeedURI = ""
                         GlobalStruct.currentFeedDisplayName = "Following"
+                        GlobalStruct.currentFeed = nil
                     } else {
                         GlobalStruct.currentFeedURI = GlobalStruct.allFeeds[indexPath.row - 2].feedURI
                         GlobalStruct.currentFeedDisplayName = GlobalStruct.allFeeds[indexPath.row - 2].displayName
+                        GlobalStruct.currentFeed = GlobalStruct.allFeeds[indexPath.row - 2]
                     }
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
                     saveCurrentFeedAndList()
@@ -546,8 +551,10 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     defaultHaptics()
                     GlobalStruct.listURI = GlobalStruct.pinnedLists[indexPath.row].uri
                     GlobalStruct.listName = GlobalStruct.pinnedLists[indexPath.row].name
+                    GlobalStruct.currentList = GlobalStruct.pinnedLists[indexPath.row].listItem
                     GlobalStruct.currentFeedURI = ""
                     GlobalStruct.currentFeedDisplayName = ""
+                    GlobalStruct.currentFeed = nil
                     if otherListUser == "" {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
                         saveCurrentFeedAndList()
@@ -564,8 +571,10 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     defaultHaptics()
                     GlobalStruct.listURI = allLists[indexPath.row - 1].uri
                     GlobalStruct.listName = allLists[indexPath.row - 1].name
+                    GlobalStruct.currentList = allLists[indexPath.row - 1]
                     GlobalStruct.currentFeedURI = ""
                     GlobalStruct.currentFeedDisplayName = ""
+                    GlobalStruct.currentFeed = nil
                     if otherListUser == "" {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
                         saveCurrentFeedAndList()
@@ -736,6 +745,16 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         UserDefaults.standard.set(GlobalStruct.currentFeedDisplayName, forKey: "currentFeedDisplayName")
         UserDefaults.standard.set(GlobalStruct.listURI, forKey: "listURI")
         UserDefaults.standard.set(GlobalStruct.listName, forKey: "listName")
+        do {
+            try Disk.save(GlobalStruct.currentFeed, to: .documents, as: "currentFeed")
+        } catch {
+            print("error saving to Disk")
+        }
+        do {
+            try Disk.save(GlobalStruct.currentList, to: .documents, as: "currentList")
+        } catch {
+            print("error saving to Disk")
+        }
     }
     
 }

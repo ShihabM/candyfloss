@@ -60,6 +60,8 @@ struct GlobalStruct {
     static var currentFetchedCursor: String = ""
     static var pinnedFeeds: [PinnedItems] = []
     static var pinnedLists: [PinnedItems] = []
+    static var currentFeed: AppBskyLexicon.Feed.GeneratorViewDefinition? = nil
+    static var currentList: AppBskyLexicon.Graph.ListViewDefinition? = nil
     
     // settings
     static var fullBlackBG: Bool = false

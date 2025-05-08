@@ -723,6 +723,8 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             let rkey: String = "\(trendingTopics[indexPath.row].link.split(separator: "/").last ?? "")"
             GlobalStruct.listURI = ""
             GlobalStruct.listName = ""
+            GlobalStruct.currentList = nil
+            GlobalStruct.currentFeed = nil
             let vc = ViewController()
             vc.fromFeedPush = true
             vc.currentFeedURI = "at://did:plc:qrz3lhbyuxbeilrc6nekdqme/app.bsky.feed.generator/\(rkey)"
@@ -764,6 +766,8 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 } ?? 0
                 GlobalStruct.listURI = ""
                 GlobalStruct.listName = ""
+                GlobalStruct.currentList = nil
+                GlobalStruct.currentFeed = suggestedFeeds[indexToUse]
                 let vc = ViewController()
                 vc.fromFeedPush = true
                 vc.currentFeedURI = suggestedFeeds[indexToUse].feedURI

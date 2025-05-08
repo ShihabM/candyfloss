@@ -56,6 +56,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             print("error fetching from Disk")
         }
+        // fetch current feed
+        do {
+            GlobalStruct.currentFeed = try Disk.retrieve("currentFeed", from: .documents, as: AppBskyLexicon.Feed.GeneratorViewDefinition.self)
+        } catch {
+            print("error fetching from Disk")
+        }
+        // fetch current list
+        do {
+            GlobalStruct.currentList = try Disk.retrieve("currentList", from: .documents, as: AppBskyLexicon.Graph.ListViewDefinition.self)
+        } catch {
+            print("error fetching from Disk")
+        }
         
         return true
     }

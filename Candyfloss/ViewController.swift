@@ -281,8 +281,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 guard let self else { return }
                 GlobalStruct.listURI = ""
                 GlobalStruct.listName = ""
+                GlobalStruct.currentList = nil
                 GlobalStruct.currentFeedURI = ""
                 GlobalStruct.currentFeedDisplayName = "Following"
+                GlobalStruct.currentFeed = nil
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
                 saveCurrentFeedAndList()
                 setupListDropdown()
@@ -299,8 +301,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 guard let self else { return }
                 GlobalStruct.listURI = ""
                 GlobalStruct.listName = ""
+                GlobalStruct.currentList = nil
                 GlobalStruct.currentFeedURI = feed.uri
                 GlobalStruct.currentFeedDisplayName = feed.name
+                GlobalStruct.currentFeed = feed.feedItem
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
                 saveCurrentFeedAndList()
                 setupListDropdown()
@@ -319,8 +323,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 guard let self else { return }
                 GlobalStruct.listURI = list.uri
                 GlobalStruct.listName = list.name
+                GlobalStruct.currentList = list.listItem
                 GlobalStruct.currentFeedURI = ""
                 GlobalStruct.currentFeedDisplayName = ""
+                GlobalStruct.currentFeed = nil
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
                 saveCurrentFeedAndList()
                 setupListDropdown()
@@ -352,14 +358,82 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             show(nvc, sender: self)
         }
         let lastSubMenu = UIMenu(title: "", options: [.displayInline], children: [menuItem1, menuItem2])
+        var pinTitle: String = "Pin Feed"
+        var pinImage: String = "pin"
+        var shouldPin: Bool = true
+        if GlobalStruct.listName != "" {
+            if GlobalStruct.pinnedLists.contains(where: { $0.name == GlobalStruct.listName }) {
+                pinTitle = "Unpin List"
+                pinImage = "pin.slash"
+                shouldPin = false
+            } else {
+                pinTitle = "Pin List"
+            }
+        } else {
+            if GlobalStruct.pinnedFeeds.contains(where: { $0.name == GlobalStruct.currentFeedDisplayName }) {
+                pinTitle = "Unpin Feed"
+                pinImage = "pin.slash"
+                shouldPin = false
+            }
+        }
+        let menuItem3 = UIAction(title: pinTitle, image: UIImage(systemName: pinImage), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            if GlobalStruct.listName != "" {
+                if shouldPin {
+                    GlobalStruct.pinnedLists.append(PinnedItems(name: GlobalStruct.listName, uri: GlobalStruct.listURI, feedItem: nil, listItem: GlobalStruct.currentList))
+                    self.setupListDropdown()
+                    self.savePinnedFeedsToDisk()
+                } else {
+                    GlobalStruct.pinnedLists = GlobalStruct.pinnedLists.filter({ x in
+                        x.name != GlobalStruct.listName
+                    })
+                    self.setupListDropdown()
+                    self.savePinnedFeedsToDisk()
+                }
+            } else {
+                if shouldPin {
+                    GlobalStruct.pinnedFeeds.append(PinnedItems(name: GlobalStruct.currentFeedDisplayName, uri: GlobalStruct.currentFeedURI, feedItem: GlobalStruct.currentFeed, listItem: nil))
+                    self.setupListDropdown()
+                    self.savePinnedFeedsToDisk()
+                } else {
+                    GlobalStruct.pinnedFeeds = GlobalStruct.pinnedFeeds.filter({ x in
+                        x.name != GlobalStruct.currentFeedDisplayName
+                    })
+                    self.setupListDropdown()
+                    self.savePinnedFeedsToDisk()
+                }
+            }
+        }
+        let pinSubMenu = UIMenu(title: "", options: [.displayInline], children: [menuItem3])
         if GlobalStruct.pinnedFeeds.isEmpty && GlobalStruct.pinnedLists.isEmpty {
             let menu = UIMenu(title: "Pin feeds and lists for quick access", options: [.displayInline], children: [feedsSubMenu, listsSubMenu, lastSubMenu])
             titleLabel.menu = menu
         } else {
-            let menu = UIMenu(title: "", options: [.displayInline], children: [feedsSubMenu, listsSubMenu])
-            titleLabel.menu = menu
+            if GlobalStruct.currentFeedDisplayName == "Following" {
+                let menu = UIMenu(title: "", options: [.displayInline], children: [feedsSubMenu, listsSubMenu])
+                titleLabel.menu = menu
+            } else {
+                let menu = UIMenu(title: "", options: [.displayInline], children: [feedsSubMenu, listsSubMenu, pinSubMenu])
+                titleLabel.menu = menu
+            }
         }
         titleLabel.showsMenuAsPrimaryAction = true
+    }
+    
+    func savePinnedFeedsToDisk() {
+        do {
+            try Disk.save(GlobalStruct.pinnedFeeds, to: .documents, as: "pinnedFeeds")
+        } catch {
+            print("error saving to Disk")
+        }
+    }
+    
+    func savePinnedListsToDisk() {
+        do {
+            try Disk.save(GlobalStruct.pinnedLists, to: .documents, as: "pinnedLists")
+        } catch {
+            print("error saving to Disk")
+        }
     }
     
     func saveCurrentFeedAndList() {
@@ -367,6 +441,16 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         UserDefaults.standard.set(GlobalStruct.currentFeedDisplayName, forKey: "currentFeedDisplayName")
         UserDefaults.standard.set(GlobalStruct.listURI, forKey: "listURI")
         UserDefaults.standard.set(GlobalStruct.listName, forKey: "listName")
+        do {
+            try Disk.save(GlobalStruct.currentFeed, to: .documents, as: "currentFeed")
+        } catch {
+            print("error saving to Disk")
+        }
+        do {
+            try Disk.save(GlobalStruct.currentList, to: .documents, as: "currentList")
+        } catch {
+            print("error saving to Disk")
+        }
     }
     
     @objc func goToFeeds() {

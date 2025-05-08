@@ -199,6 +199,14 @@ extension AppBskyLexicon.Feed {
             case reason
             case feedContext
         }
+        
+        public static func == (lhs: Self, rhs: Self) -> Bool {
+            return lhs.post.uri == rhs.post.uri
+        }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(post.uri)
+        }
     }
 
     /// A definition model for a reply reference.

@@ -304,7 +304,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                         }
                         
                         if listName != "" {
-                            let x = try await atProto.getListFeed(from: listURI)
+                            let x = try await atProto.getListFeed(from: listURI, limit: 100)
                             
                             // filter out posts that are replies (except replies to own posts)
                             allPosts += x.feed.filter({ post in
@@ -335,7 +335,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             // prefetch feeds
                             fetchFeeds()
                         } else if GlobalStruct.currentFeedURI == "" && !fromFeedPush {
-                            let x = try await atProto.getTimeline(limit: 50, cursor: currentCursor)
+                            let x = try await atProto.getTimeline(limit: 100, cursor: currentCursor)
                             
                             // filter out posts that are replies (except replies to own posts)
                             allPosts += x.feed.filter({ post in
@@ -370,7 +370,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             if fromFeedPush {
                                 feedURI = currentFeedURI
                             }
-                            let x = try await atProto.getFeed(by: feedURI, limit: 50, cursor: currentCursor)
+                            let x = try await atProto.getFeed(by: feedURI, limit: 100, cursor: currentCursor)
                             
                             // filter out posts that are replies (except replies to own posts)
                             allPosts += x.feed.filter({ post in

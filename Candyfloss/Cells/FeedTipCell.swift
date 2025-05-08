@@ -67,7 +67,7 @@ class FeedTipCell: UITableViewCell {
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[bgView]-12-|", options: [], metrics: nil, views: viewsDict))
         
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[theIcon(26)]-12-[theTitle]-(>=12)-|", options: [], metrics: nil, views: viewsDict))
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[theIcon(26)]-12-[theSubtitle]-(>=18)-|", options: [], metrics: nil, views: viewsDict))
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[theIcon(26)]-12-[theSubtitle]-(>=12)-|", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[theTitle]-3-[theSubtitle]-12-|", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(>=2)-[theIcon(26)]-(>=2)-|", options: [], metrics: nil, views: viewsDict))
         

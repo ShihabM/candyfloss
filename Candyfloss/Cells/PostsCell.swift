@@ -762,7 +762,10 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
                                 } else {
                                     Task {
                                         if let quote = await QuoteCacheManager.shared.getQuote(for: record.uri, fetcher: {
-                                            try? await GlobalStruct.atProto?.getPosts([record.uri]).posts.first
+                                            guard let post = try? await GlobalStruct.atProto?.getPosts([record.uri]).posts.first else {
+                                                return nil
+                                            }
+                                            return post as? AppBskyLexicon.Feed.PostViewDefinition
                                         }) {
                                             updateQuoteView(quote, recordURI: record.uri)
                                         }
@@ -1051,7 +1054,10 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
                                 } else {
                                     Task {
                                         if let quote = await QuoteCacheManager.shared.getQuote(for: record.uri, fetcher: {
-                                            try? await GlobalStruct.atProto?.getPosts([record.uri]).posts.first
+                                            guard let post = try? await GlobalStruct.atProto?.getPosts([record.uri]).posts.first else {
+                                                return nil
+                                            }
+                                            return post as? AppBskyLexicon.Feed.PostViewDefinition
                                         }) {
                                             updateQuoteView(quote, recordURI: record.uri)
                                         }

@@ -60,6 +60,7 @@
 		539B4D022CC7B6BA00CF6646 /* Disk+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CF52CC7B6BA00CF6646 /* Disk+Helpers.swift */; };
 		539B4D032CC7B6BA00CF6646 /* Disk+VolumeInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CF82CC7B6BA00CF6646 /* Disk+VolumeInformation.swift */; };
 		539B50AF2CC7ED3800CF6646 /* MessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B50AE2CC7ED3200CF6646 /* MessagesViewController.swift */; };
+		53A19FA62DCCB49C0040AF52 /* FeedTipCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */; };
 		53C460E42D7B1427009F7C6B /* PostProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E32D7B1424009F7C6B /* PostProcessor.swift */; };
 		53C460E62D7B5105009F7C6B /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E52D7B5100009F7C6B /* DetailsViewController.swift */; };
 		53C460E82D7B59EF009F7C6B /* DetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E72D7B59EC009F7C6B /* DetailCell.swift */; };
@@ -165,6 +166,7 @@
 		539B4CF72CC7B6BA00CF6646 /* Disk+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Disk+UIImage.swift"; sourceTree = "<group>"; };
 		539B4CF82CC7B6BA00CF6646 /* Disk+VolumeInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Disk+VolumeInformation.swift"; sourceTree = "<group>"; };
 		539B50AE2CC7ED3200CF6646 /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
+		53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedTipCell.swift; sourceTree = "<group>"; };
 		53C460E32D7B1424009F7C6B /* PostProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostProcessor.swift; sourceTree = "<group>"; };
 		53C460E52D7B5100009F7C6B /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		53C460E72D7B59EC009F7C6B /* DetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCell.swift; sourceTree = "<group>"; };
@@ -283,6 +285,7 @@
 				5309C2192DC36E0C00380B93 /* NoteCell.swift */,
 				5309C2092DC0F3A000380B93 /* SelectionCell.swift */,
 				5309C20B2DC0F3DC00380B93 /* TextSizeCell.swift */,
+				53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -528,6 +531,7 @@
 				539B4D002CC7B6BA00CF6646 /* Disk.swift in Sources */,
 				539B4D012CC7B6BA00CF6646 /* Disk+[UIImage].swift in Sources */,
 				539B4D022CC7B6BA00CF6646 /* Disk+Helpers.swift in Sources */,
+				53A19FA62DCCB49C0040AF52 /* FeedTipCell.swift in Sources */,
 				539B4D032CC7B6BA00CF6646 /* Disk+VolumeInformation.swift in Sources */,
 				5309C2182DC36CEC00380B93 /* AddAltTextViewController.swift in Sources */,
 				539B4CDA2CC7A3E700CF6646 /* StringTrimExtension.swift in Sources */,

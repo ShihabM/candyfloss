@@ -58,6 +58,8 @@ struct GlobalStruct {
     static var allFeeds: [AppBskyLexicon.Feed.GeneratorViewDefinition] = []
     static var allFetchedPosts: [AppBskyLexicon.Feed.FeedViewPostDefinition] = []
     static var currentFetchedCursor: String = ""
+    static var pinnedFeeds: [PinnedItems] = []
+    static var pinnedLists: [PinnedItems] = []
     
     // settings
     static var fullBlackBG: Bool = false

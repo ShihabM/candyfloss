@@ -23,6 +23,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     var isFetching: Bool = false
     var otherListUser: String = ""
     
+    var fromAddPin: Bool = false
+    
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView2.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
@@ -34,11 +36,13 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         
         currentCursor = UserDefaults.standard.value(forKey: "currentFeedCursor") as? String ?? nil
         
-        if otherListUser != "" {
-            GlobalStruct.isShowingFeeds = false
-        } else {
-            if let x = UserDefaults.standard.value(forKey: "isShowingFeeds") as? Bool {
-                GlobalStruct.isShowingFeeds = x
+        if !fromAddPin {
+            if otherListUser != "" {
+                GlobalStruct.isShowingFeeds = false
+            } else {
+                if let x = UserDefaults.standard.value(forKey: "isShowingFeeds") as? Bool {
+                    GlobalStruct.isShowingFeeds = x
+                }
             }
         }
         
@@ -214,7 +218,10 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     
     func setUpTable() {
         tableView.removeFromSuperview()
+        tableView.register(FeedTipCell.self, forCellReuseIdentifier: "FeedTipCell")
+        tableView.register(TrendingFeedCell.self, forCellReuseIdentifier: "TopFeedCell")
         tableView.register(FeedCell.self, forCellReuseIdentifier: "FeedCell")
+        tableView.register(FeedCell.self, forCellReuseIdentifier: "FeedCellPinned")
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = UIColor.clear
@@ -226,7 +233,10 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         tableView.reloadData()
         
         tableView2.removeFromSuperview()
+        tableView2.register(FeedTipCell.self, forCellReuseIdentifier: "FeedTipCell")
+        tableView2.register(TrendingFeedCell.self, forCellReuseIdentifier: "TopListCell")
         tableView2.register(FeedCell.self, forCellReuseIdentifier: "ListCell")
+        tableView2.register(FeedCell.self, forCellReuseIdentifier: "ListCellPinned")
         tableView2.dataSource = self
         tableView2.delegate = self
         tableView2.backgroundColor = UIColor.clear
@@ -247,136 +257,477 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == self.tableView {
-            return 1 + GlobalStruct.allFeeds.count
+            if section == 0 {
+                if GlobalStruct.pinnedFeeds.isEmpty {
+                    return 1
+                } else {
+                    return GlobalStruct.pinnedFeeds.count
+                }
+            } else {
+                return 2 + GlobalStruct.allFeeds.count
+            }
         } else {
-            return allLists.count
+            if section == 0 {
+                if allLists.isEmpty {
+                    return 0
+                } else {
+                    if GlobalStruct.pinnedLists.isEmpty {
+                        return 1
+                    } else {
+                        return GlobalStruct.pinnedLists.count
+                    }
+                }
+            } else {
+                if allLists.isEmpty {
+                    return 0
+                } else {
+                    return 1 + allLists.count
+                }
+            }
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == self.tableView {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as! FeedCell
-            let symbolConfigIcon = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
-            
-            if indexPath.row == 0 {
-                cell.configureCell(showingDescriptions)
-                cell.avatar.setImage(UIImage(systemName: "figure.walk", withConfiguration: symbolConfigIcon)?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
-                cell.theTitle.text = "Following"
-                cell.theAuthor.text = "by @bsky.app"
-                if showingDescriptions {
-                    cell.theDescription.text = "Posts from people you follow."
-                }
-            } else {
-                cell.configureCell(showingDescriptions)
-                if let url = GlobalStruct.allFeeds[indexPath.row - 1].avatarImageURL {
-                    cell.avatar.sd_setImage(with: url, for: .normal)
-                }
-                cell.theTitle.text = GlobalStruct.allFeeds[indexPath.row - 1].displayName
-                cell.theAuthor.text = "by @\(GlobalStruct.allFeeds[indexPath.row - 1].creator.actorHandle)"
-                if showingDescriptions {
-                    cell.theDescription.text = GlobalStruct.allFeeds[indexPath.row - 1].description
-                }
-            }
-            
-            if isFetchingFeeds == false && currentFeedCursor != nil {
-                if indexPath.row == GlobalStruct.allFeeds.count - 1 || indexPath.row == GlobalStruct.allFeeds.count - 5 {
-                    isFetchingFeeds = true
-                    fetchFeedsOrLists()
-                }
-            }
-            
-            if (GlobalStruct.currentFeedDisplayName == cell.theTitle.text) && GlobalStruct.listName == "" {
-                cell.accessoryType = .checkmark
-            } else {
-                cell.accessoryType = .none
-            }
-            if indexPath.row == GlobalStruct.allFeeds.count - 1 {
-                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
-            } else {
-                cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
-            }
-            cell.accessoryView = nil
-            let bgColorView = UIView()
-            bgColorView.backgroundColor = UIColor.clear
-            cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
-            return cell
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell", for: indexPath) as! FeedCell
-            
-            cell.configureCell(true)
-            if let url = allLists[indexPath.row].avatarImageURL {
-                cell.avatar.sd_setImage(with: url, for: .normal)
-            }
-            cell.theTitle.text = allLists[indexPath.row].name
-            cell.theAuthor.text = "by @\(allLists[indexPath.row].creator.actorHandle)"
-            cell.theDescription.text = allLists[indexPath.row].description ?? ""
-            
-            if isFetching == false && currentCursor != nil {
-                if indexPath.row == allLists.count - 1 || indexPath.row == allLists.count - 5 {
-                    isFetching = true
-                    fetchFeedsOrLists()
-                }
-            }
-            
-            if otherListUser == "" {
-                if GlobalStruct.listName == cell.theTitle.text {
-                    cell.accessoryType = .checkmark
+            if indexPath.section == 0 {
+                if GlobalStruct.pinnedFeeds.isEmpty {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "FeedTipCell", for: indexPath) as! FeedTipCell
+                    
+                    cell.theTitle.text = "Swipe to Pin"
+                    cell.theSubtitle.text = "Swipe feeds left to pin them for quick access from the home tab"
+                    
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
                 } else {
-                    cell.accessoryType = .none
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCellPinned", for: indexPath) as! FeedCell
+                    
+                    cell.configureCell(showingDescriptions)
+                    if let url = GlobalStruct.pinnedFeeds[indexPath.row].feedItem?.avatarImageURL {
+                        cell.avatar.sd_setImage(with: url, for: .normal)
+                    }
+                    cell.theTitle.text = GlobalStruct.pinnedFeeds[indexPath.row].feedItem?.displayName ?? ""
+                    cell.theAuthor.text = "by @\(GlobalStruct.pinnedFeeds[indexPath.row].feedItem?.creator.actorHandle ?? "")"
+                    if showingDescriptions {
+                        cell.theDescription.text = GlobalStruct.pinnedFeeds[indexPath.row].feedItem?.description ?? ""
+                    }
+                    
+                    if (GlobalStruct.currentFeedDisplayName == cell.theTitle.text) && GlobalStruct.listName == "" {
+                        cell.accessoryType = .checkmark
+                    } else {
+                        cell.accessoryType = .none
+                    }
+                    if indexPath.row == GlobalStruct.pinnedFeeds.count - 1 {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                    } else {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                    }
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                }
+            } else {
+                if indexPath.row == 0 {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "TopFeedCell", for: indexPath) as! TrendingFeedCell
+                    
+                    cell.configureCell(false)
+                    cell.theTitle.text = "All Feeds"
+                    cell.theAuthor.text = "A list of popular feeds"
+                    
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                } else {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as! FeedCell
+                    let symbolConfigIcon = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
+                    
+                    if indexPath.row == 1 {
+                        cell.configureCell(showingDescriptions)
+                        cell.avatar.setImage(UIImage(systemName: "figure.walk", withConfiguration: symbolConfigIcon)?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
+                        cell.theTitle.text = "Following"
+                        cell.theAuthor.text = "by @bsky.app"
+                        if showingDescriptions {
+                            cell.theDescription.text = "Posts from people you follow."
+                        }
+                    } else {
+                        cell.configureCell(showingDescriptions)
+                        if let url = GlobalStruct.allFeeds[indexPath.row - 2].avatarImageURL {
+                            cell.avatar.sd_setImage(with: url, for: .normal)
+                        }
+                        cell.theTitle.text = GlobalStruct.allFeeds[indexPath.row - 2].displayName
+                        cell.theAuthor.text = "by @\(GlobalStruct.allFeeds[indexPath.row - 2].creator.actorHandle)"
+                        if showingDescriptions {
+                            cell.theDescription.text = GlobalStruct.allFeeds[indexPath.row - 2].description
+                        }
+                    }
+                    
+                    if isFetchingFeeds == false && currentFeedCursor != nil {
+                        if indexPath.row == GlobalStruct.allFeeds.count - 1 || indexPath.row == GlobalStruct.allFeeds.count - 5 {
+                            isFetchingFeeds = true
+                            fetchFeedsOrLists()
+                        }
+                    }
+                    
+                    if (GlobalStruct.currentFeedDisplayName == cell.theTitle.text) && GlobalStruct.listName == "" {
+                        cell.accessoryType = .checkmark
+                    } else {
+                        cell.accessoryType = .none
+                    }
+                    if indexPath.row == GlobalStruct.allFeeds.count - 1 {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                    } else {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                    }
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
                 }
             }
-            if indexPath.row == allLists.count - 1 {
-                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+        } else {
+            if indexPath.section == 0 {
+                if GlobalStruct.pinnedLists.isEmpty {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "FeedTipCell", for: indexPath) as! FeedTipCell
+                    
+                    cell.theTitle.text = "Swipe to Pin"
+                    cell.theSubtitle.text = "Swipe lists left to pin them for quick access from the home tab"
+                    
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                } else {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "ListCellPinned", for: indexPath) as! FeedCell
+                    
+                    cell.configureCell(true)
+                    if let url = GlobalStruct.pinnedLists[indexPath.row].listItem?.avatarImageURL {
+                        cell.avatar.sd_setImage(with: url, for: .normal)
+                    }
+                    cell.theTitle.text = GlobalStruct.pinnedLists[indexPath.row].listItem?.name ?? ""
+                    cell.theAuthor.text = "by @\(GlobalStruct.pinnedLists[indexPath.row].listItem?.creator.actorHandle ?? "")"
+                    cell.theDescription.text = GlobalStruct.pinnedLists[indexPath.row].listItem?.description ?? ""
+                    
+                    if otherListUser == "" {
+                        if GlobalStruct.listName == cell.theTitle.text {
+                            cell.accessoryType = .checkmark
+                        } else {
+                            cell.accessoryType = .none
+                        }
+                    }
+                    if indexPath.row == allLists.count - 1 {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                    } else {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                    }
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                }
             } else {
-                cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                if indexPath.row == 0 {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "TopListCell", for: indexPath) as! TrendingFeedCell
+                    
+                    cell.configureCell(false)
+                    cell.theTitle.text = "All Lists"
+                    cell.theAuthor.text = "A list of your lists"
+                    
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                } else {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell", for: indexPath) as! FeedCell
+                    
+                    cell.configureCell(true)
+                    if let url = allLists[indexPath.row - 1].avatarImageURL {
+                        cell.avatar.sd_setImage(with: url, for: .normal)
+                    }
+                    cell.theTitle.text = allLists[indexPath.row - 1].name
+                    cell.theAuthor.text = "by @\(allLists[indexPath.row - 1].creator.actorHandle)"
+                    cell.theDescription.text = allLists[indexPath.row - 1].description ?? ""
+                    
+                    if isFetching == false && currentCursor != nil {
+                        if indexPath.row - 1 == allLists.count - 1 || indexPath.row - 1 == allLists.count - 5 {
+                            isFetching = true
+                            fetchFeedsOrLists()
+                        }
+                    }
+                    
+                    if otherListUser == "" {
+                        if GlobalStruct.listName == cell.theTitle.text {
+                            cell.accessoryType = .checkmark
+                        } else {
+                            cell.accessoryType = .none
+                        }
+                    }
+                    if indexPath.row == allLists.count - 1 {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                    } else {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                    }
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                }
             }
-            cell.accessoryView = nil
-            let bgColorView = UIView()
-            bgColorView.backgroundColor = UIColor.clear
-            cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
-            return cell
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        defaultHaptics()
         if tableView == self.tableView {
-            GlobalStruct.listURI = ""
-            GlobalStruct.listName = ""
-            if indexPath.row == 0 {
-                GlobalStruct.currentFeedURI = ""
-                GlobalStruct.currentFeedDisplayName = "Following"
+            if indexPath.section == 0 {
+                if GlobalStruct.pinnedFeeds.isEmpty {
+                    
+                } else {
+                    defaultHaptics()
+                    GlobalStruct.listURI = ""
+                    GlobalStruct.listName = ""
+                    GlobalStruct.currentFeedURI = GlobalStruct.pinnedFeeds[indexPath.row].uri
+                    GlobalStruct.currentFeedDisplayName = GlobalStruct.pinnedFeeds[indexPath.row].name
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
+                    saveCurrentFeedAndList()
+                    tableView.reloadData()
+                    dismiss(animated: true)
+                }
             } else {
-                GlobalStruct.currentFeedURI = GlobalStruct.allFeeds[indexPath.row - 1].feedURI
-                GlobalStruct.currentFeedDisplayName = GlobalStruct.allFeeds[indexPath.row - 1].displayName
+                if indexPath.row != 0 {
+                    defaultHaptics()
+                    GlobalStruct.listURI = ""
+                    GlobalStruct.listName = ""
+                    if indexPath.row == 1 {
+                        GlobalStruct.currentFeedURI = ""
+                        GlobalStruct.currentFeedDisplayName = "Following"
+                    } else {
+                        GlobalStruct.currentFeedURI = GlobalStruct.allFeeds[indexPath.row - 2].feedURI
+                        GlobalStruct.currentFeedDisplayName = GlobalStruct.allFeeds[indexPath.row - 2].displayName
+                    }
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
+                    saveCurrentFeedAndList()
+                    tableView.reloadData()
+                    dismiss(animated: true)
+                }
             }
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
-            saveCurrentFeedAndList()
-            tableView.reloadData()
-            dismiss(animated: true)
         } else {
-            GlobalStruct.listURI = allLists[indexPath.row].uri
-            GlobalStruct.listName = allLists[indexPath.row].name
-            GlobalStruct.currentFeedURI = ""
-            GlobalStruct.currentFeedDisplayName = ""
-            if otherListUser == "" {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
-                saveCurrentFeedAndList()
-                tableView.reloadData()
+            if indexPath.section == 0 {
+                if GlobalStruct.pinnedLists.isEmpty {
+                    
+                } else {
+                    defaultHaptics()
+                    GlobalStruct.listURI = GlobalStruct.pinnedLists[indexPath.row].uri
+                    GlobalStruct.listName = GlobalStruct.pinnedLists[indexPath.row].name
+                    GlobalStruct.currentFeedURI = ""
+                    GlobalStruct.currentFeedDisplayName = ""
+                    if otherListUser == "" {
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
+                        saveCurrentFeedAndList()
+                        tableView.reloadData()
+                    } else {
+                        let vc = ViewController()
+                        vc.fromListPush = true
+                        navigationController?.pushViewController(vc, animated: true)
+                    }
+                    dismiss(animated: true)
+                }
             } else {
-                let vc = ViewController()
-                vc.fromListPush = true
-                navigationController?.pushViewController(vc, animated: true)
+                if indexPath.row != 0 {
+                    defaultHaptics()
+                    GlobalStruct.listURI = allLists[indexPath.row - 1].uri
+                    GlobalStruct.listName = allLists[indexPath.row - 1].name
+                    GlobalStruct.currentFeedURI = ""
+                    GlobalStruct.currentFeedDisplayName = ""
+                    if otherListUser == "" {
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
+                        saveCurrentFeedAndList()
+                        tableView.reloadData()
+                    } else {
+                        let vc = ViewController()
+                        vc.fromListPush = true
+                        navigationController?.pushViewController(vc, animated: true)
+                    }
+                    dismiss(animated: true)
+                }
             }
-            dismiss(animated: true)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if tableView == self.tableView {
+            if indexPath.section == 0 && !GlobalStruct.pinnedFeeds.isEmpty {
+                let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                    GlobalStruct.pinnedFeeds.remove(at: indexPath.row)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                    self.savePinnedFeedsToDisk()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.tableView.reloadData()
+                    }
+                    completionHandler(true)
+                }
+                let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                let image = UIImage(systemName: "pin.slash.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemRed, renderingMode: .alwaysOriginal) ?? UIImage()
+                if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                    pinAction.image = circularImage
+                }
+                pinAction.backgroundColor = GlobalStruct.backgroundTint
+                let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                return configuration
+            } else {
+                if indexPath.row == 0 || indexPath.row == 1 {
+                    return nil
+                } else {
+                    let contains = GlobalStruct.pinnedFeeds.contains { $0.name == GlobalStruct.allFeeds[indexPath.row - 2].displayName }
+                    if contains {
+                        let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                            GlobalStruct.pinnedFeeds = GlobalStruct.pinnedFeeds.filter({ x in
+                                x.name != GlobalStruct.allFeeds[indexPath.row - 2].displayName
+                            })
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            self.savePinnedFeedsToDisk()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                self.tableView.reloadData()
+                            }
+                            completionHandler(true)
+                        }
+                        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                        let image = UIImage(systemName: "pin.slash.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemRed, renderingMode: .alwaysOriginal) ?? UIImage()
+                        if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                            pinAction.image = circularImage
+                        }
+                        pinAction.backgroundColor = GlobalStruct.backgroundTint
+                        let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                        return configuration
+                    } else {
+                        let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                            GlobalStruct.pinnedFeeds.append(PinnedItems(name: GlobalStruct.allFeeds[indexPath.row - 2].displayName, uri: GlobalStruct.allFeeds[indexPath.row - 2].feedURI, feedItem: GlobalStruct.allFeeds[indexPath.row - 2], listItem: nil))
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            self.savePinnedFeedsToDisk()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                self.tableView.reloadData()
+                            }
+                            completionHandler(true)
+                        }
+                        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                        let image = UIImage(systemName: "pin.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemOrange, renderingMode: .alwaysOriginal) ?? UIImage()
+                        if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                            pinAction.image = circularImage
+                        }
+                        pinAction.backgroundColor = GlobalStruct.backgroundTint
+                        let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                        return configuration
+                    }
+                }
+            }
+        } else {
+            if indexPath.section == 0 && !GlobalStruct.pinnedLists.isEmpty {
+                let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                    GlobalStruct.pinnedLists.remove(at: indexPath.row)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                    self.savePinnedListsToDisk()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.tableView2.reloadData()
+                    }
+                    completionHandler(true)
+                }
+                let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                let image = UIImage(systemName: "pin.slash.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemRed, renderingMode: .alwaysOriginal) ?? UIImage()
+                if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                    pinAction.image = circularImage
+                }
+                pinAction.backgroundColor = GlobalStruct.backgroundTint
+                let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                return configuration
+            } else {
+                if indexPath.row == 0 {
+                    return nil
+                } else {
+                    let contains = GlobalStruct.pinnedLists.contains { $0.name == self.allLists[indexPath.row - 1].name }
+                    if contains {
+                        let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                            GlobalStruct.pinnedLists = GlobalStruct.pinnedLists.filter({ x in
+                                x.name != self.allLists[indexPath.row - 1].name
+                            })
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            self.savePinnedListsToDisk()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                self.tableView2.reloadData()
+                            }
+                            completionHandler(true)
+                        }
+                        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                        let image = UIImage(systemName: "pin.slash.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemRed, renderingMode: .alwaysOriginal) ?? UIImage()
+                        if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                            pinAction.image = circularImage
+                        }
+                        pinAction.backgroundColor = GlobalStruct.backgroundTint
+                        let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                        return configuration
+                    } else {
+                        let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                            GlobalStruct.pinnedLists.append(PinnedItems(name: self.allLists[indexPath.row - 1].name, uri: self.allLists[indexPath.row - 1].uri, feedItem: nil, listItem: self.allLists[indexPath.row - 1]))
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            self.savePinnedListsToDisk()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                self.tableView2.reloadData()
+                            }
+                            completionHandler(true)
+                        }
+                        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                        let image = UIImage(systemName: "pin.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemOrange, renderingMode: .alwaysOriginal) ?? UIImage()
+                        if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                            pinAction.image = circularImage
+                        }
+                        pinAction.backgroundColor = GlobalStruct.backgroundTint
+                        let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                        return configuration
+                    }
+                }
+            }
+        }
+    }
+    
+    func savePinnedFeedsToDisk() {
+        do {
+            try Disk.save(GlobalStruct.pinnedFeeds, to: .documents, as: "pinnedFeeds")
+        } catch {
+            print("error saving to Disk")
+        }
+    }
+    
+    func savePinnedListsToDisk() {
+        do {
+            try Disk.save(GlobalStruct.pinnedLists, to: .documents, as: "pinnedLists")
+        } catch {
+            print("error saving to Disk")
         }
     }
     

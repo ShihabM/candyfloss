@@ -158,6 +158,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         NotificationCenter.default.addObserver(self, selector: #selector(self.scrollUp), name: NSNotification.Name(rawValue: "scrollUp0"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadTables), name: NSNotification.Name(rawValue: "reloadTables"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.setUpNavigationBar), name: NSNotification.Name(rawValue: "setUpNavigationBar"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.setupListDropdown), name: NSNotification.Name(rawValue: "setupListDropdown"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.fetchLatest), name: NSNotification.Name(rawValue: "fetchLatest"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.goToFeeds), name: NSNotification.Name(rawValue: "goToFeeds"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.switchFeed), name: NSNotification.Name(rawValue: "switchFeed"), object: nil)
@@ -255,6 +256,117 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 navigationItem.rightBarButtonItems = [navigationBarButtonItem]
             }
         }
+        
+        setupListDropdown()
+    }
+    
+    @objc func setupListDropdown() {
+        let titleLabel = UIButton()
+        titleLabel.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
+        let attachment1 = NSTextAttachment()
+        let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold)
+        let downImage1 = UIImage(systemName: "chevron.down", withConfiguration: symbolConfig1)
+        let downImage2 = imageWithImage(image: downImage1 ?? UIImage(), scaledToSize: CGSize(width: downImage1?.size.width ?? 0, height: (downImage1?.size.height ?? 0) - 3))
+        attachment1.image = downImage2.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal)
+        let attStringNewLine000 = NSMutableAttributedString()
+        let attStringNewLine00 = NSMutableAttributedString(string: "\(listName != "" ? listName : fromFeedPush ? currentFeedDisplayName : GlobalStruct.currentFeedDisplayName) ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold),NSAttributedString.Key.foregroundColor : UIColor.label])
+        let attString00 = NSAttributedString(attachment: attachment1)
+        attStringNewLine000.append(attStringNewLine00)
+        attStringNewLine000.append(attString00)
+        titleLabel.setAttributedTitle(attStringNewLine000, for: .normal)
+        self.navigationItem.titleView = titleLabel
+        var allActions0: [UIAction] = []
+        if !GlobalStruct.pinnedFeeds.isEmpty {
+            let menuItem = UIAction(title: "Following", image: UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in
+                guard let self else { return }
+                GlobalStruct.listURI = ""
+                GlobalStruct.listName = ""
+                GlobalStruct.currentFeedURI = ""
+                GlobalStruct.currentFeedDisplayName = "Following"
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
+                saveCurrentFeedAndList()
+                setupListDropdown()
+            }
+            if GlobalStruct.currentFeedDisplayName == "Following" {
+                menuItem.state = .on
+            } else {
+                menuItem.state = .off
+            }
+            allActions0.append(menuItem)
+        }
+        for feed in GlobalStruct.pinnedFeeds {
+            let menuItem = UIAction(title: feed.name, image: UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in
+                guard let self else { return }
+                GlobalStruct.listURI = ""
+                GlobalStruct.listName = ""
+                GlobalStruct.currentFeedURI = feed.uri
+                GlobalStruct.currentFeedDisplayName = feed.name
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
+                saveCurrentFeedAndList()
+                setupListDropdown()
+            }
+            if GlobalStruct.currentFeedDisplayName == feed.name {
+                menuItem.state = .on
+            } else {
+                menuItem.state = .off
+            }
+            allActions0.append(menuItem)
+        }
+        let feedsSubMenu = UIMenu(title: "", options: [.displayInline], children: allActions0)
+        var allActions1: [UIAction] = []
+        for list in GlobalStruct.pinnedLists {
+            let menuItem = UIAction(title: list.name, image: UIImage(systemName: "list.bullet"), identifier: nil) { [weak self] action in
+                guard let self else { return }
+                GlobalStruct.listURI = list.uri
+                GlobalStruct.listName = list.name
+                GlobalStruct.currentFeedURI = ""
+                GlobalStruct.currentFeedDisplayName = ""
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
+                saveCurrentFeedAndList()
+                setupListDropdown()
+            }
+            if GlobalStruct.listName == list.name {
+                menuItem.state = .on
+            } else {
+                menuItem.state = .off
+            }
+            allActions1.append(menuItem)
+        }
+        let listsSubMenu = UIMenu(title: "", options: [.displayInline], children: allActions1)
+        let menuItem1 = UIAction(title: "View Feeds", image: UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            GlobalStruct.isShowingFeeds = true
+            let vc = FeedsListsViewController()
+            vc.currentFeedCursor = currentFeedCursor
+            vc.fromAddPin = true
+            let nvc = SloppySwipingNav(rootViewController: vc)
+            show(nvc, sender: self)
+        }
+        let menuItem2 = UIAction(title: "View Lists", image: UIImage(systemName: "list.bullet"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            GlobalStruct.isShowingFeeds = false
+            let vc = FeedsListsViewController()
+            vc.currentFeedCursor = currentFeedCursor
+            vc.fromAddPin = true
+            let nvc = SloppySwipingNav(rootViewController: vc)
+            show(nvc, sender: self)
+        }
+        let lastSubMenu = UIMenu(title: "", options: [.displayInline], children: [menuItem1, menuItem2])
+        if GlobalStruct.pinnedFeeds.isEmpty && GlobalStruct.pinnedLists.isEmpty {
+            let menu = UIMenu(title: "Pin feeds and lists for quick access", options: [.displayInline], children: [feedsSubMenu, listsSubMenu, lastSubMenu])
+            titleLabel.menu = menu
+        } else {
+            let menu = UIMenu(title: "", options: [.displayInline], children: [feedsSubMenu, listsSubMenu])
+            titleLabel.menu = menu
+        }
+        titleLabel.showsMenuAsPrimaryAction = true
+    }
+    
+    func saveCurrentFeedAndList() {
+        UserDefaults.standard.set(GlobalStruct.currentFeedURI, forKey: "currentFeedURI")
+        UserDefaults.standard.set(GlobalStruct.currentFeedDisplayName, forKey: "currentFeedDisplayName")
+        UserDefaults.standard.set(GlobalStruct.listURI, forKey: "listURI")
+        UserDefaults.standard.set(GlobalStruct.listName, forKey: "listName")
     }
     
     @objc func goToFeeds() {

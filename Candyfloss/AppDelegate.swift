@@ -38,8 +38,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GlobalStruct.switchLinkPreviews = UserDefaults.standard.value(forKey: "switchLinkPreviews") as? Bool ?? true
         GlobalStruct.switchMedia = UserDefaults.standard.value(forKey: "switchMedia") as? Bool ?? true
         
+        // fetch all feeds
         do {
             GlobalStruct.allFeeds = try Disk.retrieve("allFeeds.json", from: .documents, as: [AppBskyLexicon.Feed.GeneratorViewDefinition].self)
+        } catch {
+            print("error fetching from Disk")
+        }
+        // fetch pinned feeds
+        do {
+            GlobalStruct.pinnedFeeds = try Disk.retrieve("pinnedFeeds", from: .documents, as: [PinnedItems].self)
+        } catch {
+            print("error fetching from Disk")
+        }
+        // fetch pinned lists
+        do {
+            GlobalStruct.pinnedLists = try Disk.retrieve("pinnedLists", from: .documents, as: [PinnedItems].self)
         } catch {
             print("error fetching from Disk")
         }

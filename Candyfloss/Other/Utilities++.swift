@@ -390,6 +390,32 @@ extension UserDefaults {
     }
 }
 
+func createImageWithCircularBackground(icon: UIImage, backgroundColor: UIColor, diameter: CGFloat) -> UIImage? {
+    let frame = CGRect(x: 0, y: 0, width: diameter, height: diameter)
+    var scale: CGFloat = 1
+    scale = UIScreen.main.scale
+    UIGraphicsBeginImageContextWithOptions(frame.size, false, scale)
+    guard let context = UIGraphicsGetCurrentContext() else { return nil }
+    context.setAllowsAntialiasing(true)
+    context.setShouldAntialias(true)
+    context.interpolationQuality = .high
+    let path = UIBezierPath(ovalIn: frame)
+    backgroundColor.setFill()
+    path.fill()
+    path.addClip()
+    let iconSize = icon.size
+    let iconRect = CGRect(
+        x: (diameter - iconSize.width) / 2,
+        y: (diameter - iconSize.height) / 2,
+        width: iconSize.width,
+        height: iconSize.height
+    )
+    icon.draw(in: iconRect)
+    let image = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    return image
+}
+
 class CustomButton: UIButton {
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         return bounds.insetBy(dx: -30, dy: -30).contains(point)
@@ -951,6 +977,13 @@ struct PostDraftsQuoteReply: Codable {
 }
 
 // other
+
+struct PinnedItems: Codable {
+    let name: String
+    let uri: String
+    let feedItem: AppBskyLexicon.Feed.GeneratorViewDefinition?
+    let listItem: AppBskyLexicon.Graph.ListViewDefinition?
+}
 
 func imageWithImage(image: UIImage, scaledToSize newSize: CGSize) -> UIImage {
     let aspectWidth = newSize.width / image.size.width

@@ -202,7 +202,7 @@ class AllStarterPacksViewController: UIViewController, UITableViewDataSource, UI
         cell.theDescription.numberOfLines = 2
         
         if indexPath.row == starterPacks.count - 1 {
-            cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         } else {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
         }

@@ -389,8 +389,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     } else {
                         cell.accessoryType = .none
                     }
-                    if indexPath.row == GlobalStruct.allFeeds.count - 1 {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                    if indexPath.row == GlobalStruct.allFeeds.count {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
                     } else {
                         cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
                     }
@@ -487,8 +487,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                             cell.accessoryType = .none
                         }
                     }
-                    if indexPath.row == allLists.count - 1 {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                    if indexPath.row == allLists.count {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
                     } else {
                         cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
                     }

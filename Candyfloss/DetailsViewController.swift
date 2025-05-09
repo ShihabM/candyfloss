@@ -533,7 +533,7 @@ class DetailsViewController: UIViewController, UITableViewDataSource, UITableVie
             if nestedRepliesIndices.contains(indexPath.row) {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 134, bottom: 0, right: 0)
             } else if indexPath.row == allReplies.count - 1 {
-                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             } else {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
             }

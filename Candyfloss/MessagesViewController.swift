@@ -291,7 +291,7 @@ class MessagesViewController: UIViewController, UITableViewDataSource, UITableVi
         }
         
         if indexPath.row == allMessages.count - 1 {
-            cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         } else {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
         }

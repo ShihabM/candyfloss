@@ -35,6 +35,7 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
     var avatar3 = UIButton()
     var avatarText = UIButton()
     
+    var divider0 = UIView()
     var divider1 = UIView()
     
     // mail
@@ -62,7 +63,7 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
         contentView.addSubview(bgView)
         
         headerImage.translatesAutoresizingMaskIntoConstraints = false
-        headerImage.backgroundColor = GlobalStruct.backgroundTint
+        headerImage.backgroundColor = GlobalStruct.modalBackground
         headerImage.imageView?.contentMode = .scaleAspectFill
         headerImage.imageView?.layer.masksToBounds = true
         headerImage.contentHorizontalAlignment = .fill
@@ -75,8 +76,12 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
         headerImage.addInteraction(interaction)
         bgView.addSubview(headerImage)
         
+        divider0.translatesAutoresizingMaskIntoConstraints = false
+        divider0.backgroundColor = UIColor.gray
+        bgView.addSubview(divider0)
+        
         avatar.translatesAutoresizingMaskIntoConstraints = false
-        avatar.backgroundColor = GlobalStruct.backgroundTint
+        avatar.backgroundColor = GlobalStruct.detailQuoteCell
         avatar.layer.borderWidth = 4
         avatar.layer.borderColor = GlobalStruct.detailQuoteCell.cgColor
         avatar.layer.cornerRadius = 80
@@ -269,6 +274,7 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
             "bgView" : bgView,
             "headerImage" : headerImage,
             "avatar" : avatar,
+            "divider0" : divider0,
             "username" : username,
             "usertag" : usertag,
             "followsYouTag" : followsYouTag,
@@ -289,6 +295,9 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
         
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[headerImage(154)]", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[headerImage]-0-|", options: [], metrics: nil, views: viewsDict))
+        
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-154-[divider0(0.18)]", options: [], metrics: nil, views: viewsDict))
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[divider0]-0-|", options: [], metrics: nil, views: viewsDict))
         
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[avatar2(32)]", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-64-[avatar3(32)]", options: [], metrics: nil, views: viewsDict))

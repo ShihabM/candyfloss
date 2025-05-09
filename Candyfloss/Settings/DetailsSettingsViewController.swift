@@ -31,7 +31,7 @@ class DetailsSettingsViewController: UIViewController, UITableViewDataSource, UI
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = GlobalStruct.backgroundTint
+        view.backgroundColor = GlobalStruct.modalBackground
         navigationItem.title = "Post Details"
         
         tableView.allowsFocus = true
@@ -40,7 +40,7 @@ class DetailsSettingsViewController: UIViewController, UITableViewDataSource, UI
         tableView.register(SelectionCell.self, forCellReuseIdentifier: "SelectionCell1")
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = GlobalStruct.groupBG
+        tableView.backgroundColor = GlobalStruct.modalBackground
         tableView.layer.masksToBounds = true
         tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.rowHeight = UITableView.automaticDimension
@@ -81,7 +81,7 @@ class DetailsSettingsViewController: UIViewController, UITableViewDataSource, UI
             switchView.addTarget(self, action: #selector(switchShowNextReplyButton(_:)), for: .valueChanged)
             cell.accessoryView = switchView
             cell.selectionStyle = .none
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             cell.focusEffect = UIFocusHaloEffect()
             return cell
         } else {
@@ -135,7 +135,7 @@ class DetailsSettingsViewController: UIViewController, UITableViewDataSource, UI
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             cell.hoverStyle = .none
             return cell
         }

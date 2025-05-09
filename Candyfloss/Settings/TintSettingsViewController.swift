@@ -29,10 +29,10 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
     @objc func updateTint() {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
-            tableView.backgroundColor = GlobalStruct.groupBG
+            tableView.backgroundColor = GlobalStruct.modalBackground
             let appearance = UINavigationBarAppearance()
             view.backgroundColor = GlobalStruct.backgroundTint
-            appearance.backgroundColor = view.backgroundColor
+            appearance.backgroundColor = GlobalStruct.backgroundTint
             appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
             appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
             navigationController?.navigationBar.standardAppearance = appearance
@@ -51,7 +51,7 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = GlobalStruct.backgroundTint
+        view.backgroundColor = GlobalStruct.modalBackground
         navigationItem.title = "App Tint"
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
@@ -65,7 +65,7 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
         tableView.alpha = 1
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = GlobalStruct.groupBG
+        tableView.backgroundColor = GlobalStruct.modalBackground
         tableView.layer.masksToBounds = true
         tableView.estimatedRowHeight = 89
         tableView.rowHeight = UITableView.automaticDimension
@@ -106,7 +106,7 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             return cell
         } else if indexPath.section == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell1", for: indexPath)
@@ -127,7 +127,7 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PlainCell", for: indexPath) as! PlainCell
@@ -150,7 +150,7 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             cell.hoverStyle = .none
             return cell
         }

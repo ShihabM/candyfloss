@@ -21,7 +21,7 @@ class SelectionCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         bgButton.translatesAutoresizingMaskIntoConstraints = false
-        bgButton.backgroundColor = GlobalStruct.backgroundTint
+        bgButton.backgroundColor = GlobalStruct.detailQuoteCell
         contentView.addSubview(bgButton)
         
         theTitle.translatesAutoresizingMaskIntoConstraints = false

@@ -29,6 +29,7 @@ struct GlobalStruct {
     static var detailCell: UIColor = UIColor(named: "detailCell")!
     static var detailQuoteCell: UIColor = UIColor(named: "detailQuoteCell")!
     static var blueskyBlue: UIColor = UIColor(named: "blueskyBlue")!
+    static var modalBackground: UIColor = UIColor(named: "modalBG")!
     
     // defaults
     static var dateFormatter = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"

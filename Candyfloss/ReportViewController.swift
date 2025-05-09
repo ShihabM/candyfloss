@@ -28,7 +28,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = GlobalStruct.backgroundTint
+        view.backgroundColor = GlobalStruct.modalBackground
         navigationItem.title = "Report User"
         if let _ = currentPost {
             navigationItem.title = "Report Post"
@@ -85,7 +85,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.register(PlainCell.self, forCellReuseIdentifier: "PlainCell2")
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = GlobalStruct.backgroundTint
+        tableView.backgroundColor = GlobalStruct.modalBackground
         tableView.layer.masksToBounds = true
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableFooterView = UIView(frame: .zero)

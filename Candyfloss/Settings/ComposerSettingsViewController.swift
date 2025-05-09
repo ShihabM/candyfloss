@@ -31,7 +31,7 @@ class ComposerSettingsViewController: UIViewController, UITableViewDataSource, U
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = GlobalStruct.backgroundTint
+        view.backgroundColor = GlobalStruct.modalBackground
         navigationItem.title = "Post Composer"
         
         tableView.allowsFocus = true
@@ -40,7 +40,7 @@ class ComposerSettingsViewController: UIViewController, UITableViewDataSource, U
         tableView.register(SelectionCell.self, forCellReuseIdentifier: "SelectionCell2")
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = GlobalStruct.groupBG
+        tableView.backgroundColor = GlobalStruct.modalBackground
         tableView.layer.masksToBounds = true
         tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.rowHeight = UITableView.automaticDimension
@@ -99,7 +99,7 @@ class ComposerSettingsViewController: UIViewController, UITableViewDataSource, U
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             cell.hoverStyle = .none
             return cell
         } else {
@@ -169,7 +169,7 @@ class ComposerSettingsViewController: UIViewController, UITableViewDataSource, U
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             cell.hoverStyle = .none
             return cell
         }

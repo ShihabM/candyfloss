@@ -34,50 +34,10 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
         super.viewDidAppear(animated)
     }
     
-    @objc func updateTint() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            let appearance = UINavigationBarAppearance()
-            self.view.backgroundColor = GlobalStruct.backgroundTint
-            appearance.backgroundColor = self.view.backgroundColor
-            appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
-            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
-            self.navigationController?.navigationBar.standardAppearance = appearance
-            self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
-            self.navigationController?.navigationBar.compactAppearance = appearance
-            let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
-            let smallestFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize - 2
-            for x in self.tableView.visibleCells {
-                if let y = x as? PostsCell {
-                    y.backgroundColor = GlobalStruct.backgroundTint
-                    y.time.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
-                    y.username.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .bold)
-                    y.usertag.font = UIFont.systemFont(ofSize: smallestFontSize + GlobalStruct.customTextSize, weight: .regular)
-                    y.text.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
-                    y.repost.titleLabel?.font = UIFont.systemFont(ofSize: smallestFontSize + GlobalStruct.customTextSize, weight: .regular)
-                    y.text.mentionColor = GlobalStruct.baseTint
-                    y.text.hashtagColor = GlobalStruct.baseTint
-                    y.text.URLColor = GlobalStruct.baseTint
-                    y.text.emailColor = GlobalStruct.baseTint
-                    y.text.lineSpacing = GlobalStruct.customLineSize
-                    y.text.numberOfLines = GlobalStruct.maxLines
-                    if let text = y.text.text {
-                        y.text.text = nil
-                        y.text.text = text
-                    }
-                    y.uriLabel.textColor = GlobalStruct.baseTint
-                }
-            }
-            self.tableView.reloadData()
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = GlobalStruct.backgroundTint
+        self.view.backgroundColor = GlobalStruct.modalBackground
         self.navigationItem.title = "Posts"
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
         
         if GlobalStruct.customTextSize == 0 {
             self.fontText = "\("System Size")"
@@ -138,7 +98,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
         tableView.register(PostsCell.self, forCellReuseIdentifier: "PostsCell")
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.backgroundColor = GlobalStruct.groupBG
+        self.tableView.backgroundColor = GlobalStruct.modalBackground
         self.tableView.layer.masksToBounds = true
         self.tableView.estimatedRowHeight = UITableView.automaticDimension
         self.tableView.rowHeight = UITableView.automaticDimension
@@ -202,7 +162,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             cell.hoverStyle = .none
             cell.separatorInset = UIEdgeInsets(top: 0, left: .greatestFiniteMagnitude, bottom: 0, right: 0)
             return cell
@@ -220,7 +180,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else {
@@ -229,7 +189,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 cell.configureSize(self.view.bounds.width)
                 cell.slider.setValue(Float(GlobalStruct.customTextSize), animated: false)
                 cell.slider.addTarget(self, action: #selector(self.valueChanged(_:)), for: .valueChanged)
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 
                 cell.accessoryView = .none
                 cell.selectionStyle = .none
@@ -251,7 +211,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else {
@@ -260,7 +220,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 cell.configureSize(self.view.bounds.width)
                 cell.slider.setValue(Float(GlobalStruct.customLineSize), animated: false)
                 cell.slider.addTarget(self, action: #selector(self.valueChanged2(_:)), for: .valueChanged)
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 
                 cell.accessoryView = .none
                 cell.selectionStyle = .none
@@ -310,7 +270,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 1 {
@@ -406,7 +366,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 2 {
@@ -430,7 +390,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 3 {
@@ -454,7 +414,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 4 {
@@ -478,7 +438,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 5 {
@@ -502,7 +462,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 6 {
@@ -526,7 +486,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else {
@@ -550,7 +510,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             }

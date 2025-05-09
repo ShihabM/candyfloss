@@ -341,6 +341,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
             } else {
                 configureActivityCell(cell, with: allNotifications[indexPath.row], text: "Deleted post")
             }
+            cell.layoutIfNeeded()
             
             cell.avatar1.tag = indexPath.row
             cell.avatar2.tag = indexPath.row

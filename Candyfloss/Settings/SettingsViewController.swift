@@ -46,10 +46,10 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     @objc func updateTint() {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
-            tableView.backgroundColor = GlobalStruct.groupBG
+            tableView.backgroundColor = GlobalStruct.modalBackground
             let appearance = UINavigationBarAppearance()
-            view.backgroundColor = GlobalStruct.backgroundTint
-            appearance.backgroundColor = view.backgroundColor
+            view.backgroundColor = GlobalStruct.modalBackground
+            appearance.backgroundColor = GlobalStruct.backgroundTint
             appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
             appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
             navigationController?.navigationBar.standardAppearance = appearance
@@ -86,7 +86,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = GlobalStruct.backgroundTint
+        view.backgroundColor = GlobalStruct.modalBackground
         navigationItem.title = "Settings"
         
         NotificationCenter.default.addObserver(self, selector: #selector(overrideTheme), name: NSNotification.Name(rawValue: "overrideTheme"), object: nil)
@@ -94,7 +94,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         NotificationCenter.default.addObserver(self, selector: #selector(updateTintMain), name: NSNotification.Name(rawValue: "updateTintMain"), object: nil)
         
         let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = view.backgroundColor
+        appearance.backgroundColor = GlobalStruct.backgroundTint
         appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
         navigationController?.navigationBar.standardAppearance = appearance
@@ -139,7 +139,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.register(PlainCell.self, forCellReuseIdentifier: "PlainCell6")
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = GlobalStruct.groupBG
+        tableView.backgroundColor = GlobalStruct.modalBackground
         tableView.layer.masksToBounds = true
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableFooterView = UIView(frame: .zero)
@@ -179,7 +179,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 1 {
@@ -192,7 +192,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 2 {
@@ -234,7 +234,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 3 {
@@ -258,7 +258,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             } else {
@@ -281,7 +281,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
+                cell.backgroundColor = GlobalStruct.detailQuoteCell
                 cell.hoverStyle = .none
                 return cell
             }
@@ -294,7 +294,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             cell.hoverStyle = .none
             return cell
         } else if indexPath.section == 2 {
@@ -308,7 +308,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             cell.hoverStyle = .none
             return cell
         } else {
@@ -323,7 +323,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
+            cell.backgroundColor = GlobalStruct.detailQuoteCell
             cell.hoverStyle = .none
             return cell
         }

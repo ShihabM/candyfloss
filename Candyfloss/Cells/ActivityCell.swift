@@ -36,10 +36,6 @@ class ActivityCell: UITableViewCell, SKPhotoBrowserDelegate, UISheetPresentation
     
     let symbolConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .semibold)
     
-    var postImage = UIImageView()
-    var constraint1: [NSLayoutConstraint] = []
-    var constraint2: [NSLayoutConstraint] = []
-    
     override func prepareForReuse() {
         super.prepareForReuse()
     }
@@ -133,16 +129,6 @@ class ActivityCell: UITableViewCell, SKPhotoBrowserDelegate, UISheetPresentation
             bgView.addSubview(postContents)
         }
         
-        postImage.translatesAutoresizingMaskIntoConstraints = false
-        postImage.backgroundColor = GlobalStruct.pollBar.withAlphaComponent(0.25)
-        postImage.layer.cornerRadius = 10
-        postImage.layer.cornerCurve = .continuous
-        postImage.contentMode = .scaleAspectFill
-        postImage.layer.masksToBounds = true
-        postImage.clipsToBounds = true
-        postImage.isUserInteractionEnabled = true
-        bgView.addSubview(postImage)
-        
         let viewsDict = [
             "bgView" : bgView,
             "typeIndicator" : typeIndicator,
@@ -153,7 +139,6 @@ class ActivityCell: UITableViewCell, SKPhotoBrowserDelegate, UISheetPresentation
             "time" : time,
             "username" : username,
             "postContents" : postContents,
-            "postImage" : postImage,
         ]
         let metricsDict: [String: Any] = [
             "offset" : 74 - mostSmallestFontSize - 10
@@ -162,28 +147,16 @@ class ActivityCell: UITableViewCell, SKPhotoBrowserDelegate, UISheetPresentation
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[bgView]-0-|", options: [], metrics: nil, views: viewsDict))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[bgView]-0-|", options: [], metrics: nil, views: viewsDict))
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar1(32)]-7-[postImage(50)]-(>=12)-|", options: [], metrics: nil, views: viewsDict))
-        
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar2(32)]-(>=12)-|", options: [], metrics: nil, views: viewsDict))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar3(32)]-(>=12)-|", options: [], metrics: nil, views: viewsDict))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar4(32)]-(>=12)-|", options: [], metrics: nil, views: viewsDict))
-        
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[time]-(>=12)-|", options: [], metrics: nil, views: viewsDict))
-        
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[typeIndicator(32)]-(>=5)-|", options: [], metrics: nil, views: viewsDict))
-        
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar1(32)]-5-[username]-4-[postContents]-14-|", options: [], metrics: nil, views: viewsDict))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar2(32)]", options: [], metrics: nil, views: viewsDict))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar3(32)]", options: [], metrics: nil, views: viewsDict))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar4(32)]", options: [], metrics: nil, views: viewsDict))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[time]", options: [], metrics: nil, views: viewsDict))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[typeIndicator(32)]", options: [], metrics: nil, views: viewsDict))
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(>=10)-[time]-18-|", options: [], metrics: metricsDict, views: viewsDict))
-        
-        constraint1.forEach { $0.isActive = false }
-        constraint1 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[typeIndicator(44)]-12-[postContents]-18-|", options: [], metrics: nil, views: viewsDict)
-        constraint1.forEach { $0.isActive = true }
-        
-        constraint2.forEach { $0.isActive = false }
-        constraint2 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[typeIndicator(44)]-12-[username]-18-|", options: [], metrics: nil, views: viewsDict)
-        constraint2.forEach { $0.isActive = true }
-        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[typeIndicator(44)]-12-[postContents]-18-|", options: [], metrics: nil, views: viewsDict))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[typeIndicator(44)]-12-[username]-18-|", options: [], metrics: nil, views: viewsDict))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[typeIndicator(44)]-12-[avatar1(32)]-8-[avatar2(32)]-8-[avatar3(32)]-6-[avatar4(32)]", options: [], metrics: metricsDict, views: viewsDict))
     }
     
@@ -192,7 +165,6 @@ class ActivityCell: UITableViewCell, SKPhotoBrowserDelegate, UISheetPresentation
     }
     
     func configure(_ notification: [AppBskyLexicon.Notification.Notification] = []) {
-        avatar1.alpha = notification.count > 0 ? 1 : 0
         avatar2.alpha = notification.count > 1 ? 1 : 0
         avatar3.alpha = notification.count > 2 ? 1 : 0
         avatar4.alpha = notification.count > 3 ? 1 : 0
@@ -204,28 +176,6 @@ class ActivityCell: UITableViewCell, SKPhotoBrowserDelegate, UISheetPresentation
         }
         if notification.count > 2 {
             currentProfile3 = notification[2].author
-        }
-    }
-    
-    func setupImages(_ hasImage: Bool = false) {
-        let viewsDict = [
-            "bgView" : bgView,
-            "typeIndicator" : typeIndicator,
-            "time" : time,
-            "username" : username,
-            "postContents" : postContents,
-            "postImage" : postImage,
-        ]
-        if hasImage {
-            NSLayoutConstraint.deactivate(constraint1 + constraint2)
-            constraint1 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[typeIndicator(44)]-12-[postContents]-12-[postImage(50)]-18-|", options: [], metrics: nil, views: viewsDict)
-            constraint2 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[typeIndicator(44)]-12-[username]-12-[postImage(50)]-18-|", options: [], metrics: nil, views: viewsDict)
-            NSLayoutConstraint.activate(constraint1 + constraint2)
-        } else {
-            NSLayoutConstraint.deactivate(constraint1 + constraint2)
-            constraint1 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[typeIndicator(44)]-12-[postContents]-18-|", options: [], metrics: nil, views: viewsDict)
-            constraint2 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[typeIndicator(44)]-12-[username]-18-|", options: [], metrics: nil, views: viewsDict)
-            NSLayoutConstraint.activate(constraint1 + constraint2)
         }
     }
     

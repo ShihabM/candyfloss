@@ -348,7 +348,6 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
             cell.avatar1.addTarget(self, action: #selector(viewProfile1), for: .touchUpInside)
             cell.avatar2.addTarget(self, action: #selector(viewProfile2), for: .touchUpInside)
             cell.avatar3.addTarget(self, action: #selector(viewProfile3), for: .touchUpInside)
-            cell.layoutIfNeeded()
             
             if isFetching == false && currentCursor != nil {
                 if indexPath.row == allNotifications.count - 1 || indexPath.row == allNotifications.count - 5 {

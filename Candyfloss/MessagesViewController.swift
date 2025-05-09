@@ -281,6 +281,7 @@ class MessagesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         cell.avatar.tag = indexPath.row
         cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
+        cell.text.numberOfLines = 2
         
         if isFetching == false && currentCursor != nil {
             if indexPath.row == allMessages.count - 1 || indexPath.row == allMessages.count - 5 {

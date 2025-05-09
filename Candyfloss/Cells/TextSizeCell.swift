@@ -17,7 +17,7 @@ class TextSizeCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         circle1.frame = CGRect(x: contentView.bounds.width/2 - 3, y: 29, width: 12, height: 12)
-        circle1.backgroundColor = GlobalStruct.backgroundTint
+        circle1.backgroundColor = GlobalStruct.modalBackground
         circle1.layer.cornerRadius = 6
         contentView.addSubview(circle1)
         
@@ -27,8 +27,8 @@ class TextSizeCell: UITableViewCell {
         slider.maximumValue = 5
         slider.isContinuous = true
         slider.tintColor = GlobalStruct.baseTint
-        slider.minimumTrackTintColor = GlobalStruct.groupBG
-        slider.maximumTrackTintColor = GlobalStruct.groupBG
+        slider.minimumTrackTintColor = GlobalStruct.modalBackground
+        slider.maximumTrackTintColor = GlobalStruct.modalBackground
         slider.value = Float(GlobalStruct.customTextSize)
         contentView.addSubview(slider)
         

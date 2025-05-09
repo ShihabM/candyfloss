@@ -104,11 +104,11 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
         bgView.addSubview(usertag)
         
         followsYouTag.translatesAutoresizingMaskIntoConstraints = false
-        followsYouTag.setTitle("  Follows You  ", for: .normal)
+        followsYouTag.setTitle("   Follows You   ", for: .normal)
         followsYouTag.setTitleColor(.white, for: .normal)
         followsYouTag.titleLabel?.font = UIFont.systemFont(ofSize: mostSmallestFontSize + GlobalStruct.customTextSize, weight: .semibold)
         followsYouTag.backgroundColor = GlobalStruct.baseTint
-        followsYouTag.layer.cornerRadius = 6
+        followsYouTag.layer.cornerRadius = (mostSmallestFontSize + 10) / 2
         followsYouTag.alpha = 0
         bgView.addSubview(followsYouTag)
         
@@ -410,7 +410,7 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
             "divider1" : divider1,
         ]
         let metricsDict: [String: Any] = [
-            "height" : mostSmallestFontSize + 8
+            "height" : mostSmallestFontSize + 10
         ]
         NSLayoutConstraint.deactivate(constraintST1)
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[statsStackView]-0-|", options: [], metrics: nil, views: viewsDict))

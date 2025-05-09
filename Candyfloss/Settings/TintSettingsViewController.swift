@@ -31,7 +31,7 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
             guard let self else { return }
             tableView.backgroundColor = GlobalStruct.modalBackground
             let appearance = UINavigationBarAppearance()
-            view.backgroundColor = GlobalStruct.backgroundTint
+            view.backgroundColor = GlobalStruct.modalBackground
             appearance.backgroundColor = GlobalStruct.backgroundTint
             appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
             appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
@@ -41,10 +41,10 @@ class TintSettingsViewController: UIViewController, UITableViewDataSource, UITab
             let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
             for x in tableView.visibleCells {
                 if let y = x as? PlainCell {
-                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.backgroundColor = GlobalStruct.detailQuoteCell
                     y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                 }
-                x.backgroundColor = GlobalStruct.backgroundTint
+                x.backgroundColor = GlobalStruct.detailQuoteCell
             }
         }
     }

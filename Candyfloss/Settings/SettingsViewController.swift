@@ -58,17 +58,17 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
             for x in tableView.visibleCells {
                 if let y = x as? PlainCell {
-                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.backgroundColor = GlobalStruct.detailQuoteCell
                     y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                 }
                 if let y = x as? SelectionCell {
-                    y.backgroundColor = GlobalStruct.backgroundTint
-                    y.bgButton.backgroundColor = GlobalStruct.backgroundTint
+                    y.backgroundColor = GlobalStruct.detailQuoteCell
+                    y.bgButton.backgroundColor = GlobalStruct.detailQuoteCell
                     y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                     y.theTitle2.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                 }
                 if let y = x as? TextSizeCell {
-                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.backgroundColor = GlobalStruct.detailQuoteCell
                 }
             }
         }

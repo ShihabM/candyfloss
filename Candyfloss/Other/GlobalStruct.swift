@@ -15,21 +15,21 @@ struct GlobalStruct {
     
     // tints
     static var baseTint: UIColor = UIColor(named: "baseTint")!
-    static var backgroundTint: UIColor = (UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "fullBlack")! : UIColor(named: "bg")!
+    static var backgroundTint: UIColor = (UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false == true) ? UIColor(named: "fullBlack")! : UIColor(named: "bg")!
     static var raisedBackgroundTint: UIColor = UIColor(named: "bg2")!
     static var cellBackgroundTint: UIColor = UIColor(named: "bgInset")!
     static var backgroundTintHighlight: UIColor = UIColor(named: "bgHighlight")!
     static var followBG: UIColor = UIColor(named: "followBG")!
     static var threadLines: UIColor = UIColor(named: "threadLines")!
-    static var groupBG: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "groupSepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "groupBG2")! : UIColor(named: "groupBG")!)
-    static var spoilerBG: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "groupSepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "spoilerBGFullBlack")! : UIColor(named: "spoilerBG")!)
-    static var pollBar: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "sepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "spoilerBGFullBlack")! : UIColor(named: "pollBar")!)
-    static var textColor: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "sepiaPrimary")! : UIColor(named: "textColor")!
-    static var secondaryTextColor: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "sepiaSecondary")! : UIColor(named: "secondaryTextColor")!
+    static var groupBG: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "groupSepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "groupBG2")! : UIColor(named: "groupBG")!)
+    static var spoilerBG: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "groupSepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "spoilerBGFullBlack")! : UIColor(named: "spoilerBG")!)
+    static var pollBar: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "sepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false == true) ? UIColor(named: "spoilerBGFullBlack")! : UIColor(named: "pollBar")!)
+    static var textColor: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "sepiaPrimary")! : UIColor(named: "textColor")!
+    static var secondaryTextColor: UIColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "sepiaSecondary")! : UIColor(named: "secondaryTextColor")!
     static var detailCell: UIColor = UIColor(named: "detailCell")!
     static var detailQuoteCell: UIColor = UIColor(named: "detailQuoteCell")!
     static var blueskyBlue: UIColor = UIColor(named: "blueskyBlue")!
-    static var modalBackground: UIColor = UIColor(named: "modalBG")!
+    static var modalBackground: UIColor = (UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false == true) ? UIColor(named: "fullBlackModal")! : UIColor(named: "modalBG")!
     
     // defaults
     static var dateFormatter = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"

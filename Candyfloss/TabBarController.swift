@@ -77,12 +77,13 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     }
     
     @objc func updateTintFullBlack() {
-        GlobalStruct.backgroundTint = (UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "fullBlack")! : UIColor(named: "bg")!
-        GlobalStruct.groupBG = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "groupSepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "groupBG2")! : UIColor(named: "groupBG")!)
-        GlobalStruct.spoilerBG = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "groupSepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "spoilerBGFullBlack")! : UIColor(named: "spoilerBG")!)
-        GlobalStruct.pollBar = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "sepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "spoilerBGFullBlack")! : UIColor(named: "pollBar")!)
-        GlobalStruct.textColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "sepiaPrimary")! : UIColor(named: "textColor")!
-        GlobalStruct.secondaryTextColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "sepiaSecondary")! : UIColor(named: "secondaryTextColor")!
+        GlobalStruct.backgroundTint = (UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false == true) ? UIColor(named: "fullBlack")! : UIColor(named: "bg")!
+        GlobalStruct.groupBG = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "groupSepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false == true) ? UIColor(named: "groupBG2")! : UIColor(named: "groupBG")!)
+        GlobalStruct.spoilerBG = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "groupSepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false == true) ? UIColor(named: "spoilerBGFullBlack")! : UIColor(named: "spoilerBG")!)
+        GlobalStruct.pollBar = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "sepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false == true) ? UIColor(named: "spoilerBGFullBlack")! : UIColor(named: "pollBar")!)
+        GlobalStruct.textColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "sepiaPrimary")! : UIColor(named: "textColor")!
+        GlobalStruct.secondaryTextColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false == true) ? UIColor(named: "sepiaSecondary")! : UIColor(named: "secondaryTextColor")!
+        GlobalStruct.modalBackground = (UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false == true) ? UIColor(named: "fullBlackModal")! : UIColor(named: "modalBG")!
         view.backgroundColor = GlobalStruct.backgroundTint
         tabBar.backgroundColor = view.backgroundColor
         tabBar.barTintColor = view.backgroundColor

@@ -1407,6 +1407,14 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
                 actionButtonInsideBookmark.setImage(GlobalStruct.bookmarkImage1, for: .normal)
             }
         }
+        
+        text.customize { text in
+            text.textColor = GlobalStruct.textColor
+            text.mentionColor = GlobalStruct.baseTint
+            text.hashtagColor = GlobalStruct.baseTint
+            text.URLColor = GlobalStruct.baseTint
+            text.emailColor = GlobalStruct.baseTint
+        }
     }
     
     func updateQuoteView(_ quote: AppBskyLexicon.Feed.PostViewDefinition, recordURI: String) {

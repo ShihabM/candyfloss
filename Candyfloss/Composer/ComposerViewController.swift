@@ -441,7 +441,6 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
             let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell
             let post = allPosts[indexPath.row]
             configurePostCell(cell, with: post, showActionButtons: false)
-            cell.layoutIfNeeded()
             
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             cell.accessoryView = nil

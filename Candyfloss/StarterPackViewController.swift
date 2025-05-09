@@ -436,7 +436,6 @@ class StarterPackViewController: UIViewController, UITableViewDataSource, UITabl
             cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
             cell.repost.tag = indexPath.row
             cell.repost.addTarget(self, action: #selector(repostTapped(_:)), for: .touchUpInside)
-            cell.layoutIfNeeded()
             
             if !isSearching {
                 if isFetching == false && currentCursor != nil {

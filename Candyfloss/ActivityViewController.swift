@@ -307,7 +307,6 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                 cell.avatar.tag = indexPath.row
                 cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
             }
-            cell.layoutIfNeeded()
             
             if isFetching == false && currentCursor != nil {
                 if indexPath.row == allNotifications.count - 1 || indexPath.row == allNotifications.count - 5 {
@@ -341,7 +340,6 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
             } else {
                 configureActivityCell(cell, with: allNotifications[indexPath.row], text: "Deleted post")
             }
-            cell.layoutIfNeeded()
             
             cell.avatar1.tag = indexPath.row
             cell.avatar2.tag = indexPath.row

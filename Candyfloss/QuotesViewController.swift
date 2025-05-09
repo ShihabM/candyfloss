@@ -209,7 +209,6 @@ class QuotesViewController: UIViewController, UITableViewDataSource, UITableView
         
         cell.avatar.tag = indexPath.row
         cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
-        cell.layoutIfNeeded()
         
         if isFetching == false && currentCursor != nil {
             if indexPath.row == allPosts.count - 1 || indexPath.row == allPosts.count - 5 {

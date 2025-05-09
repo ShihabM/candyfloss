@@ -399,7 +399,6 @@ class DetailsViewController: UIViewController, UITableViewDataSource, UITableVie
             
             cell.avatar.tag = indexPath.row
             cell.avatar.addTarget(self, action: #selector(parentProfileTapped(_:)), for: .touchUpInside)
-            cell.layoutIfNeeded()
             
             if indexPath.row == allParents.count - 1 {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
@@ -422,7 +421,6 @@ class DetailsViewController: UIViewController, UITableViewDataSource, UITableVie
                 
                 cell.avatar.tag = indexPath.row
                 cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
-                cell.layoutIfNeeded()
                 
                 cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
                 cell.accessoryView = nil
@@ -531,7 +529,6 @@ class DetailsViewController: UIViewController, UITableViewDataSource, UITableVie
             
             cell.avatar.tag = indexPath.row
             cell.avatar.addTarget(self, action: #selector(replyProfileTapped(_:)), for: .touchUpInside)
-            cell.layoutIfNeeded()
             
             if nestedRepliesIndices.contains(indexPath.row) {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 134, bottom: 0, right: 0)

@@ -467,7 +467,6 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
             cell.repost.tag = indexPath.row
             cell.repost.addTarget(self, action: #selector(repostTapped(_:)), for: .touchUpInside)
-            cell.layoutIfNeeded()
             
             if isFetching == false && currentCursor != nil {
                 if indexPath.row == allPosts.count - 1 || indexPath.row == allPosts.count - 5 {

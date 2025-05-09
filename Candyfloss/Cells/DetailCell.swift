@@ -777,6 +777,14 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
             }
         }
         
+        text.customize { text in
+            text.textColor = UIColor.label
+            text.mentionColor = GlobalStruct.baseTint
+            text.hashtagColor = GlobalStruct.baseTint
+            text.URLColor = GlobalStruct.baseTint
+            text.emailColor = GlobalStruct.baseTint
+        }
+        
         cellStackViewConstraints7 = NSLayoutConstraint.constraints(withVisualFormat: verticalLayoutString1, options: [], metrics: nil, views: viewsDict)
         for constraint in cellStackViewConstraints7 {
             constraint.priority = .defaultLow

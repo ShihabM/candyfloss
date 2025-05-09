@@ -240,7 +240,6 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         cell.avatar.tag = indexPath.row
         cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
-        cell.layoutIfNeeded()
         
         if indexPath.row == allPosts.count - 1 {
             cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)

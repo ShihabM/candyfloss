@@ -111,5 +111,13 @@ class MessageCell: UITableViewCell, SKPhotoBrowserDelegate {
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar(44)]-(>=14)-|", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[time]-(>=14)-|", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[username]-1-[usertag]-5-[text]-14-|", options: [], metrics: nil, views: viewsDict))
+        
+        text.customize { text in
+            text.textColor = GlobalStruct.textColor
+            text.mentionColor = GlobalStruct.baseTint
+            text.hashtagColor = GlobalStruct.baseTint
+            text.URLColor = GlobalStruct.baseTint
+            text.emailColor = GlobalStruct.baseTint
+        }
     }
 }

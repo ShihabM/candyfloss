@@ -204,7 +204,6 @@ class DraftsViewController: UIViewController, UITableViewDataSource, UITableView
             cell.time.text = timeSince.toString(dateStyle: .short, timeStyle: .short)
         }
         cell.configure(post: nil, showActionButtons: false, isRepost: nil, isNestedQuote: false, isNestedReply: false, isPinned: false, fromPreview: true)
-        cell.layoutIfNeeded()
         
         if indexPath.row == GlobalStruct.drafts.count - 1 {
             cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)

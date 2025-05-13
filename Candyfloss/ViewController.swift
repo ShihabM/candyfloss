@@ -40,6 +40,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
+    // loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
@@ -463,6 +466,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     @objc func switchFeed(_ hasAuthenticated: Bool = true) {
         DispatchQueue.main.async {
+            self.loadingIndicator.startAnimating()
             self.navigationItem.title = self.fromFeedPush ? self.currentFeedDisplayName : GlobalStruct.currentFeedDisplayName
             self.listURI = ""
             self.listName = ""
@@ -477,6 +481,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     @objc func switchList(_ hasAuthenticated: Bool = true) {
         DispatchQueue.main.async {
+            self.loadingIndicator.startAnimating()
             self.navigationItem.title = GlobalStruct.listName
             self.listURI = GlobalStruct.listURI
             self.listName = GlobalStruct.listName
@@ -524,6 +529,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             
                             currentCursor = x.cursor
                             DispatchQueue.main.async {
+                                self.loadingIndicator.stopAnimating()
                                 self.tableView.reloadData()
                                 self.isFetching = false
                             }
@@ -555,6 +561,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             
                             currentCursor = x.cursor
                             DispatchQueue.main.async {
+                                self.loadingIndicator.stopAnimating()
                                 self.tableView.reloadData()
                                 self.isFetching = false
                             }
@@ -590,6 +597,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             
                             currentCursor = x.cursor
                             DispatchQueue.main.async {
+                                self.loadingIndicator.stopAnimating()
                                 self.tableView.reloadData()
                                 self.isFetching = false
                             }
@@ -766,6 +774,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func setUpTable() {
+        loadingIndicator.center = view.center
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
+        
         tableView.removeFromSuperview()
         tableView.register(PostsCell.self, forCellReuseIdentifier: "PostsCell")
         tableView.dataSource = self

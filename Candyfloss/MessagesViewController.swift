@@ -25,6 +25,9 @@ class MessagesViewController: UIViewController, UITableViewDataSource, UITableVi
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
+    // loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
@@ -191,11 +194,16 @@ class MessagesViewController: UIViewController, UITableViewDataSource, UITableVi
                     let x = try await atProtoBluesky.listConversations(cursor: currentCursor)
                     allMessages += x.conversations
                     currentCursor = x.cursor
-                    tableView.reloadData()
-                    refreshControl.endRefreshing()
+                    
+                    DispatchQueue.main.async {
+                        self.loadingIndicator.stopAnimating()
+                        self.tableView.reloadData()
+                        self.refreshControl.endRefreshing()
+                    }
                 }
             } catch {
                 print("Error fetching messages: \(error.localizedDescription)")
+                loadingIndicator.stopAnimating()
                 refreshControl.endRefreshing()
             }
         }
@@ -228,6 +236,11 @@ class MessagesViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func setUpTable() {
+        loadingIndicator.center = view.center
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
+        
         tableView.removeFromSuperview()
         tableView.register(MessageCell.self, forCellReuseIdentifier: "MessageCell")
         tableView.dataSource = self

@@ -28,6 +28,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
+    // loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileHeaderCell {
@@ -256,6 +259,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                         })
                         currentCursor = x.cursor
                         DispatchQueue.main.async {
+                            self.loadingIndicator.stopAnimating()
                             self.tableView.reloadData()
                             self.refreshControl.endRefreshing()
                             self.isFetching = false
@@ -269,6 +273,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                         })
                         currentCursor = x.cursor
                         DispatchQueue.main.async {
+                            self.loadingIndicator.stopAnimating()
                             self.tableView.reloadData()
                             self.refreshControl.endRefreshing()
                             self.isFetching = false
@@ -278,6 +283,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             } catch {
                 print("Error fetching profiles and feed: \(error.localizedDescription)")
                 DispatchQueue.main.async {
+                    self.loadingIndicator.stopAnimating()
                     self.tableView.reloadData()
                     self.refreshControl.endRefreshing()
                     self.isFetching = false
@@ -348,6 +354,11 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func setUpTable() {
+        loadingIndicator.center = view.center
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
+        
         tableView.removeFromSuperview()
         tableView.register(ProfileHeaderCell.self, forCellReuseIdentifier: "ProfileHeaderCell")
         tableView.register(PostsCell.self, forCellReuseIdentifier: "PostsCell")

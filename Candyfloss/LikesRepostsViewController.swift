@@ -28,6 +28,9 @@ class LikesRepostsViewController: UIViewController, UITableViewDataSource, UITab
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
+    // loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
@@ -155,6 +158,7 @@ class LikesRepostsViewController: UIViewController, UITableViewDataSource, UITab
                         currentCursor = x.cursor
                     }
                     DispatchQueue.main.async {
+                        self.loadingIndicator.stopAnimating()
                         self.tableView.reloadData()
                         self.isFetching = false
                     }
@@ -162,6 +166,7 @@ class LikesRepostsViewController: UIViewController, UITableViewDataSource, UITab
             } catch {
                 print("Error fetching users: \(error.localizedDescription)")
                 DispatchQueue.main.async {
+                    self.loadingIndicator.stopAnimating()
                     self.isFetching = false
                 }
             }
@@ -169,6 +174,11 @@ class LikesRepostsViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     func setUpTable() {
+        loadingIndicator.center = view.center
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
+        
         tableView.removeFromSuperview()
         tableView.register(UserCell.self, forCellReuseIdentifier: "UserCell")
         tableView.dataSource = self

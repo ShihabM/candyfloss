@@ -24,6 +24,9 @@ class QuotesViewController: UIViewController, UITableViewDataSource, UITableView
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
+    // loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
@@ -150,6 +153,7 @@ class QuotesViewController: UIViewController, UITableViewDataSource, UITableView
                     allPosts += x.posts
                     currentCursor = x.cursor
                     DispatchQueue.main.async {
+                        self.loadingIndicator.stopAnimating()
                         self.tableView.reloadData()
                         self.isFetching = false
                     }
@@ -157,6 +161,7 @@ class QuotesViewController: UIViewController, UITableViewDataSource, UITableView
             } catch {
                 print("Error fetching quotes: \(error.localizedDescription)")
                 DispatchQueue.main.async {
+                    self.loadingIndicator.stopAnimating()
                     self.isFetching = false
                 }
             }
@@ -164,6 +169,11 @@ class QuotesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func setUpTable() {
+        loadingIndicator.center = view.center
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
+        
         tableView.removeFromSuperview()
         tableView.register(PostsCell.self, forCellReuseIdentifier: "PostsCell")
         tableView.dataSource = self

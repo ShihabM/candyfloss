@@ -25,6 +25,9 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
+    // loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
@@ -234,6 +237,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                     DispatchQueue.main.async {
                         self.allSubjectPosts += subjects.posts
                         self.allNotifications += groupedNotifications
+                        self.loadingIndicator.stopAnimating()
                         self.tableView.reloadData()
                         self.refreshControl.endRefreshing()
                         self.isFetching = false
@@ -243,6 +247,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                 print("Error fetching activity: \(error.localizedDescription)")
                 DispatchQueue.main.async {
                     self.isFetching = false
+                    self.loadingIndicator.stopAnimating()
                     self.refreshControl.endRefreshing()
                 }
             }
@@ -254,6 +259,11 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func setUpTable() {
+        loadingIndicator.center = view.center
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
+        
         tableView.removeFromSuperview()
         tableView.register(PostsCell.self, forCellReuseIdentifier: "PostsCell")
         tableView.register(ActivityCell.self, forCellReuseIdentifier: "ActivityCell")

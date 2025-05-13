@@ -33,6 +33,9 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
+    // loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
@@ -243,6 +246,7 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
                         currentCursor = x.cursor
                     }
                     DispatchQueue.main.async {
+                        self.loadingIndicator.stopAnimating()
                         self.tableView.reloadData()
                         self.isFetching = false
                     }
@@ -250,6 +254,7 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
             } catch {
                 print("Error fetching friends: \(error.localizedDescription)")
                 DispatchQueue.main.async {
+                    self.loadingIndicator.stopAnimating()
                     self.isFetching = false
                 }
             }
@@ -257,6 +262,11 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func setUpTable() {
+        loadingIndicator.center = view.center
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
+        
         tableView.removeFromSuperview()
         tableView.register(UserCell.self, forCellReuseIdentifier: "UserCell")
         tableView.dataSource = self

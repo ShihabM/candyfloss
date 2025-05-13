@@ -41,6 +41,9 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
+    // loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
@@ -225,6 +228,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     fetchedAreasCount += 1
                     DispatchQueue.main.async {
                         if self.fetchedAreasCount == 4 {
+                            self.loadingIndicator.stopAnimating()
                             self.tableView.reloadData()
                             self.refreshControl.endRefreshing()
                         }
@@ -232,6 +236,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
             } catch {
                 print("Error fetching trending topics: \(error.localizedDescription)")
+                loadingIndicator.stopAnimating()
                 tableView.reloadData()
                 refreshControl.endRefreshing()
             }
@@ -245,6 +250,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     fetchedAreasCount += 1
                     DispatchQueue.main.async {
                         if self.fetchedAreasCount == 4 {
+                            self.loadingIndicator.stopAnimating()
                             self.tableView.reloadData()
                             self.refreshControl.endRefreshing()
                         }
@@ -252,6 +258,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
             } catch {
                 print("Error fetching suggested users: \(error.localizedDescription)")
+                loadingIndicator.stopAnimating()
                 tableView.reloadData()
                 refreshControl.endRefreshing()
             }
@@ -264,6 +271,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     fetchedAreasCount += 1
                     DispatchQueue.main.async {
                         if self.fetchedAreasCount == 4 {
+                            self.loadingIndicator.stopAnimating()
                             self.tableView.reloadData()
                             self.refreshControl.endRefreshing()
                         }
@@ -271,6 +279,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
             } catch {
                 print("Error fetching more suggested users: \(error.localizedDescription)")
+                loadingIndicator.stopAnimating()
                 tableView.reloadData()
                 refreshControl.endRefreshing()
             }
@@ -288,6 +297,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     fetchedAreasCount += 1
                     DispatchQueue.main.async {
                         if self.fetchedAreasCount == 4 {
+                            self.loadingIndicator.stopAnimating()
                             self.tableView.reloadData()
                             self.refreshControl.endRefreshing()
                         }
@@ -295,6 +305,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
             } catch {
                 print("Error fetching starter packs: \(error.localizedDescription)")
+                loadingIndicator.stopAnimating()
                 tableView.reloadData()
                 refreshControl.endRefreshing()
             }
@@ -311,6 +322,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     .map { $0 }
                     DispatchQueue.main.async {
                         if self.fetchedAreasCount == 4 {
+                            self.loadingIndicator.stopAnimating()
                             self.tableView.reloadData()
                             self.refreshControl.endRefreshing()
                         }
@@ -319,6 +331,8 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
             } catch {
                 print("Error fetching suggested feeds: \(error.localizedDescription)")
+                loadingIndicator.stopAnimating()
+                tableView.reloadData()
                 refreshControl.endRefreshing()
             }
         }
@@ -347,6 +361,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                         }
                         DispatchQueue.main.async {
                             if self.fetchedAreasCount == 4 {
+                                self.loadingIndicator.stopAnimating()
                                 self.tableView.reloadData()
                                 self.refreshControl.endRefreshing()
                             }
@@ -354,6 +369,8 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 } catch {
                     print("Error fetching feed posts: \(error.localizedDescription)")
+                    loadingIndicator.stopAnimating()
+                    tableView.reloadData()
                     refreshControl.endRefreshing()
                 }
             }
@@ -368,6 +385,11 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func setUpTable() {
+        loadingIndicator.center = view.center
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
+        
         tableView.removeFromSuperview()
         tableView = UITableView(frame: .zero, style: .plain)
         tableView.register(TrendingTopicsCell.self, forCellReuseIdentifier: "TrendingTopicsCell")

@@ -1372,7 +1372,7 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         }
         viewsActions.append(lists)
         let viewMessages = UIAction(title: "Messages", image: UIImage(systemName: "bubble.left"), identifier: nil) { action in
-            let vc = MessagesViewController()
+            let vc = MessagesListViewController()
             vc.fromNavigation = true
             UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
         }

@@ -1,0 +1,128 @@
+//
+//  MessageChatViewController.swift
+//  Candyfloss
+//
+//  Created by Shihab Mehboob on 13/05/2025.
+//
+
+import Foundation
+import UIKit
+import ATProtoKit
+import MessageKit
+import InputBarAccessoryView
+
+class MessageChatViewController: MessagesViewController {
+    
+    var messages: [Message] = []
+    var displayName: String = ""
+    var conversation: [ChatBskyLexicon.Conversation.ConversationViewDefinition] = []
+    var allMessages: [ATUnion.GetMessagesOutputMessagesUnion] = []
+    
+    // loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = GlobalStruct.backgroundTint
+        navigationItem.title = displayName
+        
+        loadingIndicator.center = view.center
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        view.addSubview(loadingIndicator)
+        
+        messagesCollectionView.backgroundColor = view.backgroundColor
+        messagesCollectionView.messagesDataSource = self
+        messagesCollectionView.messagesLayoutDelegate = self
+        messagesCollectionView.messagesDisplayDelegate = self
+        
+        let layout = messagesCollectionView.collectionViewLayout as? MessagesCollectionViewFlowLayout
+        layout?.sectionInset = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+        layout?.setMessageIncomingAvatarSize(.zero)
+        layout?.setMessageOutgoingAvatarSize(.zero)
+        
+        messageInputBar.delegate = self
+        messageInputBar.backgroundView.backgroundColor = view.backgroundColor
+        messageInputBar.inputTextView.placeholder = "Message..."
+        
+        fetchMessages()
+    }
+    
+    func fetchMessages() {
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+                    let y = try await atProtoBluesky.getMessages(from: conversation.first?.conversationID ?? "")
+                    DispatchQueue.main.async {
+                        self.allMessages = y.messages
+                        for message in self.allMessages {
+                            switch message {
+                            case .messageView(let message):
+                                self.messages.insert(Message(sender: Sender(senderId: message.sender.authorDID, displayName: message.sender.authorDID), messageId: message.messageID, sentDate: message.sentAt, kind: .text(message.text)), at: 0)
+                            default:
+                                break
+                            }
+                        }
+                        self.loadingIndicator.stopAnimating()
+                        self.messagesCollectionView.reloadData()
+                        self.messagesCollectionView.scrollToLastItem(animated: false)
+                    }
+                }
+            } catch {
+                print("Error fetching messages: \(error.localizedDescription)")
+            }
+        }
+    }
+}
+
+extension MessageChatViewController: MessagesDataSource {
+    var currentSender: SenderType {
+        return Sender(senderId: GlobalStruct.currentUser?.actorDID ?? "", displayName: GlobalStruct.currentUser?.actorDID ?? "")
+    }
+
+    func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
+        return messages.count
+    }
+
+    func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
+        return messages[indexPath.section]
+    }
+}
+
+extension MessageChatViewController: MessagesLayoutDelegate, MessagesDisplayDelegate {
+    func backgroundColor(for message: MessageType, at _: IndexPath, in _: MessagesCollectionView) -> UIColor {
+        isFromCurrentSender(message: message) ? GlobalStruct.baseTint : GlobalStruct.raisedBackgroundTint
+    }
+    
+    func configureAvatarView(
+        _ avatarView: AvatarView,
+        for message: MessageType,
+        at indexPath: IndexPath,
+        in _: MessagesCollectionView)
+    {
+        avatarView.isHidden = true
+    }
+}
+
+extension MessageChatViewController: InputBarAccessoryViewDelegate {
+    func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
+        let newMessage = Message(sender: currentSender, messageId: UUID().uuidString, sentDate: Date(), kind: .text(text))
+        messages.append(newMessage)
+        messagesCollectionView.reloadData()
+        inputBar.inputTextView.text = ""
+        messagesCollectionView.scrollToLastItem()
+    }
+}
+
+struct Message: MessageType {
+    let sender: SenderType
+    let messageId: String
+    let sentDate: Date
+    let kind: MessageKind
+}
+
+struct Sender: SenderType {
+    let senderId: String
+    let displayName: String
+}

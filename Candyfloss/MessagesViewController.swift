@@ -1,5 +1,5 @@
 //
-//  MessagesViewController.swift
+//  MessagesListViewController.swift
 //  Candyfloss
 //
 //  Created by Shihab Mehboob on 07/03/2025.
@@ -8,7 +8,7 @@
 import UIKit
 import ATProtoKit
 
-class MessagesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating, UISearchBarDelegate {
+class MessagesListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating, UISearchBarDelegate {
     
     var tableView = UITableView()
     var tempScrollPosition: CGFloat = 0
@@ -192,7 +192,9 @@ class MessagesViewController: UIViewController, UITableViewDataSource, UITableVi
                     }
                     let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
                     let x = try await atProtoBluesky.listConversations(cursor: currentCursor)
-                    allMessages += x.conversations
+                    allMessages += x.conversations.filter({ message in
+                        message.status == .accepted
+                    })
                     currentCursor = x.cursor
                     
                     DispatchQueue.main.async {
@@ -319,6 +321,14 @@ class MessagesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let vc = MessageChatViewController()
+        if let author = allMessages[indexPath.row].members.first(where: { member in
+            member.actorDID != GlobalStruct.currentUser?.actorDID ?? ""
+        }) {
+            vc.displayName = author.displayName ?? "Chat"
+        }
+        vc.conversation = [allMessages[indexPath.row]]
+        navigationController?.pushViewController(vc, animated: true)
         if isSearching {
             searchController.isActive = false
         }

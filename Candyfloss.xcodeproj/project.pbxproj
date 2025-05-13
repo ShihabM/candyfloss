@@ -63,6 +63,8 @@
 		53A19FA62DCCB49C0040AF52 /* FeedTipCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */; };
 		53A19FB22DD34C020040AF52 /* ATMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 53A19FB12DD34C020040AF52 /* ATMacro */; };
 		53A19FB42DD34C020040AF52 /* ATProtoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 53A19FB32DD34C020040AF52 /* ATProtoKit */; };
+		53A1A0472DD39EFF0040AF52 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = 53A1A0462DD39EFF0040AF52 /* MessageKit */; };
+		53A1A0492DD39F100040AF52 /* MessageChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */; };
 		53C460E42D7B1427009F7C6B /* PostProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E32D7B1424009F7C6B /* PostProcessor.swift */; };
 		53C460E62D7B5105009F7C6B /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E52D7B5100009F7C6B /* DetailsViewController.swift */; };
 		53C460E82D7B59EF009F7C6B /* DetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E72D7B59EC009F7C6B /* DetailCell.swift */; };
@@ -169,6 +171,7 @@
 		539B4CF82CC7B6BA00CF6646 /* Disk+VolumeInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Disk+VolumeInformation.swift"; sourceTree = "<group>"; };
 		539B50AE2CC7ED3200CF6646 /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
 		53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedTipCell.swift; sourceTree = "<group>"; };
+		53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageChatViewController.swift; sourceTree = "<group>"; };
 		53C460E32D7B1424009F7C6B /* PostProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostProcessor.swift; sourceTree = "<group>"; };
 		53C460E52D7B5100009F7C6B /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		53C460E72D7B59EC009F7C6B /* DetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCell.swift; sourceTree = "<group>"; };
@@ -223,6 +226,7 @@
 				53C4659A2D8C7AFA009F7C6B /* ATMacro in Frameworks */,
 				53C939832CC6A82E009321BD /* SDWebImage in Frameworks */,
 				53C939852CC6A82E009321BD /* SDWebImageMapKit in Frameworks */,
+				53A1A0472DD39EFF0040AF52 /* MessageKit in Frameworks */,
 				53A19FB42DD34C020040AF52 /* ATProtoKit in Frameworks */,
 				53C4659C2D8C7AFA009F7C6B /* ATProtoKit in Frameworks */,
 				53A19FB22DD34C020040AF52 /* ATMacro in Frameworks */,
@@ -327,6 +331,7 @@
 				53CA75F72DA7D93E007E2361 /* BookmarksViewController.swift */,
 				539B4CD12CC7A3E700CF6646 /* ProfileViewController.swift */,
 				539B50AE2CC7ED3200CF6646 /* MessagesViewController.swift */,
+				53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */,
 				53CA75FD2DA95995007E2361 /* LikesViewController.swift */,
 				53C460E52D7B5100009F7C6B /* DetailsViewController.swift */,
 				53C460ED2D7DB97B009F7C6B /* FriendsViewController.swift */,
@@ -450,6 +455,7 @@
 				53C4659B2D8C7AFA009F7C6B /* ATProtoKit */,
 				53A19FB12DD34C020040AF52 /* ATMacro */,
 				53A19FB32DD34C020040AF52 /* ATProtoKit */,
+				53A1A0462DD39EFF0040AF52 /* MessageKit */,
 			);
 			productName = Candyfloss;
 			productReference = 53C9394E2CC69382009321BD /* Candyfloss.app */;
@@ -482,6 +488,7 @@
 			packageReferences = (
 				53C939812CC6A82E009321BD /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				53A19FB02DD34C020040AF52 /* XCRemoteSwiftPackageReference "ATProtoKit" */,
+				53A1A0452DD39EFF0040AF52 /* XCRemoteSwiftPackageReference "MessageKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 53C9394F2CC69382009321BD /* Products */;
@@ -573,6 +580,7 @@
 				5309C2102DC21AAC00380B93 /* DetailsSettingsViewController.swift in Sources */,
 				53C461512D7DC52E009F7C6B /* SKDetectingView.swift in Sources */,
 				53C461522D7DC52E009F7C6B /* SKZoomingScrollView.swift in Sources */,
+				53A1A0492DD39F100040AF52 /* MessageChatViewController.swift in Sources */,
 				5309C1FC2DB8F51600380B93 /* StarterPackListCell.swift in Sources */,
 				531980982D96E5DA006C3D22 /* ComposeCell.swift in Sources */,
 				53C461532D7DC52E009F7C6B /* SKPhoto.swift in Sources */,
@@ -848,6 +856,14 @@
 				minimumVersion = 0.26.0;
 			};
 		};
+		53A1A0452DD39EFF0040AF52 /* XCRemoteSwiftPackageReference "MessageKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MessageKit/MessageKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 		53C939812CC6A82E009321BD /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
@@ -868,6 +884,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 53A19FB02DD34C020040AF52 /* XCRemoteSwiftPackageReference "ATProtoKit" */;
 			productName = ATProtoKit;
+		};
+		53A1A0462DD39EFF0040AF52 /* MessageKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53A1A0452DD39EFF0040AF52 /* XCRemoteSwiftPackageReference "MessageKit" */;
+			productName = MessageKit;
 		};
 		53C465992D8C7AFA009F7C6B /* ATMacro */ = {
 			isa = XCSwiftPackageProductDependency;

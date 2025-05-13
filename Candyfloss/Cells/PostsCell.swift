@@ -1430,7 +1430,7 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
                 self.cellStackViewConstraintQuote?.isActive = true
                 GlobalStruct.quoteTableHeights[recordURI] = height
                 if let tableView = self.findSuperview(ofType: UITableView.self) {
-                    UIView.performWithoutAnimation {
+                    tableView.performBatchUpdates {
                         tableView.beginUpdates()
                         tableView.endUpdates()
                     }

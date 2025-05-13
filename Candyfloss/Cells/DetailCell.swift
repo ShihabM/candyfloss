@@ -810,7 +810,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
                     self.quoteTableView.heightAnchor.constraint(equalToConstant: self.quoteTableView.contentSize.height)
                 ])
                 if let tableView = self.superview as? UITableView {
-                    UIView.performWithoutAnimation {
+                    tableView.performBatchUpdates {
                         tableView.beginUpdates()
                         tableView.endUpdates()
                     }

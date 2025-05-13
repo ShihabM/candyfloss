@@ -15,6 +15,7 @@ class MessageChatViewController: MessagesViewController {
     
     var messages: [Message] = []
     var displayName: String = ""
+    var avatar: URL? = nil
     var conversation: [ChatBskyLexicon.Conversation.ConversationViewDefinition] = []
     var allMessages: [ATUnion.GetMessagesOutputMessagesUnion] = []
     
@@ -25,6 +26,22 @@ class MessageChatViewController: MessagesViewController {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
         navigationItem.title = displayName
+        
+        let avatarButton = UIButton(type: .custom)
+        avatarButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            avatarButton.widthAnchor.constraint(equalToConstant: 28),
+            avatarButton.heightAnchor.constraint(equalToConstant: 28)
+        ])
+        avatarButton.layer.cornerRadius = 14
+        avatarButton.clipsToBounds = true
+        if let url = avatar {
+            avatarButton.sd_setImage(with: url, for: .normal)
+        }
+        avatarButton.imageView?.contentMode = .scaleAspectFill
+        let avatarBarButtonItem = UIBarButtonItem(customView: avatarButton)
+        avatarBarButtonItem.accessibilityLabel = displayName
+        navigationItem.rightBarButtonItem = avatarBarButtonItem
         
         loadingIndicator.center = view.center
         loadingIndicator.hidesWhenStopped = true
@@ -46,6 +63,16 @@ class MessageChatViewController: MessagesViewController {
         messageInputBar.inputTextView.placeholder = "Message..."
         
         fetchMessages()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "hideNewPostButton"), object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "showNewPostButton"), object: nil)
     }
     
     func fetchMessages() {

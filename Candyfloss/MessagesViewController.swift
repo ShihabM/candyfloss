@@ -326,6 +326,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
             member.actorDID != GlobalStruct.currentUser?.actorDID ?? ""
         }) {
             vc.displayName = author.displayName ?? "Chat"
+            vc.avatar = author.avatarImageURL
         }
         vc.conversation = [allMessages[indexPath.row]]
         navigationController?.pushViewController(vc, animated: true)

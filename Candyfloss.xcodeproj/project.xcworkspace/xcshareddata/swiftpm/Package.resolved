@@ -1,6 +1,15 @@
 {
-  "originHash" : "39c33e75badc72524b632042ed484748f06022298bdb6077bb83c5fd19407432",
+  "originHash" : "70cda878f5c006f32232594ab0316a3fc50c11a9938a0c5ae3112e62d084a4f3",
   "pins" : [
+    {
+      "identity" : "atprotokit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/MasterJ93/ATProtoKit",
+      "state" : {
+        "revision" : "a09197de0d2c05ef92dbb9d9e9effce15e8ab17f",
+        "version" : "0.26.0"
+      }
+    },
     {
       "identity" : "sdwebimage",
       "kind" : "remoteSourceControl",

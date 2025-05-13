@@ -795,20 +795,24 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-            if indexPath.row < self.feedPosts1.count + 1 {
-                return makePostContextMenu(indexPath.row - 1, post: self.feedPosts1[indexPath.row - 1].post)
-            } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + 2 {
-                return makePostContextMenu(indexPath.row - self.feedPosts1.count - 2, post: self.feedPosts2[indexPath.row - self.feedPosts1.count - 2].post)
-            } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + 3 {
-                return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - 3, post: self.feedPosts3[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - 3].post)
-            } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + self.feedPosts4.count + 4 {
-                return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - 4, post: self.feedPosts4[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - 4].post)
-            } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + self.feedPosts4.count + self.feedPosts5.count + 5 {
-                return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - self.feedPosts4.count - 5, post: self.feedPosts5[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - self.feedPosts4.count - 5].post)
-            } else {
-                return nil
+        if indexPath.section > 2 {
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+                if indexPath.row < self.feedPosts1.count + 1 {
+                    return makePostContextMenu(indexPath.row - 1, post: self.feedPosts1[indexPath.row - 1].post)
+                } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + 2 {
+                    return makePostContextMenu(indexPath.row - self.feedPosts1.count - 2, post: self.feedPosts2[indexPath.row - self.feedPosts1.count - 2].post)
+                } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + 3 {
+                    return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - 3, post: self.feedPosts3[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - 3].post)
+                } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + self.feedPosts4.count + 4 {
+                    return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - 4, post: self.feedPosts4[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - 4].post)
+                } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + self.feedPosts4.count + self.feedPosts5.count + 5 {
+                    return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - self.feedPosts4.count - 5, post: self.feedPosts5[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - self.feedPosts4.count - 5].post)
+                } else {
+                    return nil
+                }
             }
+        } else {
+            return nil
         }
     }
     

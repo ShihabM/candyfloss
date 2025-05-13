@@ -237,7 +237,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
         Task {
             do {
                 if let atProto = GlobalStruct.atProto {
-                    let atProtoAdmin = ATProtoAdmin(sessionConfiguration: atProto.sessionConfiguration)
+                    let atProtoAdmin = await ATProtoAdmin(sessionConfiguration: atProto.sessionConfiguration)
                     if let _ = currentPost {
                         let recordUri = currentPost?.uri ?? ""
                         let recordCID = currentPost?.cid ?? ""

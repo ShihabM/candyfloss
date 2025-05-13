@@ -11,7 +11,7 @@ import AVFAudio
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating, UISearchBarDelegate {
     
-    let config = ATProtocolConfiguration(handle: GlobalStruct.userHandle, appPassword: GlobalStruct.userAppPassword)
+    let config = ATProtocolConfiguration()
     
     var tableView = UITableView()
     var tempScrollPosition: CGFloat = 0
@@ -607,8 +607,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 print("Error fetching feed, refresh token and retry: \(error.localizedDescription)")
                 do {
                     if let atProto = GlobalStruct.atProto {
-                        let refreshed = try await atProto.refreshSession(refreshToken: UserDefaults.standard.value(forKey: "refreshToken") as? String ?? "", pdsURL: atProto.session?.pdsURL ?? "")
-                        UserDefaults.standard.set(refreshed.refreshToken, forKey: "refreshToken")
+                        try await atProto.sessionConfiguration?.refreshSession()
                         Task {
                             await authenticate()
                         }
@@ -725,8 +724,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 print("Error fetching feed, refresh token and retry: \(error.localizedDescription)")
                 do {
                     if let atProto = GlobalStruct.atProto {
-                        let refreshed = try await atProto.refreshSession(refreshToken: UserDefaults.standard.value(forKey: "refreshToken") as? String ?? "", pdsURL: atProto.session?.pdsURL ?? "")
-                        UserDefaults.standard.set(refreshed.refreshToken, forKey: "refreshToken")
+                        try await atProto.sessionConfiguration?.refreshSession()
                         Task {
                             await authenticate(false)
                         }
@@ -741,9 +739,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func authenticate(_ fetchNextimeline: Bool = true) async {
         do {
-            try await config.authenticate()
+            try await config.authenticate(with: GlobalStruct.userHandle, password: GlobalStruct.userAppPassword)
             GlobalStruct.atProto = await ATProtoKit(sessionConfiguration: config)
-            UserDefaults.standard.set(config.session?.refreshToken ?? "", forKey: "refreshToken")
             if fetchNextimeline {
                 fetchTimeline()
             } else {

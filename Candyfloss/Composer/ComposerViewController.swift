@@ -243,7 +243,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                     }
                     
                     // post
-                    if let post = allPosts.first, let session = atProto.session {
+                    if let post = allPosts.first, let session = try await atProto.getUserSession() {
                         if isQuote {
                             let strongReference = ComAtprotoLexicon.Repository.StrongReference(recordURI: post.uri, cidHash: post.cid)
                             let post = try await atProtoBluesky.createPostRecord(
@@ -251,7 +251,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                 locales: [Locale(identifier: currentLocale)],
                                 embed: .record(strongReference: strongReference)
                             )
-                            let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                            _ = try await atProtoBluesky.createThreadgateRecord(
                                 postURI: post.recordURI,
                                 replyControls: whoCanReply
                             )
@@ -271,7 +271,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                     locales: [Locale(identifier: currentLocale)],
                                     replyTo: replyTo
                                 )
-                                let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                _ = try await atProtoBluesky.createThreadgateRecord(
                                     postURI: post.recordURI,
                                     replyControls: whoCanReply
                                 )
@@ -288,7 +288,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                         replyTo: replyTo,
                                         embed: .video(video: videoData, captions: nil, altText: mediaAltText.first ?? nil, aspectoRatio: nil)
                                     )
-                                    let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                    _ = try await atProtoBluesky.createThreadgateRecord(
                                         postURI: post.recordURI,
                                         replyControls: whoCanReply
                                     )
@@ -304,7 +304,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                         replyTo: replyTo,
                                         embed: .images(images: allImages)
                                     )
-                                    let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                    _ = try await atProtoBluesky.createThreadgateRecord(
                                         postURI: post.recordURI,
                                         replyControls: whoCanReply
                                     )
@@ -322,7 +322,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                 text: currentPostText,
                                 locales: [Locale(identifier: currentLocale)]
                             )
-                            let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                            _ = try await atProtoBluesky.createThreadgateRecord(
                                 postURI: post.recordURI,
                                 replyControls: whoCanReply
                             )
@@ -338,7 +338,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                     locales: [Locale(identifier: currentLocale)],
                                     embed: .video(video: videoData, captions: nil, altText: mediaAltText.first ?? nil, aspectoRatio: nil)
                                 )
-                                let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                _ = try await atProtoBluesky.createThreadgateRecord(
                                     postURI: post.recordURI,
                                     replyControls: whoCanReply
                                 )
@@ -353,7 +353,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                                     locales: [Locale(identifier: currentLocale)],
                                     embed: .images(images: allImages)
                                 )
-                                let threadgateResult = try await atProtoBluesky.createThreadgateRecord(
+                                _ = try await atProtoBluesky.createThreadgateRecord(
                                     postURI: post.recordURI,
                                     replyControls: whoCanReply
                                 )
@@ -919,7 +919,6 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         // layout toolbar
         
         var theItems: [UIBarButtonItem] = []
-//        theItems.append(contentsOf: [photoButton, fixedSpacer, cameraButton, fixedSpacer, gifButton, fixedSpacer, visibilityButton, fixedSpacer, languageButton, fixedSpacer])
         theItems.append(contentsOf: [photoButton, fixedSpacer, cameraButton, fixedSpacer, visibilityButton, fixedSpacer, languageButton, fixedSpacer])
         if GlobalStruct.drafts.count > 0 {
             theItems.append(contentsOf: [draftsButton, fixedSpacer])
@@ -1606,4 +1605,32 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         present(SloppySwipingNav(rootViewController: vc), animated: true, completion: nil)
     }
     
+}
+
+extension ATProtoBluesky.ThreadgateAllowRule: @retroactive Equatable, @retroactive Hashable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.allowMentions, .allowMentions),
+             (.allowFollowers, .allowFollowers),
+             (.allowFollowing, .allowFollowing):
+            return true
+        case let (.allowList(uri1), .allowList(uri2)):
+            return uri1 == uri2
+        default:
+            return false
+        }
+    }
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .allowMentions:
+            hasher.combine("allowMentions")
+        case .allowFollowers:
+            hasher.combine("allowFollowers")
+        case .allowFollowing:
+            hasher.combine("allowFollowing")
+        case .allowList(let uri):
+            hasher.combine("allowList")
+            hasher.combine(uri)
+        }
+    }
 }

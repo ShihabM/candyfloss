@@ -14,9 +14,11 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     var tempScrollPosition: CGFloat = 0
     let refreshControl = UIRefreshControl()
     var allMessages: [ChatBskyLexicon.Conversation.ConversationViewDefinition] = []
+    var filteredMessages: [ChatBskyLexicon.Conversation.ConversationViewDefinition] = []
     var currentCursor: String? = nil
     var isFetching: Bool = false
     var fromNavigation: Bool = false
+    var messageSection: Int = 0
     
     // inline search
     var searchView: UIView = UIView()
@@ -38,20 +40,20 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     
     func updateSearchResults(for searchController: UISearchController) {
         if searchResults.isEmpty {} else {
-            allMessages = searchResults
+            filteredMessages = searchResults
         }
         if let theText = searchController.searchBar.text?.lowercased() {
             if theText.isEmpty {
                 isSearching = false
                 if searchFirstTime {
                     searchFirstTime = false
-                    searchResults = allMessages
+                    searchResults = filteredMessages
                 } else {
-                    allMessages = searchResults
+                    filteredMessages = searchResults
                     tableView.reloadData()
                 }
             } else {
-                let z = allMessages.filter({
+                let z = filteredMessages.filter({
                     let matchingAccount: Bool = ($0.members.last?.displayName ?? "").lowercased().contains(theText)
                     if let message = $0.lastMessage {
                         switch message {
@@ -63,7 +65,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
                     }
                     return false
                 })
-                allMessages = z
+                filteredMessages = z
                 tableView.reloadData()
                 isSearching = true
             }
@@ -73,7 +75,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         isSearching = false
         if !searchResults.isEmpty {
-            allMessages = self.searchResults
+            filteredMessages = self.searchResults
             tableView.reloadData()
         }
         searchFirstTime = true
@@ -85,7 +87,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     @objc func scrollUp() {
-        if allMessages.isEmpty {} else {
+        if filteredMessages.isEmpty {} else {
             if tableView.contentOffset.y <= 60 {
                 tableView.setContentOffset(CGPoint(x: 0, y: tempScrollPosition), animated: true)
                 tempScrollPosition = tableView.contentOffset.y
@@ -173,6 +175,105 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
             navigationBarButtonItem.accessibilityLabel = "Settings"
             navigationItem.leftBarButtonItem = navigationBarButtonItem
         }
+        
+        setupListDropdown()
+    }
+    
+    @objc func setupListDropdown() {
+        var theTitle: String = ""
+        if messageSection == 0 {
+            theTitle = "Messages"
+        } else if messageSection == 1 {
+            theTitle = "Muted"
+        } else {
+            theTitle = "Requested"
+        }
+        let titleLabel = UIButton()
+        titleLabel.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
+        let attachment1 = NSTextAttachment()
+        let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold)
+        let downImage1 = UIImage(systemName: "chevron.down", withConfiguration: symbolConfig1)
+        let downImage2 = imageWithImage(image: downImage1 ?? UIImage(), scaledToSize: CGSize(width: downImage1?.size.width ?? 0, height: (downImage1?.size.height ?? 0) - 3))
+        attachment1.image = downImage2.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal)
+        let attStringNewLine000 = NSMutableAttributedString()
+        let attStringNewLine00 = NSMutableAttributedString(string: "\(theTitle) ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold),NSAttributedString.Key.foregroundColor : UIColor.label])
+        let attString00 = NSAttributedString(attachment: attachment1)
+        attStringNewLine000.append(attStringNewLine00)
+        attStringNewLine000.append(attString00)
+        titleLabel.setAttributedTitle(attStringNewLine000, for: .normal)
+        self.navigationItem.titleView = titleLabel
+        var allActions0: [UIAction] = []
+        let menuItem = UIAction(title: "Messages", image: UIImage(systemName: "bubble.left"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            messageSection = 0
+            filteredMessages = allMessages.filter({ message in
+                message.status == .accepted && !message.isMuted
+            })
+            updateSearchBar(text: "Messages")
+            tableView.reloadData()
+            setupListDropdown()
+        }
+        if messageSection == 0 {
+            menuItem.state = .on
+        } else {
+            menuItem.state = .off
+        }
+        allActions0.append(menuItem)
+        let menuItem1 = UIAction(title: "Muted", image: UIImage(systemName: "speaker.slash"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            messageSection = 1
+            filteredMessages = allMessages.filter({ message in
+                message.isMuted
+            })
+            updateSearchBar(text: "Muted")
+            tableView.reloadData()
+            setupListDropdown()
+        }
+        if messageSection == 1 {
+            menuItem1.state = .on
+        } else {
+            menuItem1.state = .off
+        }
+        allActions0.append(menuItem1)
+        let menuItem2 = UIAction(title: "Requested", image: UIImage(systemName: "questionmark.bubble"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            messageSection = 2
+            filteredMessages = allMessages.filter({ message in
+                message.status == .request
+            })
+            updateSearchBar(text: "Requested")
+            tableView.reloadData()
+            setupListDropdown()
+        }
+        if messageSection == 2 {
+            menuItem2.state = .on
+        } else {
+            menuItem2.state = .off
+        }
+        allActions0.append(menuItem2)
+        let menu = UIMenu(title: "", options: [.displayInline], children: allActions0)
+        titleLabel.menu = menu
+        titleLabel.showsMenuAsPrimaryAction = true
+    }
+    
+    func updateSearchBar(text: String) {
+        self.searchController = ({
+            let controller = UISearchController(searchResultsController: nil)
+            controller.searchResultsUpdater = self
+            controller.obscuresBackgroundDuringPresentation = false
+            controller.hidesNavigationBarDuringPresentation = false
+            controller.searchBar.backgroundImage = UIImage()
+            controller.searchBar.backgroundColor = GlobalStruct.backgroundTint
+            controller.searchBar.barTintColor = GlobalStruct.backgroundTint
+            controller.searchBar.sizeToFit()
+            controller.searchBar.delegate = self
+            controller.definesPresentationContext = true
+            controller.searchBar.placeholder = "Search \(text)"
+            self.definesPresentationContext = true
+            searchView.addSubview(controller.searchBar)
+            tableView.tableHeaderView = searchView
+            return controller
+        })()
     }
     
     @objc func goToSettings() {
@@ -192,8 +293,9 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
                     }
                     let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
                     let x = try await atProtoBluesky.listConversations(cursor: currentCursor)
-                    allMessages += x.conversations.filter({ message in
-                        message.status == .accepted
+                    allMessages += x.conversations
+                    filteredMessages = allMessages.filter({ message in
+                        message.status == .accepted && !message.isMuted
                     })
                     currentCursor = x.cursor
                     
@@ -218,11 +320,11 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
                     let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
                     let x = try await atProtoBluesky.listConversations()
                     let newMessages = x.conversations.filter { newMessage in
-                        !allMessages.contains(where: { $0.conversationID == newMessage.conversationID })
+                        !filteredMessages.contains(where: { $0.conversationID == newMessage.conversationID })
                     }
                     DispatchQueue.main.async {
                         if !newMessages.isEmpty {
-                            self.allMessages.insert(contentsOf: newMessages, at: 0)
+                            self.filteredMessages.insert(contentsOf: newMessages, at: 0)
                             self.tableView.reloadData()
                             self.refreshControl.endRefreshing()
                         }
@@ -280,15 +382,15 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return allMessages.count
+        return filteredMessages.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
-        if let message = allMessages[indexPath.row].lastMessage {
+        if let message = filteredMessages[indexPath.row].lastMessage {
             switch message {
             case .messageView(let message):
-                configureMessageCell(cell, with: message, members: allMessages[indexPath.row].members)
+                configureMessageCell(cell, with: message, members: filteredMessages[indexPath.row].members)
             default:
                 break
             }
@@ -299,13 +401,13 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
         cell.text.numberOfLines = 2
         
         if isFetching == false && currentCursor != nil {
-            if indexPath.row == allMessages.count - 1 || indexPath.row == allMessages.count - 5 {
+            if indexPath.row == filteredMessages.count - 1 || indexPath.row == filteredMessages.count - 5 {
                 isFetching = true
                 fetchMessages()
             }
         }
         
-        if indexPath.row == allMessages.count - 1 {
+        if indexPath.row == filteredMessages.count - 1 {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         } else {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
@@ -322,15 +424,15 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let vc = MessageChatViewController()
-        if let author = allMessages[indexPath.row].members.first(where: { member in
+        if let author = filteredMessages[indexPath.row].members.first(where: { member in
             member.actorDID != GlobalStruct.currentUser?.actorDID ?? ""
         }) {
             vc.displayName = author.displayName ?? "Chat"
             vc.actorDID = author.actorDID
             vc.avatar = author.avatarImageURL
-            vc.isMuted = allMessages[indexPath.row].isMuted
+            vc.isMuted = filteredMessages[indexPath.row].isMuted
         }
-        vc.conversation = [allMessages[indexPath.row]]
+        vc.conversation = [filteredMessages[indexPath.row]]
         navigationController?.pushViewController(vc, animated: true)
         if isSearching {
             searchController.isActive = false
@@ -340,7 +442,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     @objc func profileTapped(_ sender: UIButton) {
         defaultHaptics()
         let vc = ProfileViewController()
-        vc.profile = allMessages[sender.tag].members.first?.actorDID ?? ""
+        vc.profile = filteredMessages[sender.tag].members.first?.actorDID ?? ""
         navigationController?.pushViewController(vc, animated: true)
     }
     

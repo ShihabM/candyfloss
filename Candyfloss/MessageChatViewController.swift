@@ -29,7 +29,7 @@ class MessageChatViewController: MessagesViewController {
         view.backgroundColor = GlobalStruct.backgroundTint
         navigationItem.title = displayName
         
-        setUpNavigation()
+        setupNavigation()
         
         loadingIndicator.center = view.center
         loadingIndicator.hidesWhenStopped = true
@@ -53,7 +53,7 @@ class MessageChatViewController: MessagesViewController {
         fetchMessages()
     }
     
-    func setUpNavigation() {
+    func setupNavigation() {
         let avatarButton = UIButton(type: .custom)
         avatarButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -86,7 +86,7 @@ class MessageChatViewController: MessagesViewController {
                 muteChat()
             }
             isMuted = !isMuted
-            setUpNavigation()
+            setupNavigation()
         }
         if !isMuted {
             menuItem2.attributes = .destructive

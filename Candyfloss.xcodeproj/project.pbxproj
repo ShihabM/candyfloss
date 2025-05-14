@@ -65,6 +65,7 @@
 		53A19FB42DD34C020040AF52 /* ATProtoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 53A19FB32DD34C020040AF52 /* ATProtoKit */; };
 		53A1A0472DD39EFF0040AF52 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = 53A1A0462DD39EFF0040AF52 /* MessageKit */; };
 		53A1A0492DD39F100040AF52 /* MessageChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */; };
+		53A1A04B2DD4ACD00040AF52 /* HashtagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1A04A2DD4ACA30040AF52 /* HashtagViewController.swift */; };
 		53C460E42D7B1427009F7C6B /* PostProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E32D7B1424009F7C6B /* PostProcessor.swift */; };
 		53C460E62D7B5105009F7C6B /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E52D7B5100009F7C6B /* DetailsViewController.swift */; };
 		53C460E82D7B59EF009F7C6B /* DetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E72D7B59EC009F7C6B /* DetailCell.swift */; };
@@ -172,6 +173,7 @@
 		539B50AE2CC7ED3200CF6646 /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
 		53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedTipCell.swift; sourceTree = "<group>"; };
 		53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageChatViewController.swift; sourceTree = "<group>"; };
+		53A1A04A2DD4ACA30040AF52 /* HashtagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagViewController.swift; sourceTree = "<group>"; };
 		53C460E32D7B1424009F7C6B /* PostProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostProcessor.swift; sourceTree = "<group>"; };
 		53C460E52D7B5100009F7C6B /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		53C460E72D7B59EC009F7C6B /* DetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCell.swift; sourceTree = "<group>"; };
@@ -337,6 +339,7 @@
 				53C460ED2D7DB97B009F7C6B /* FriendsViewController.swift */,
 				53C461692D8C4576009F7C6B /* LikesRepostsViewController.swift */,
 				53C4616B2D8C48F6009F7C6B /* QuotesViewController.swift */,
+				53A1A04A2DD4ACA30040AF52 /* HashtagViewController.swift */,
 				53C465A12D8DC59F009F7C6B /* ReportViewController.swift */,
 				5309C2162DC24E2C00380B93 /* Composer */,
 				5309C2152DC24E2300380B93 /* Settings */,
@@ -558,6 +561,7 @@
 				53C461442D7DC52E009F7C6B /* SKPagingScrollView.swift in Sources */,
 				53C461452D7DC52E009F7C6B /* SKButtons.swift in Sources */,
 				5309C21C2DC3881900380B93 /* Secrets.swift in Sources */,
+				53A1A04B2DD4ACD00040AF52 /* HashtagViewController.swift in Sources */,
 				53C461462D7DC52E009F7C6B /* SKDetectingImageView.swift in Sources */,
 				53C461472D7DC52E009F7C6B /* SKMesurement.swift in Sources */,
 				53C461482D7DC52E009F7C6B /* UIApplication+UIWindow2.swift in Sources */,

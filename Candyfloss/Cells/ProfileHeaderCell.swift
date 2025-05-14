@@ -158,6 +158,9 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
         }
         bio.handleHashtagTap { (str) in
             defaultHaptics()
+            let vc = HashtagViewController()
+            vc.hashtag = str
+            UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
         }
         bio.handleURLTap { (str) in
             defaultHaptics()

@@ -223,6 +223,9 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
         }
         text.handleHashtagTap { (str) in
             defaultHaptics()
+            let vc = HashtagViewController()
+            vc.hashtag = str
+            UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
         }
         text.handleURLTap { (str) in
             defaultHaptics()

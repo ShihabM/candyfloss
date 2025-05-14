@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGestureRecognizerDelegate {
+class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGestureRecognizerDelegate, UIContextMenuInteractionDelegate {
     
     var firstVC = SloppySwipingNav()
     var secondVC = SloppySwipingNav()
@@ -17,6 +17,8 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     var fifthVC = SloppySwipingNav()
     let newPostButton = UIButton()
     var longPressRecognizer = UILongPressGestureRecognizer()
+    let overlayView2 = UIImageView()
+    let overlayView3 = UIImageView()
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -117,22 +119,46 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         }
         secondVC.tabBarItem.tag = 1
         
-        let rootViewController3 = ExploreViewController()
+        if let data = UserDefaults.standard.data(forKey: "currentSwitchableViewAtSpot3") {
+            if let decoded = try? JSONDecoder().decode(SwitchableViewConfig.self, from: data) {
+                let viewController = viewController(for: decoded.title)
+                GlobalStruct.currentSwitchableViewAtSpot3 = SwitchableViews(
+                    title: decoded.title,
+                    icon: decoded.icon,
+                    iconSelected: decoded.iconSelected,
+                    view: viewController
+                )
+            }
+        }
+        
+        let rootViewController3 = GlobalStruct.currentSwitchableViewAtSpot3.view
         thirdVC = SloppySwipingNav(rootViewController: rootViewController3)
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
-            let image = UIImage(systemName: "magnifyingglass")
-            let image2 = UIImage(systemName: "magnifyingglass")
+            let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot3.icon)
+            let image2 = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot3.iconSelected)
             thirdVC.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             thirdVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
             thirdVC.accessibilityLabel = ""
         }
         thirdVC.tabBarItem.tag = 2
         
-        let rootViewController4 = BookmarksViewController()
+        if let data = UserDefaults.standard.data(forKey: "currentSwitchableViewAtSpot4") {
+            if let decoded = try? JSONDecoder().decode(SwitchableViewConfig.self, from: data) {
+                let viewController = viewController(for: decoded.title)
+                GlobalStruct.currentSwitchableViewAtSpot4 = SwitchableViews(
+                    title: decoded.title,
+                    icon: decoded.icon,
+                    iconSelected: decoded.iconSelected,
+                    view: viewController
+                )
+            }
+        }
+        
+        let rootViewController4 = GlobalStruct.currentSwitchableViewAtSpot4.view
         fourthVC = SloppySwipingNav(rootViewController: rootViewController4)
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
-            let image = UIImage(systemName: "bookmark")
-            let image2 = UIImage(systemName: "bookmark.fill")
+            let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot4.icon)
+            let image2 = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot4.iconSelected)
             fourthVC.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             fourthVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
             fourthVC.accessibilityLabel = ""
@@ -151,11 +177,98 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         }
         fifthVC.tabBarItem.tag = 4
         
+        let offset2 = (self.view.bounds.width/5)*3
+        let offset3 = (self.view.bounds.width/5)*4
+        
+        overlayView2.frame = CGRect(x: offset2 - 20, y: 25, width: 12, height: 14)
+        overlayView2.image = UIImage(systemName: "chevron.up.chevron.down")?.withTintColor(GlobalStruct.secondaryTextColor.withAlphaComponent(0.3), renderingMode: .alwaysOriginal)
+        tabBar.addSubview(overlayView2)
+        
+        overlayView3.frame = CGRect(x: offset3 - 20, y: 25, width: 12, height: 14)
+        overlayView3.image = UIImage(systemName: "chevron.up.chevron.down")?.withTintColor(GlobalStruct.secondaryTextColor.withAlphaComponent(0.3), renderingMode: .alwaysOriginal)
+        tabBar.addSubview(overlayView3)
+        
         setViewControllers([firstVC, secondVC, thirdVC, fourthVC, fifthVC], animated: false)
+        setupContextMenus()
         
         self.longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         self.longPressRecognizer.minimumPressDuration = 0.33
         self.tabBar.addGestureRecognizer(self.longPressRecognizer)
+    }
+    
+    func viewController(for title: String) -> UIViewController {
+        switch title {
+        case "Bookmarks": return BookmarksViewController()
+        case "Explore": return ExploreViewController()
+        case "Likes": return LikesViewController()
+        case "Lists": return FeedsListsViewController()
+        case "Messages": return MessagesListViewController()
+        default: return BookmarksViewController()
+        }
+    }
+    
+    func setupContextMenus() {
+        guard let tabBarItems = self.tabBar.items else { return }
+        for (index, _) in tabBarItems.enumerated() {
+            if index == 2 || index == 3 {
+                if let itemView = tabBarItems[index].value(forKey: "view") as? UIView {
+                    let interaction = UIContextMenuInteraction(delegate: self)
+                    itemView.addInteraction(interaction)
+                    itemView.tag = index
+                }
+            }
+        }
+    }
+    
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        guard let itemView = interaction.view else { return nil }
+        let index = itemView.tag
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            var allActions: [UIAction] = []
+            for switchableView in GlobalStruct.switchableViews {
+                let action = UIAction(title: switchableView.title, image: UIImage(systemName: switchableView.icon)) { _ in
+                    if index == 2 {
+                        GlobalStruct.currentSwitchableViewAtSpot3 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
+                    } else {
+                        GlobalStruct.currentSwitchableViewAtSpot4 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
+                    }
+                    let config = SwitchableViewConfig(
+                        title: switchableView.title,
+                        icon: switchableView.icon,
+                        iconSelected: switchableView.iconSelected
+                    )
+                    if let encoded = try? JSONEncoder().encode(config) {
+                        if index == 2 {
+                            UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot3")
+                        } else {
+                            UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot4")
+                        }
+                    }
+                    let vc1 = SloppySwipingNav(rootViewController: switchableView.view)
+                    vc1.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: UIImage(systemName: switchableView.icon) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: UIImage(systemName: switchableView.iconSelected) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
+                    vc1.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
+                    vc1.accessibilityLabel = ""
+                    vc1.tabBarItem.tag = index
+                    self.viewControllers?[index] = vc1
+                    self.setupContextMenus()
+                }
+                if index == 2 {
+                    if switchableView.title == GlobalStruct.currentSwitchableViewAtSpot3.title {
+                        action.state = .on
+                    } else {
+                        action.state = .off
+                    }
+                } else {
+                    if switchableView.title == GlobalStruct.currentSwitchableViewAtSpot4.title {
+                        action.state = .on
+                    } else {
+                        action.state = .off
+                    }
+                }
+                allActions.append(action)
+            }
+            return UIMenu(title: "Switch tab to...", children: allActions)
+        }
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {

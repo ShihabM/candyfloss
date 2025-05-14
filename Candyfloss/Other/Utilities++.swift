@@ -976,6 +976,21 @@ struct PostDraftsQuoteReply: Codable {
     let cid: String
 }
 
+// switchable views
+
+struct SwitchableViews {
+    let title: String
+    let icon: String
+    let iconSelected: String
+    let view: UIViewController
+}
+
+struct SwitchableViewConfig: Codable {
+    let title: String
+    let icon: String
+    let iconSelected: String
+}
+
 // other
 
 struct PinnedItems: Codable {
@@ -1359,6 +1374,12 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
             UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
         }
         viewsActions.append(viewBookmarks)
+        let viewExplore = UIAction(title: "Explore", image: UIImage(systemName: "magnifyingglass"), identifier: nil) { action in
+            let vc = ExploreViewController()
+            vc.fromNavigation = true
+            UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+        }
+        viewsActions.append(viewExplore)
         let viewLikes = UIAction(title: "Likes", image: UIImage(systemName: "heart"), identifier: nil) { action in
             let vc = LikesViewController()
             vc.fromNavigation = true

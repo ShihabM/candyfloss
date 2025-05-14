@@ -98,6 +98,17 @@ struct GlobalStruct {
     static var composerMediaIndex: Int = 0
     static var currentMediaAltText: String = ""
     
+    // views
+    static var currentSwitchableViewAtSpot3 = SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController())
+    static var currentSwitchableViewAtSpot4 = SwitchableViews(title: "Bookmarks", icon: "bookmark", iconSelected: "bookmark.fill", view: BookmarksViewController())
+    static var switchableViews: [SwitchableViews] = [
+        SwitchableViews(title: "Bookmarks", icon: "bookmark", iconSelected: "bookmark.fill", view: BookmarksViewController()),
+        SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController()),
+        SwitchableViews(title: "Likes", icon: "heart", iconSelected: "heart.fill", view: LikesViewController()),
+        SwitchableViews(title: "Lists", icon: "list.bullet", iconSelected: "list.bullet", view: FeedsListsViewController()),
+        SwitchableViews(title: "Messages", icon: "bubble.left", iconSelected: "bubble.left.fill", view: MessagesListViewController())
+    ]
+    
     // action buttons
     static var bookmarkImage1 = UIImage(systemName: "bookmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))?.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal)
     static var bookmarkImage2 = UIImage(systemName: "bookmark.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))?.withTintColor(GlobalStruct.baseTint, renderingMode: .alwaysOriginal)

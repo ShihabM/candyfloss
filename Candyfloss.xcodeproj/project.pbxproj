@@ -59,7 +59,7 @@
 		539B4D012CC7B6BA00CF6646 /* Disk+[UIImage].swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CF12CC7B6BA00CF6646 /* Disk+[UIImage].swift */; };
 		539B4D022CC7B6BA00CF6646 /* Disk+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CF52CC7B6BA00CF6646 /* Disk+Helpers.swift */; };
 		539B4D032CC7B6BA00CF6646 /* Disk+VolumeInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CF82CC7B6BA00CF6646 /* Disk+VolumeInformation.swift */; };
-		539B50AF2CC7ED3800CF6646 /* MessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B50AE2CC7ED3200CF6646 /* MessagesViewController.swift */; };
+		539B50AF2CC7ED3800CF6646 /* MessagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B50AE2CC7ED3200CF6646 /* MessagesListViewController.swift */; };
 		53A19FA62DCCB49C0040AF52 /* FeedTipCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */; };
 		53A19FB22DD34C020040AF52 /* ATMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 53A19FB12DD34C020040AF52 /* ATMacro */; };
 		53A19FB42DD34C020040AF52 /* ATProtoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 53A19FB32DD34C020040AF52 /* ATProtoKit */; };
@@ -170,7 +170,7 @@
 		539B4CF62CC7B6BA00CF6646 /* Disk+InternalHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Disk+InternalHelpers.swift"; sourceTree = "<group>"; };
 		539B4CF72CC7B6BA00CF6646 /* Disk+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Disk+UIImage.swift"; sourceTree = "<group>"; };
 		539B4CF82CC7B6BA00CF6646 /* Disk+VolumeInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Disk+VolumeInformation.swift"; sourceTree = "<group>"; };
-		539B50AE2CC7ED3200CF6646 /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
+		539B50AE2CC7ED3200CF6646 /* MessagesListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesListViewController.swift; sourceTree = "<group>"; };
 		53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedTipCell.swift; sourceTree = "<group>"; };
 		53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageChatViewController.swift; sourceTree = "<group>"; };
 		53A1A04A2DD4ACA30040AF52 /* HashtagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagViewController.swift; sourceTree = "<group>"; };
@@ -332,7 +332,7 @@
 				5309C1F52DB7CD7500380B93 /* StarterPackViewController.swift */,
 				53CA75F72DA7D93E007E2361 /* BookmarksViewController.swift */,
 				539B4CD12CC7A3E700CF6646 /* ProfileViewController.swift */,
-				539B50AE2CC7ED3200CF6646 /* MessagesViewController.swift */,
+				539B50AE2CC7ED3200CF6646 /* MessagesListViewController.swift */,
 				53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */,
 				53CA75FD2DA95995007E2361 /* LikesViewController.swift */,
 				53C460E52D7B5100009F7C6B /* DetailsViewController.swift */,
@@ -525,7 +525,7 @@
 				53CA75F82DA7D944007E2361 /* BookmarksViewController.swift in Sources */,
 				5309C1F82DB7F85000380B93 /* AllStarterPacksViewController.swift in Sources */,
 				5309C1F02DB2C34C00380B93 /* TrendingFeedCell.swift in Sources */,
-				539B50AF2CC7ED3800CF6646 /* MessagesViewController.swift in Sources */,
+				539B50AF2CC7ED3800CF6646 /* MessagesListViewController.swift in Sources */,
 				539B4CD62CC7A3E700CF6646 /* ActiveBuilder.swift in Sources */,
 				539B4CD72CC7A3E700CF6646 /* ActiveLabel.swift in Sources */,
 				539B4CD82CC7A3E700CF6646 /* ActiveType.swift in Sources */,

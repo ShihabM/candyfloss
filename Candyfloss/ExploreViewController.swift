@@ -14,6 +14,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     var tempScrollPosition: CGFloat = 0
     let refreshControl = UIRefreshControl()
     var fetchedAreasCount: Int = 0
+    var fromNavigation: Bool = false
     
     // trending topics
     var trendingTopics: [AppBskyLexicon.Unspecced.TrendingTopic] = []
@@ -207,12 +208,14 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
         
-        let navigationButton = CustomButton(type: .system)
-        navigationButton.setImage(UIImage(systemName: "gear"), for: .normal)
-        navigationButton.addTarget(self, action: #selector(self.goToSettings), for: .touchUpInside)
-        let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
-        navigationBarButtonItem.accessibilityLabel = "Settings"
-        navigationItem.leftBarButtonItem = navigationBarButtonItem
+        if !fromNavigation {
+            let navigationButton = CustomButton(type: .system)
+            navigationButton.setImage(UIImage(systemName: "gear"), for: .normal)
+            navigationButton.addTarget(self, action: #selector(self.goToSettings), for: .touchUpInside)
+            let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
+            navigationBarButtonItem.accessibilityLabel = "Settings"
+            navigationItem.leftBarButtonItem = navigationBarButtonItem
+        }
     }
     
     @objc func fetchTrending() {

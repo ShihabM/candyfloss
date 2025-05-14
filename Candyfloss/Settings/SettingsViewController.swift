@@ -361,6 +361,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             if let link = URL(string: "https://status.bsky.app") {
                 if GlobalStruct.openLinksInApp {
                     let safariVC = SFSafariViewController(url: link)
+                    safariVC.modalPresentationStyle = .pageSheet
                     getTopMostViewController()?.present(safariVC, animated: true, completion: nil)
                 } else {
                     UIApplication.shared.open(link, options: [:], completionHandler: nil)

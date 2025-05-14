@@ -42,13 +42,41 @@ class MessageChatViewController: MessagesViewController {
         messagesCollectionView.messagesDisplayDelegate = self
         
         let layout = messagesCollectionView.collectionViewLayout as? MessagesCollectionViewFlowLayout
-        layout?.sectionInset = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+        layout?.sectionInset = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
         layout?.setMessageIncomingAvatarSize(.zero)
         layout?.setMessageOutgoingAvatarSize(.zero)
         
         messageInputBar.delegate = self
         messageInputBar.backgroundView.backgroundColor = view.backgroundColor
         messageInputBar.inputTextView.placeholder = "Message..."
+        
+        messageInputBar.separatorLine.isHidden = true
+        messageInputBar.contentView.backgroundColor = UIColor(named: "groupBG")
+        messageInputBar.contentView.layer.cornerRadius = 19
+        messageInputBar.contentView.layer.masksToBounds = true
+        messageInputBar.inputTextView.textContainerInset = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
+        messageInputBar.inputTextView.placeholderLabelInsets = UIEdgeInsets(top: 8, left: 14, bottom: 8, right: 14)
+        
+        messageInputBar.setRightStackViewWidthConstant(to: 38, animated: false)
+        messageInputBar.sendButton.imageView?.backgroundColor = UIColor(named: "groupBG")
+        messageInputBar.sendButton.setSize(CGSize(width: 38, height: 38), animated: false)
+        messageInputBar.sendButton.image = imageWithImage(image: UIImage(systemName: "arrow.up.circle.fill") ?? UIImage(), scaledToSize: CGSize(width: 24, height: 24)).withRenderingMode(.alwaysOriginal).withTintColor(.systemGray2)
+        messageInputBar.sendButton.title = nil
+        messageInputBar.sendButton.imageView?.layer.cornerRadius = 12
+        messageInputBar.sendButton.imageView?.contentMode = .scaleAspectFill
+        messageInputBar.sendButton.adjustsImageWhenDisabled = false
+        messageInputBar.sendButton.imageView?.layer.borderWidth = 0
+        messageInputBar.sendButton.imageView?.layer.borderColor = GlobalStruct.baseTint.cgColor
+        messageInputBar.sendButton.onEnabled { item in
+            item.imageView?.backgroundColor = .white
+            item.image = imageWithImage(image: UIImage(systemName: "arrow.up.circle.fill") ?? UIImage(), scaledToSize: CGSize(width: 24, height: 24)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint)
+            item.imageView?.layer.borderWidth = 2
+        }
+        messageInputBar.sendButton.onDisabled { item in
+            item.imageView?.backgroundColor = UIColor(named: "groupBG")
+            item.image = imageWithImage(image: UIImage(systemName: "arrow.up.circle.fill") ?? UIImage(), scaledToSize: CGSize(width: 24, height: 24)).withRenderingMode(.alwaysOriginal).withTintColor(.systemGray2)
+            item.imageView?.layer.borderWidth = 0
+        }
         
         fetchMessages()
     }
@@ -135,6 +163,7 @@ class MessageChatViewController: MessagesViewController {
                         self.loadingIndicator.stopAnimating()
                         self.messagesCollectionView.reloadData()
                         self.messagesCollectionView.scrollToLastItem(animated: false)
+                        self.messagesCollectionView.setContentOffset(CGPoint(x: 0, y: self.messagesCollectionView.contentOffset.y + 5), animated: false)
                     }
                 }
             } catch {
@@ -208,7 +237,11 @@ extension MessageChatViewController: MessagesDataSource {
 
 extension MessageChatViewController: MessagesLayoutDelegate, MessagesDisplayDelegate {
     func backgroundColor(for message: MessageType, at _: IndexPath, in _: MessagesCollectionView) -> UIColor {
-        isFromCurrentSender(message: message) ? GlobalStruct.baseTint : GlobalStruct.raisedBackgroundTint
+        isFromCurrentSender(message: message) ? GlobalStruct.baseTint : UIColor(named: "groupBG")!
+    }
+    
+    func textColor(for message: MessageType, at _: IndexPath, in _: MessagesCollectionView) -> UIColor {
+        isFromCurrentSender(message: message) ? .white : GlobalStruct.textColor
     }
     
     func configureAvatarView(
@@ -226,8 +259,26 @@ extension MessageChatViewController: InputBarAccessoryViewDelegate {
         let newMessage = Message(sender: currentSender, messageId: UUID().uuidString, sentDate: Date(), kind: .text(text))
         messages.append(newMessage)
         messagesCollectionView.reloadData()
+        sendMessage(text: text)
         inputBar.inputTextView.text = ""
         messagesCollectionView.scrollToLastItem()
+    }
+    
+    func sendMessage(text: String) {
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+//                    let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+//                    let input = ChatBskyLexicon.Conversation.MessageInputDefinition.init(from: )
+//                    let y = try await atProtoBluesky.sendMessage(to: conversation.first?.conversationID ?? "", message: input)
+//                    DispatchQueue.main.async {
+//                        
+//                    }
+                }
+            } catch {
+                print("Error unmuting conversation: \(error.localizedDescription)")
+            }
+        }
     }
 }
 

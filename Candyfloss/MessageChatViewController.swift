@@ -15,7 +15,9 @@ class MessageChatViewController: MessagesViewController {
     
     var messages: [Message] = []
     var displayName: String = ""
+    var actorDID: String = ""
     var avatar: URL? = nil
+    var isMuted: Bool = false
     var conversation: [ChatBskyLexicon.Conversation.ConversationViewDefinition] = []
     var allMessages: [ATUnion.GetMessagesOutputMessagesUnion] = []
     
@@ -27,21 +29,7 @@ class MessageChatViewController: MessagesViewController {
         view.backgroundColor = GlobalStruct.backgroundTint
         navigationItem.title = displayName
         
-        let avatarButton = UIButton(type: .custom)
-        avatarButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            avatarButton.widthAnchor.constraint(equalToConstant: 28),
-            avatarButton.heightAnchor.constraint(equalToConstant: 28)
-        ])
-        avatarButton.layer.cornerRadius = 14
-        avatarButton.clipsToBounds = true
-        if let url = avatar {
-            avatarButton.sd_setImage(with: url, for: .normal)
-        }
-        avatarButton.imageView?.contentMode = .scaleAspectFill
-        let avatarBarButtonItem = UIBarButtonItem(customView: avatarButton)
-        avatarBarButtonItem.accessibilityLabel = displayName
-        navigationItem.rightBarButtonItem = avatarBarButtonItem
+        setUpNavigation()
         
         loadingIndicator.center = view.center
         loadingIndicator.hidesWhenStopped = true
@@ -63,6 +51,59 @@ class MessageChatViewController: MessagesViewController {
         messageInputBar.inputTextView.placeholder = "Message..."
         
         fetchMessages()
+    }
+    
+    func setUpNavigation() {
+        let avatarButton = UIButton(type: .custom)
+        avatarButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            avatarButton.widthAnchor.constraint(equalToConstant: 28),
+            avatarButton.heightAnchor.constraint(equalToConstant: 28)
+        ])
+        avatarButton.layer.cornerRadius = 14
+        avatarButton.clipsToBounds = true
+        if let url = avatar {
+            avatarButton.sd_setImage(with: url, for: .normal)
+        }
+        avatarButton.imageView?.contentMode = .scaleAspectFill
+        let menuItem1 = UIAction(title: "View Profile", image: UIImage(systemName: "person"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            let vc = ProfileViewController()
+            vc.profile = actorDID
+            navigationController?.pushViewController(vc, animated: true)
+        }
+        var muteText: String = "Mute Chat"
+        var muteImage: String = "speaker.slash"
+        if isMuted {
+            muteText = "Unmute Chat"
+            muteImage = "speaker.wave.1"
+        }
+        let menuItem2 = UIAction(title: muteText, image: UIImage(systemName: muteImage), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            if isMuted {
+                unmuteChat()
+            } else {
+                muteChat()
+            }
+            isMuted = !isMuted
+            setUpNavigation()
+        }
+        if !isMuted {
+            menuItem2.attributes = .destructive
+        }
+        let menuItem3 = UIAction(title: "Leave Chat", image: UIImage(systemName: "arrow.left"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            leaveChat()
+            navigationController?.popViewController(animated: true)
+        }
+        menuItem3.attributes = .destructive
+        let subMenu = UIMenu(title: "", options: [.displayInline], children: [menuItem2, menuItem3])
+        let menu = UIMenu(title: "", options: [.displayInline], children: [menuItem1] + [subMenu])
+        avatarButton.menu = menu
+        avatarButton.showsMenuAsPrimaryAction = true
+        let avatarBarButtonItem = UIBarButtonItem(customView: avatarButton)
+        avatarBarButtonItem.accessibilityLabel = displayName
+        navigationItem.rightBarButtonItem = avatarBarButtonItem
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -98,6 +139,54 @@ class MessageChatViewController: MessagesViewController {
                 }
             } catch {
                 print("Error fetching messages: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func muteChat() {
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+                    let y = try await atProtoBluesky.muteConversation(from: conversation.first?.conversationID ?? "")
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+            } catch {
+                print("Error muting conversation: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func unmuteChat() {
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+                    let y = try await atProtoBluesky.unmuteConversation(by: conversation.first?.conversationID ?? "")
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+            } catch {
+                print("Error unmuting conversation: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func leaveChat() {
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+                    let y = try await atProtoBluesky.leaveConversation(from: conversation.first?.conversationID ?? "")
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+            } catch {
+                print("Error leaving conversation: \(error.localizedDescription)")
             }
         }
     }

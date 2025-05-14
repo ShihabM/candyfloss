@@ -294,9 +294,19 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
                     let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
                     let x = try await atProtoBluesky.listConversations(cursor: currentCursor)
                     allMessages += x.conversations
-                    filteredMessages = allMessages.filter({ message in
-                        message.status == .accepted && !message.isMuted
-                    })
+                    if messageSection == 0 {
+                        filteredMessages = allMessages.filter({ message in
+                            message.status == .accepted && !message.isMuted
+                        })
+                    } else if messageSection == 1 {
+                        filteredMessages = allMessages.filter({ message in
+                            message.isMuted
+                        })
+                    } else {
+                        filteredMessages = allMessages.filter({ message in
+                            message.status == .request
+                        })
+                    }
                     currentCursor = x.cursor
                     
                     DispatchQueue.main.async {
@@ -320,12 +330,27 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
                     let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
                     let x = try await atProtoBluesky.listConversations()
                     let newMessages = x.conversations.filter { newMessage in
-                        !filteredMessages.contains(where: { $0.conversationID == newMessage.conversationID })
+                        !allMessages.contains(where: { $0.conversationID == newMessage.conversationID })
                     }
                     DispatchQueue.main.async {
                         if !newMessages.isEmpty {
-                            self.filteredMessages.insert(contentsOf: newMessages, at: 0)
+                            self.allMessages.insert(contentsOf: newMessages, at: 0)
+                            if self.messageSection == 0 {
+                                self.filteredMessages = self.allMessages.filter({ message in
+                                    message.status == .accepted && !message.isMuted
+                                })
+                            } else if self.messageSection == 1 {
+                                self.filteredMessages = self.allMessages.filter({ message in
+                                    message.isMuted
+                                })
+                            } else {
+                                self.filteredMessages = self.allMessages.filter({ message in
+                                    message.status == .request
+                                })
+                            }
                             self.tableView.reloadData()
+                            self.refreshControl.endRefreshing()
+                        } else {
                             self.refreshControl.endRefreshing()
                         }
                     }

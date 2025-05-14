@@ -132,6 +132,12 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         }
         
         let rootViewController3 = GlobalStruct.currentSwitchableViewAtSpot3.view
+        if GlobalStruct.currentSwitchableViewAtSpot3.title == "Lists" {
+            if let rootViewController3 = rootViewController3 as? FeedsListsViewController {
+                rootViewController3.fromTab = true
+                rootViewController3.otherListUser = GlobalStruct.currentUser?.actorHandle ?? ""
+            }
+        }
         thirdVC = SloppySwipingNav(rootViewController: rootViewController3)
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
             let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot3.icon)
@@ -155,6 +161,12 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         }
         
         let rootViewController4 = GlobalStruct.currentSwitchableViewAtSpot4.view
+        if GlobalStruct.currentSwitchableViewAtSpot4.title == "Lists" {
+            if let rootViewController4 = rootViewController4 as? FeedsListsViewController {
+                rootViewController4.fromTab = true
+                rootViewController4.otherListUser = GlobalStruct.currentUser?.actorHandle ?? ""
+            }
+        }
         fourthVC = SloppySwipingNav(rootViewController: rootViewController4)
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
             let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot4.icon)
@@ -244,7 +256,14 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                             UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot4")
                         }
                     }
-                    let vc1 = SloppySwipingNav(rootViewController: switchableView.view)
+                    let vc = switchableView.view
+                    if switchableView.title == "Lists" {
+                        if let vc = vc as? FeedsListsViewController {
+                            vc.fromTab = true
+                            vc.otherListUser = GlobalStruct.currentUser?.actorHandle ?? ""
+                        }
+                    }
+                    let vc1 = SloppySwipingNav(rootViewController: vc)
                     vc1.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: UIImage(systemName: switchableView.icon) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: UIImage(systemName: switchableView.iconSelected) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
                     vc1.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
                     vc1.accessibilityLabel = ""

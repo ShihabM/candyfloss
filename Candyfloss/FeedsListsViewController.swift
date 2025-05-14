@@ -15,6 +15,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     var currentFeedCursor: String? = nil
     var isFetchingFeeds: Bool = false
     var showingDescriptions: Bool = true
+    var fromTab: Bool = false
     
     // lists
     var tableView2 = UITableView()
@@ -101,6 +102,22 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
             
             setupListDropdown()
         }
+        
+        if fromTab {
+            let navigationButton = CustomButton(type: .system)
+            navigationButton.setImage(UIImage(systemName: "gear"), for: .normal)
+            navigationButton.addTarget(self, action: #selector(self.goToSettings), for: .touchUpInside)
+            let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
+            navigationBarButtonItem.accessibilityLabel = "Settings"
+            navigationItem.leftBarButtonItem = navigationBarButtonItem
+        }
+    }
+    
+    @objc func goToSettings() {
+        defaultHaptics()
+        let vc = SettingsViewController()
+        vc.fromNavigationStack = false
+        getTopMostViewController()?.show(SloppySwipingNav(rootViewController: vc), sender: self)
     }
     
     @objc func setupListDropdown() {

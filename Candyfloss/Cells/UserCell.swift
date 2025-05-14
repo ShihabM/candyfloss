@@ -138,9 +138,9 @@ class UserCell: UITableViewCell, UIContextMenuInteractionDelegate {
         if followsYou {
             followsYouTag.alpha = 1
             if bioText == "" {
-                followsYouLayoutString = "V:|-12-[username]-1-[usertag]-6-[followsYouTag(height)]-(>=14)-|"
+                followsYouLayoutString = "V:|-12-[username]-1-[usertag]-10-[followsYouTag(height)]-(>=14)-|"
             } else {
-                followsYouLayoutString = "V:|-12-[username]-1-[usertag]-6-[followsYouTag(height)]-5-[bio]-(>=14)-|"
+                followsYouLayoutString = "V:|-12-[username]-1-[usertag]-10-[followsYouTag(height)]-8-[bio]-(>=14)-|"
             }
         } else {
             followsYouTag.alpha = 0

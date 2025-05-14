@@ -337,11 +337,7 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
             }
             cell.username.text = user?.displayName ?? ""
             cell.usertag.text = "@\(user?.actorHandle ?? "")"
-            var followsYou: Bool = false
-            if let _ = user?.viewer?.followedByURI {
-                followsYou = true
-            }
-            cell.configureCell(followsYou, bioText: "", currentProfile: user)
+            cell.configureCell(false, bioText: "", currentProfile: user)
             if isFetching == false && currentCursor != nil {
                 if indexPath.row == offsetCount - 1 || indexPath.row == offsetCount - 5 {
                     isFetching = true
@@ -368,8 +364,10 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.usertag.text = "@\(user?.actorHandle ?? "")"
             let bioText = user?.description ?? ""
             var followsYou: Bool = false
-            if let _ = user?.viewer?.followedByURI {
-                followsYou = true
+            if !isShowingFollowers {
+                if let _ = user?.viewer?.followedByURI {
+                    followsYou = true
+                }
             }
             cell.configureCell(followsYou, bioText: bioText, defaultProfile: user)
             if isFetching == false && currentCursor != nil {

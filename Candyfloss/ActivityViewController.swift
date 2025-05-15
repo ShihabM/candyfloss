@@ -156,7 +156,13 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
-        navigationItem.title = "Activity"
+        
+        notificationsSection = UserDefaults.standard.value(forKey: "notificationsSection") as? Int ?? 0
+        if notificationsSection == 0 {
+            navigationItem.title = "Activity"
+        } else {
+            navigationItem.title = "Mentions"
+        }
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.scrollUp), name: NSNotification.Name(rawValue: "scrollUp1"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadTables), name: NSNotification.Name(rawValue: "reloadTables"), object: nil)
@@ -213,6 +219,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
         let menuItem = UIAction(title: "Activity", image: UIImage(systemName: "bell"), identifier: nil) { [weak self] action in
             guard let self else { return }
             notificationsSection = 0
+            UserDefaults.standard.set(notificationsSection, forKey: "notificationsSection")
             filteredNotifications = allNotifications
             updateSearchBar(text: "Activity")
             tableView.reloadData()
@@ -227,6 +234,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
         let menuItem1 = UIAction(title: "Mentions", image: UIImage(systemName: "at"), identifier: nil) { [weak self] action in
             guard let self else { return }
             notificationsSection = 1
+            UserDefaults.standard.set(notificationsSection, forKey: "notificationsSection")
             filteredNotifications = allNotifications.filter({ notification in
                 notification.contains { n in
                     n.reason == .reply || n.reason == .mention

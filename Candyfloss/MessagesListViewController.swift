@@ -203,7 +203,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
         titleLabel.setAttributedTitle(attStringNewLine000, for: .normal)
         self.navigationItem.titleView = titleLabel
         var allActions0: [UIAction] = []
-        let menuItem = UIAction(title: "Messages", image: UIImage(systemName: "bubble.left"), identifier: nil) { [weak self] action in
+        let menuItem = UIAction(title: "Messages", image: UIImage(systemName: "message"), identifier: nil) { [weak self] action in
             guard let self else { return }
             messageSection = 0
             filteredMessages = allMessages.filter({ message in

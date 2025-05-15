@@ -107,7 +107,7 @@ struct GlobalStruct {
         SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController()),
         SwitchableViews(title: "Likes", icon: "heart", iconSelected: "heart.fill", view: LikesViewController()),
         SwitchableViews(title: "Lists", icon: "list.bullet", iconSelected: "list.bullet", view: FeedsListsViewController()),
-        SwitchableViews(title: "Messages", icon: "bubble.left", iconSelected: "bubble.left.fill", view: MessagesListViewController()),
+        SwitchableViews(title: "Messages", icon: "message", iconSelected: "message.fill", view: MessagesListViewController()),
         SwitchableViews(title: "Profile", icon: "person", iconSelected: "person.fill", view: ProfileViewController())
     ]
     

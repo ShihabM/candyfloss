@@ -244,6 +244,16 @@ extension MessageChatViewController: MessagesLayoutDelegate, MessagesDisplayDele
         isFromCurrentSender(message: message) ? .white : GlobalStruct.textColor
     }
     
+    func enabledDetectors(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> [DetectorType] {
+        return [.url, .hashtag, .mention]
+    }
+    
+    func detectorAttributes(for detector: DetectorType, and message: MessageType, at indexPath: IndexPath) -> [NSAttributedString.Key: Any] {
+        return isFromCurrentSender(message: message) ?
+        [.foregroundColor: UIColor.white, .font: UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold)] :
+        [.foregroundColor: UIColor.label, .font: UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold)]
+    }
+    
     func configureAvatarView(
         _ avatarView: AvatarView,
         for message: MessageType,

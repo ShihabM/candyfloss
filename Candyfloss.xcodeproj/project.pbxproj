@@ -856,8 +856,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MasterJ93/ATProtoKit";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.26.0;
+				kind = exactVersion;
+				version = 0.26.0;
 			};
 		};
 		53A1A0452DD39EFF0040AF52 /* XCRemoteSwiftPackageReference "MessageKit" */ = {

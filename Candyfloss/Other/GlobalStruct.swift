@@ -101,12 +101,14 @@ struct GlobalStruct {
     // views
     static var currentSwitchableViewAtSpot3 = SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController())
     static var currentSwitchableViewAtSpot4 = SwitchableViews(title: "Bookmarks", icon: "bookmark", iconSelected: "bookmark.fill", view: BookmarksViewController())
+    static var currentSwitchableViewAtSpot5 = SwitchableViews(title: "Profile", icon: "person", iconSelected: "person.fill", view: ProfileViewController())
     static var switchableViews: [SwitchableViews] = [
         SwitchableViews(title: "Bookmarks", icon: "bookmark", iconSelected: "bookmark.fill", view: BookmarksViewController()),
         SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController()),
         SwitchableViews(title: "Likes", icon: "heart", iconSelected: "heart.fill", view: LikesViewController()),
         SwitchableViews(title: "Lists", icon: "list.bullet", iconSelected: "list.bullet", view: FeedsListsViewController()),
-        SwitchableViews(title: "Messages", icon: "bubble.left", iconSelected: "bubble.left.fill", view: MessagesListViewController())
+        SwitchableViews(title: "Messages", icon: "bubble.left", iconSelected: "bubble.left.fill", view: MessagesListViewController()),
+        SwitchableViews(title: "Profile", icon: "person", iconSelected: "person.fill", view: ProfileViewController())
     ]
     
     // action buttons

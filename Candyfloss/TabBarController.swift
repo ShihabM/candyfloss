@@ -19,6 +19,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     var longPressRecognizer = UILongPressGestureRecognizer()
     let overlayView2 = UIImageView()
     let overlayView3 = UIImageView()
+    let overlayView4 = UIImageView()
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -177,12 +178,28 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         }
         fourthVC.tabBarItem.tag = 3
         
-        let rootViewController5 = ProfileViewController()
-        rootViewController5.fromTab = true
+        if let data = UserDefaults.standard.data(forKey: "currentSwitchableViewAtSpot5") {
+            if let decoded = try? JSONDecoder().decode(SwitchableViewConfig.self, from: data) {
+                let viewController = viewController(for: decoded.title)
+                GlobalStruct.currentSwitchableViewAtSpot5 = SwitchableViews(
+                    title: decoded.title,
+                    icon: decoded.icon,
+                    iconSelected: decoded.iconSelected,
+                    view: viewController
+                )
+            }
+        }
+        
+        let rootViewController5 = GlobalStruct.currentSwitchableViewAtSpot5.view
+        if GlobalStruct.currentSwitchableViewAtSpot5.title == "Profile" {
+            if let rootViewController5 = rootViewController5 as? ProfileViewController {
+                rootViewController5.fromTab = true
+            }
+        }
         fifthVC = SloppySwipingNav(rootViewController: rootViewController5)
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
-            let image = UIImage(systemName: "person")
-            let image2 = UIImage(systemName: "person.fill")
+            let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot5.icon)
+            let image2 = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot5.iconSelected)
             fifthVC.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             fifthVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
             fifthVC.accessibilityLabel = ""
@@ -191,14 +208,19 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         
         let offset2 = (self.view.bounds.width/5)*3
         let offset3 = (self.view.bounds.width/5)*4
+        let offset4 = self.view.bounds.width
         
-        overlayView2.frame = CGRect(x: offset2 - 20, y: 25, width: 12, height: 14)
+        overlayView2.frame = CGRect(x: offset2 - 22, y: 25, width: 12, height: 14)
         overlayView2.image = UIImage(systemName: "chevron.up.chevron.down")?.withTintColor(GlobalStruct.secondaryTextColor.withAlphaComponent(0.3), renderingMode: .alwaysOriginal)
         tabBar.addSubview(overlayView2)
         
-        overlayView3.frame = CGRect(x: offset3 - 20, y: 25, width: 12, height: 14)
+        overlayView3.frame = CGRect(x: offset3 - 22, y: 25, width: 12, height: 14)
         overlayView3.image = UIImage(systemName: "chevron.up.chevron.down")?.withTintColor(GlobalStruct.secondaryTextColor.withAlphaComponent(0.3), renderingMode: .alwaysOriginal)
         tabBar.addSubview(overlayView3)
+        
+        overlayView4.frame = CGRect(x: offset4 - 22, y: 25, width: 12, height: 14)
+        overlayView4.image = UIImage(systemName: "chevron.up.chevron.down")?.withTintColor(GlobalStruct.secondaryTextColor.withAlphaComponent(0.3), renderingMode: .alwaysOriginal)
+        tabBar.addSubview(overlayView4)
         
         setViewControllers([firstVC, secondVC, thirdVC, fourthVC, fifthVC], animated: false)
         setupContextMenus()
@@ -215,6 +237,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         case "Likes": return LikesViewController()
         case "Lists": return FeedsListsViewController()
         case "Messages": return MessagesListViewController()
+        case "Profile": return ProfileViewController()
         default: return BookmarksViewController()
         }
     }
@@ -222,7 +245,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     func setupContextMenus() {
         guard let tabBarItems = self.tabBar.items else { return }
         for (index, _) in tabBarItems.enumerated() {
-            if index == 2 || index == 3 {
+            if index == 2 || index == 3 || index == 4 {
                 if let itemView = tabBarItems[index].value(forKey: "view") as? UIView {
                     let interaction = UIContextMenuInteraction(delegate: self)
                     itemView.addInteraction(interaction)
@@ -241,8 +264,10 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                 let action = UIAction(title: switchableView.title, image: UIImage(systemName: switchableView.icon)) { _ in
                     if index == 2 {
                         GlobalStruct.currentSwitchableViewAtSpot3 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
-                    } else {
+                    } else if index == 3 {
                         GlobalStruct.currentSwitchableViewAtSpot4 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
+                    } else {
+                        GlobalStruct.currentSwitchableViewAtSpot5 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
                     }
                     let config = SwitchableViewConfig(
                         title: switchableView.title,
@@ -252,8 +277,10 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     if let encoded = try? JSONEncoder().encode(config) {
                         if index == 2 {
                             UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot3")
-                        } else {
+                        } else if index == 3 {
                             UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot4")
+                        } else {
+                            UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot5")
                         }
                     }
                     let vc = switchableView.view
@@ -277,8 +304,14 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     } else {
                         action.state = .off
                     }
-                } else {
+                } else if index == 3 {
                     if switchableView.title == GlobalStruct.currentSwitchableViewAtSpot4.title {
+                        action.state = .on
+                    } else {
+                        action.state = .off
+                    }
+                } else {
+                    if switchableView.title == GlobalStruct.currentSwitchableViewAtSpot5.title {
                         action.state = .on
                     } else {
                         action.state = .off

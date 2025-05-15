@@ -248,7 +248,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             do {
                 if let atProto = GlobalStruct.atProto {
                     let x = try await atProto.getSuggestedFollowsByActor(GlobalStruct.currentUser?.actorHandle ?? "")
-                    suggestedUsers = Array(x.suggestions.prefix(3))
+                    suggestedUsers = Array(x.suggestions.prefix(5))
                     whoToFollow = x.suggestions
                     fetchedAreasCount += 1
                     DispatchQueue.main.async {
@@ -291,7 +291,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             do {
                 if let atProto = GlobalStruct.atProto {
                     let x = try await atProto.getStarterPacks(uris: GlobalStruct.starterPacks)
-                    starterPacks = Array(x.starterPacks.shuffled().prefix(3))
+                    starterPacks = Array(x.starterPacks.shuffled().prefix(5))
                     allStarterPacks = x.starterPacks.sorted {
                         let name1 = $0.record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self)?.name.lowercased() ?? ""
                         let name2 = $1.record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self)?.name.lowercased() ?? ""

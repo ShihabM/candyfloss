@@ -14,9 +14,11 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     var tempScrollPosition: CGFloat = 0
     let refreshControl = UIRefreshControl()
     var allNotifications: [[AppBskyLexicon.Notification.Notification]] = []
+    var filteredNotifications: [[AppBskyLexicon.Notification.Notification]] = []
     var allSubjectPosts: [AppBskyLexicon.Feed.PostViewDefinition] = []
     var currentCursor: String? = nil
     var isFetching: Bool = false
+    var notificationsSection: Int = 0
     
     // inline search
     var searchView: UIView = UIView()
@@ -38,20 +40,20 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func updateSearchResults(for searchController: UISearchController) {
         if searchResults.isEmpty {} else {
-            allNotifications = searchResults
+            filteredNotifications = searchResults
         }
         if let theText = searchController.searchBar.text?.lowercased() {
             if theText.isEmpty {
                 isSearching = false
                 if searchFirstTime {
                     searchFirstTime = false
-                    searchResults = allNotifications
+                    searchResults = filteredNotifications
                 } else {
-                    allNotifications = searchResults
+                    filteredNotifications = searchResults
                     tableView.reloadData()
                 }
             } else {
-                let z = allNotifications.filter({
+                let z = filteredNotifications.filter({
                     for x in $0 {
                         let matchingAccount: Bool = (x.author.displayName ?? "").lowercased().contains(theText)
                         if let record = x.record.getRecord(ofType: AppBskyLexicon.Feed.PostRecord.self) {
@@ -62,7 +64,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                     }
                     return false
                 })
-                allNotifications = z
+                filteredNotifications = z
                 tableView.reloadData()
                 isSearching = true
             }
@@ -72,7 +74,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         isSearching = false
         if !searchResults.isEmpty {
-            allNotifications = self.searchResults
+            filteredNotifications = self.searchResults
             tableView.reloadData()
         }
         searchFirstTime = true
@@ -84,7 +86,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     @objc func scrollUp() {
-        if allNotifications.isEmpty {} else {
+        if filteredNotifications.isEmpty {} else {
             if tableView.contentOffset.y <= 60 {
                 tableView.setContentOffset(CGPoint(x: 0, y: tempScrollPosition), animated: true)
                 tempScrollPosition = tableView.contentOffset.y
@@ -182,6 +184,87 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
         let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
         navigationBarButtonItem.accessibilityLabel = "Settings"
         navigationItem.leftBarButtonItem = navigationBarButtonItem
+        
+        setupListDropdown()
+    }
+    
+    @objc func setupListDropdown() {
+        var theTitle: String = ""
+        if notificationsSection == 0 {
+            theTitle = "Activity"
+        } else {
+            theTitle = "Mentions"
+        }
+        let titleLabel = UIButton()
+        titleLabel.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
+        let attachment1 = NSTextAttachment()
+        let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold)
+        let downImage1 = UIImage(systemName: "chevron.down", withConfiguration: symbolConfig1)
+        let downImage2 = imageWithImage(image: downImage1 ?? UIImage(), scaledToSize: CGSize(width: downImage1?.size.width ?? 0, height: (downImage1?.size.height ?? 0) - 3))
+        attachment1.image = downImage2.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal)
+        let attStringNewLine000 = NSMutableAttributedString()
+        let attStringNewLine00 = NSMutableAttributedString(string: "\(theTitle) ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold),NSAttributedString.Key.foregroundColor : UIColor.label])
+        let attString00 = NSAttributedString(attachment: attachment1)
+        attStringNewLine000.append(attStringNewLine00)
+        attStringNewLine000.append(attString00)
+        titleLabel.setAttributedTitle(attStringNewLine000, for: .normal)
+        self.navigationItem.titleView = titleLabel
+        var allActions0: [UIAction] = []
+        let menuItem = UIAction(title: "Activity", image: UIImage(systemName: "bell"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            notificationsSection = 0
+            filteredNotifications = allNotifications
+            updateSearchBar(text: "Activity")
+            tableView.reloadData()
+            setupListDropdown()
+        }
+        if notificationsSection == 0 {
+            menuItem.state = .on
+        } else {
+            menuItem.state = .off
+        }
+        allActions0.append(menuItem)
+        let menuItem1 = UIAction(title: "Mentions", image: UIImage(systemName: "at"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            notificationsSection = 1
+            filteredNotifications = allNotifications.filter({ notification in
+                notification.contains { n in
+                    n.reason == .reply || n.reason == .mention
+                }
+            })
+            updateSearchBar(text: "Mentions")
+            tableView.reloadData()
+            setupListDropdown()
+        }
+        if notificationsSection == 1 {
+            menuItem1.state = .on
+        } else {
+            menuItem1.state = .off
+        }
+        allActions0.append(menuItem1)
+        let menu = UIMenu(title: "", options: [.displayInline], children: allActions0)
+        titleLabel.menu = menu
+        titleLabel.showsMenuAsPrimaryAction = true
+    }
+    
+    func updateSearchBar(text: String) {
+        self.searchController = ({
+            let controller = UISearchController(searchResultsController: nil)
+            controller.searchResultsUpdater = self
+            controller.obscuresBackgroundDuringPresentation = false
+            controller.hidesNavigationBarDuringPresentation = false
+            controller.searchBar.backgroundImage = UIImage()
+            controller.searchBar.backgroundColor = GlobalStruct.backgroundTint
+            controller.searchBar.barTintColor = GlobalStruct.backgroundTint
+            controller.searchBar.sizeToFit()
+            controller.searchBar.delegate = self
+            controller.definesPresentationContext = true
+            controller.searchBar.placeholder = "Search \(text)"
+            self.definesPresentationContext = true
+            searchView.addSubview(controller.searchBar)
+            tableView.tableHeaderView = searchView
+            return controller
+        })()
     }
     
     @objc func goToSettings() {
@@ -237,6 +320,15 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                     DispatchQueue.main.async {
                         self.allSubjectPosts += subjects.posts
                         self.allNotifications += groupedNotifications
+                        if self.notificationsSection == 0 {
+                            self.filteredNotifications = self.allNotifications
+                        } else {
+                            self.filteredNotifications = self.allNotifications.filter({ notification in
+                                notification.contains { n in
+                                    n.reason == .reply || n.reason == .mention
+                                }
+                            })
+                        }
                         self.loadingIndicator.stopAnimating()
                         self.tableView.reloadData()
                         self.refreshControl.endRefreshing()
@@ -302,30 +394,74 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return allNotifications.count
+        return filteredNotifications.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if allNotifications[indexPath.row].first?.reason ?? .none == .reply {
+        if filteredNotifications[indexPath.row].first?.reason ?? .none == .reply || filteredNotifications[indexPath.row].first?.reason ?? .none == .mention {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell
             
+            cell.avatar.tag = indexPath.row
+            cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
             if let post = allSubjectPosts.first(where: { post in
-                post.uri == allNotifications[indexPath.row].first?.uri ?? ""
+                post.uri == filteredNotifications[indexPath.row].first?.uri ?? ""
             }) {
                 configurePostCell(cell, with: post)
-                
-                cell.avatar.tag = indexPath.row
-                cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
+            } else {
+                if let record = filteredNotifications[indexPath.row].first?.record.getRecord(ofType: AppBskyLexicon.Feed.PostRecord.self) {
+                    if let url = filteredNotifications[indexPath.row].first?.author.avatarImageURL {
+                        cell.avatar.sd_setImage(with: url, for: .normal)
+                    } else {
+                        cell.avatar.setImage(UIImage(), for: .normal)
+                    }
+                    cell.username.text = filteredNotifications[indexPath.row].first?.author.displayName ?? ""
+                    if cell.username.text == "" {
+                        cell.username.text = " "
+                    }
+                    cell.usertag.text = "@\(filteredNotifications[indexPath.row].first?.author.actorHandle ?? "")"
+                    cell.text.text = record.text.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let timeSince = record.createdAt
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = GlobalStruct.dateFormatter
+                    if GlobalStruct.dateFormat == 0 {
+                        cell.time.text = timeSince.toStringWithRelativeTime()
+                    } else {
+                        cell.time.text = timeSince.toString(dateStyle: .short, timeStyle: .short)
+                    }
+                    cell.repliesCount = 0
+                    cell.likesCount = 0
+                    cell.repostsCount = 0
+                    cell.configure(post: nil, showActionButtons: GlobalStruct.showActionButtons, isRepost: nil, isNestedQuote: false, isNestedReply: false, isPinned: false)
+                    Task {
+                        do {
+                            if let atProto = GlobalStruct.atProto {
+                                let posts = try await atProto.getPosts([filteredNotifications[indexPath.row].first?.uri ?? ""])
+                                self.allSubjectPosts += posts.posts
+                                cell.repliesCount = posts.posts.first?.replyCount ?? 0
+                                cell.likesCount = posts.posts.first?.likeCount ?? 0
+                                cell.repostsCount = posts.posts.first?.repostCount ?? 0
+                            }
+                        } catch {
+                            print("Error fetching post: \(error.localizedDescription)")
+                        }
+                    }
+                } else {
+                    cell.avatar.setImage(UIImage(), for: .normal)
+                    cell.username.text = ""
+                    cell.usertag.text = ""
+                    cell.text.text = ""
+                    cell.time.text = ""
+                }
             }
             
             if isFetching == false && currentCursor != nil {
-                if indexPath.row == allNotifications.count - 1 || indexPath.row == allNotifications.count - 5 {
+                if indexPath.row == filteredNotifications.count - 1 || indexPath.row == filteredNotifications.count - 5 {
                     isFetching = true
                     fetchActivity()
                 }
             }
             
-            if indexPath.row == allNotifications.count - 1 {
+            if indexPath.row == filteredNotifications.count - 1 {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             } else {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
@@ -340,15 +476,15 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
             let cell = tableView.dequeueReusableCell(withIdentifier: "ActivityCell", for: indexPath) as! ActivityCell
             
             if let post = allSubjectPosts.first(where: { post in
-                post.uri == allNotifications[indexPath.row].first?.reasonSubjectURI ?? ""
+                post.uri == filteredNotifications[indexPath.row].first?.reasonSubjectURI ?? ""
             }) {
                 if let record = post.record.getRecord(ofType: AppBskyLexicon.Feed.PostRecord.self) {
-                    configureActivityCell(cell, with: allNotifications[indexPath.row], text: record.text)
+                    configureActivityCell(cell, with: filteredNotifications[indexPath.row], text: record.text)
                 } else {
-                    configureActivityCell(cell, with: allNotifications[indexPath.row], text: "Deleted post")
+                    configureActivityCell(cell, with: filteredNotifications[indexPath.row], text: "Deleted post")
                 }
             } else {
-                configureActivityCell(cell, with: allNotifications[indexPath.row], text: "Deleted post")
+                configureActivityCell(cell, with: filteredNotifications[indexPath.row], text: "Deleted post")
             }
             
             cell.avatar1.tag = indexPath.row
@@ -359,13 +495,13 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
             cell.avatar3.addTarget(self, action: #selector(viewProfile3), for: .touchUpInside)
             
             if isFetching == false && currentCursor != nil {
-                if indexPath.row == allNotifications.count - 1 || indexPath.row == allNotifications.count - 5 {
+                if indexPath.row == filteredNotifications.count - 1 || indexPath.row == filteredNotifications.count - 5 {
                     isFetching = true
                     fetchActivity()
                 }
             }
             
-            if indexPath.row == allNotifications.count - 1 {
+            if indexPath.row == filteredNotifications.count - 1 {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             } else {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
@@ -382,24 +518,41 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if let post = allSubjectPosts.first(where: { post in
-            post.uri == allNotifications[indexPath.row].first?.uri ?? ""
+            post.uri == filteredNotifications[indexPath.row].first?.uri ?? ""
         }) {
             let vc = DetailsViewController()
             vc.detailPost = post
             navigationController?.pushViewController(vc, animated: true)
         } else if let post = allSubjectPosts.first(where: { post in
-            post.uri == allNotifications[indexPath.row].first?.reasonSubjectURI ?? ""
+            post.uri == filteredNotifications[indexPath.row].first?.reasonSubjectURI ?? ""
         }) {
             let vc = DetailsViewController()
             vc.detailPost = post
             navigationController?.pushViewController(vc, animated: true)
+        } else {
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        if let record = filteredNotifications[indexPath.row].first?.record.getRecord(ofType: AppBskyLexicon.Feed.PostRecord.self) {
+                            let post = try await atProto.searchPosts(matching: record.text, author: filteredNotifications[indexPath.row].first?.author.actorHandle ?? "")
+                            if let post = post.posts.first {
+                                let vc = DetailsViewController()
+                                vc.detailPost = post
+                                navigationController?.pushViewController(vc, animated: true)
+                            }
+                        }
+                    }
+                } catch {
+                    print("Error fetching post: \(error.localizedDescription)")
+                }
+            }
         }
-        if allNotifications[indexPath.row].first?.reason ?? .none == .follow {
+        if filteredNotifications[indexPath.row].first?.reason ?? .none == .follow {
             let vc = FriendsViewController()
             vc.profile = ""
             vc.isShowingFollowers = true
             var allActivityUsers: [AppBskyLexicon.Actor.ProfileViewBasicDefinition] = []
-            for x in allNotifications[indexPath.row] {
+            for x in filteredNotifications[indexPath.row] {
                 allActivityUsers.append(x.author)
             }
             vc.allActivityUsers = allActivityUsers
@@ -411,22 +564,22 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        if self.allNotifications[indexPath.row].first?.reason ?? .none == .reply {
+        if self.filteredNotifications[indexPath.row].first?.reason ?? .none == .reply || self.filteredNotifications[indexPath.row].first?.reason ?? .none == .mention {
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
                 if let post = self.allSubjectPosts.first(where: { post in
-                    post.uri == self.allNotifications[indexPath.row].first?.uri ?? ""
+                    post.uri == self.filteredNotifications[indexPath.row].first?.uri ?? ""
                 }) {
                     return makePostContextMenu(indexPath.row, post: post)
                 } else {
                     return nil
                 }
             }
-        } else if self.allNotifications[indexPath.row].first?.reason ?? .none == .follow {
+        } else if self.filteredNotifications[indexPath.row].first?.reason ?? .none == .follow {
             return nil
         } else {
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
                 if let post = self.allSubjectPosts.first(where: { post in
-                    post.uri == self.allNotifications[indexPath.row].first?.reasonSubjectURI ?? ""
+                    post.uri == self.filteredNotifications[indexPath.row].first?.reasonSubjectURI ?? ""
                 }) {
                     return makePostContextMenu(indexPath.row, post: post)
                 } else {
@@ -439,28 +592,28 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     @objc func profileTapped(_ sender: UIButton) {
         defaultHaptics()
         let vc = ProfileViewController()
-        vc.profile = allNotifications[sender.tag].first?.author.actorDID ?? ""
+        vc.profile = filteredNotifications[sender.tag].first?.author.actorDID ?? ""
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc func viewProfile1(_ sender: UIButton) {
         defaultHaptics()
         let vc = ProfileViewController()
-        vc.profile = allNotifications[sender.tag].first?.author.actorDID ?? ""
+        vc.profile = filteredNotifications[sender.tag].first?.author.actorDID ?? ""
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc func viewProfile2(_ sender: UIButton) {
         defaultHaptics()
         let vc = ProfileViewController()
-        vc.profile = allNotifications[sender.tag][1].author.actorDID
+        vc.profile = filteredNotifications[sender.tag][1].author.actorDID
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc func viewProfile3(_ sender: UIButton) {
         defaultHaptics()
         let vc = ProfileViewController()
-        vc.profile = allNotifications[sender.tag][2].author.actorDID
+        vc.profile = filteredNotifications[sender.tag][2].author.actorDID
         navigationController?.pushViewController(vc, animated: true)
     }
     

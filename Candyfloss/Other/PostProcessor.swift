@@ -14,6 +14,8 @@ func configurePostCell(_ cell: PostsCell, with post: AppBskyLexicon.Feed.PostVie
     // post avatar
     if let url = post.author.avatarImageURL {
         cell.avatar.sd_setImage(with: url, for: .normal)
+    } else {
+        cell.avatar.setImage(UIImage(), for: .normal)
     }
     
     // post user details
@@ -68,6 +70,8 @@ func configureDetailCell(_ cell: DetailCell, with post: AppBskyLexicon.Feed.Post
     // post avatar
     if let url = post.author.avatarImageURL {
         cell.avatar.sd_setImage(with: url, for: .normal)
+    } else {
+        cell.avatar.setImage(UIImage(), for: .normal)
     }
     
     // post user details
@@ -212,6 +216,8 @@ func configureMessageCell(_ cell: MessageCell, with message: ChatBskyLexicon.Con
         // message avatar
         if let url = author.avatarImageURL {
             cell.avatar.sd_setImage(with: url, for: .normal)
+        } else {
+            cell.avatar.setImage(UIImage(), for: .normal)
         }
         
         // message user details

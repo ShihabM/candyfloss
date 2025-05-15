@@ -323,6 +323,27 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         }
     }
     
+    func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        previewForHighlightingMenuWithConfiguration configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
+        let parameters = UIPreviewParameters()
+        parameters.backgroundColor = GlobalStruct.backgroundTint
+        parameters.visiblePath = UIBezierPath(ovalIn: CGRect(x: -6, y: -6, width: 40, height: 40))
+        parameters.shadowPath = nil
+        if let imageView = interaction.view?.subviews.first(where: { $0 is UIImageView }) {
+            return UITargetedPreview(view: imageView, parameters: parameters)
+        }
+        return UITargetedPreview(view: interaction.view ?? UIView(), parameters: parameters)
+    }
+    
+    func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        previewForDismissingMenuWithConfiguration configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
+        return nil
+    }
+    
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         return true
     }

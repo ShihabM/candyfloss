@@ -355,7 +355,66 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     @objc func fetchLatest() {
-        self.refreshControl.endRefreshing()
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let latest = try await atProto.listNotifications(isPriority: nil, cursor: nil)
+
+                    var newGrouped: [[AppBskyLexicon.Notification.Notification]] = []
+                    var group: [AppBskyLexicon.Notification.Notification] = []
+                    var previousReason: AppBskyLexicon.Notification.Notification.Reason? = nil
+                    for notification in latest.notifications {
+                        if allNotifications.flatMap({ $0 }).contains(where: { $0.uri == notification.uri }) {
+                            break
+                        }
+
+                        if notification.reason == previousReason {
+                            if !group.contains(where: { $0.author.actorDID == notification.author.actorDID }) {
+                                group.insert(notification, at: 0)
+                            }
+                        } else {
+                            if !group.isEmpty { newGrouped.append(group) }
+                            group = [notification]
+                        }
+                        previousReason = notification.reason
+                    }
+                    if !group.isEmpty {
+                        newGrouped.append(group)
+                    }
+
+                    var uris: [String] = []
+                    for notification in latest.notifications {
+                        if notification.reason == .reply || notification.reason == .mention {
+                            uris.append(notification.uri)
+                        } else if let uri = notification.reasonSubjectURI {
+                            uris.append(uri)
+                        }
+                    }
+                    let newSubjects = try await atProto.getPosts(uris)
+
+                    DispatchQueue.main.async {
+                        self.allSubjectPosts.insert(contentsOf: newSubjects.posts, at: 0)
+                        self.allNotifications.insert(contentsOf: newGrouped, at: 0)
+
+                        if self.notificationsSection == 0 {
+                            self.filteredNotifications = self.allNotifications
+                        } else {
+                            self.filteredNotifications = self.allNotifications.filter {
+                                $0.contains { $0.reason == .reply || $0.reason == .mention }
+                            }
+                        }
+
+                        self.refreshControl.endRefreshing()
+                        self.tableView.reloadData()
+                    }
+                }
+            } catch {
+                print("Error fetching latest notifications: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+                }
+            }
+        }
     }
     
     func setUpTable() {

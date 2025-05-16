@@ -121,6 +121,7 @@ class UserCell: UITableViewCell, UIContextMenuInteractionDelegate {
         self.currentProfile = currentProfile
         self.defaultProfile = defaultProfile
         bio.text = bioText.trimmingCharacters(in: .whitespacesAndNewlines)
+        avatar.addTarget(self, action: #selector(avatarTapped), for: .touchUpInside)
         
         let viewsDict = [
             "bgView" : bgView,
@@ -153,6 +154,14 @@ class UserCell: UITableViewCell, UIContextMenuInteractionDelegate {
         NSLayoutConstraint.deactivate(cellStackViewConstraints1)
         cellStackViewConstraints1 = NSLayoutConstraint.constraints(withVisualFormat: followsYouLayoutString, options: [], metrics: metricsDict, views: viewsDict)
         NSLayoutConstraint.activate(cellStackViewConstraints1)
+    }
+    
+    @objc func avatarTapped() {
+        if let tableView = self.findSuperview(ofType: UITableView.self),
+           let indexPath = tableView.indexPath(for: self),
+           let delegate = tableView.delegate {
+            delegate.tableView?(tableView, didSelectRowAt: indexPath)
+        }
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {

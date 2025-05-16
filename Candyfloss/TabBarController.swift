@@ -499,7 +499,7 @@ class AnimateTabController: UITabBarController {
         if GlobalStruct.animateTabSelections {
             let timeInterval: TimeInterval = 0.45
             let propertyAnimator = UIViewPropertyAnimator(duration: timeInterval, dampingRatio: 0.85) {
-                barItemView.transform = CGAffineTransform.identity.scaledBy(x: 1.14, y: 1.14)
+                barItemView.transform = CGAffineTransform.identity.scaledBy(x: 0.86, y: 0.86)
             }
             propertyAnimator.addAnimations({ barItemView.transform = .identity }, delayFactor: CGFloat(timeInterval))
             propertyAnimator.startAnimation()

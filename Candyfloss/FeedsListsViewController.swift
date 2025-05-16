@@ -372,7 +372,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     return cell
                 } else {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as! FeedCell
-                    let symbolConfigIcon = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
+                    let symbolConfigIcon = UIImage.SymbolConfiguration(pointSize: 22, weight: .semibold)
                     
                     if indexPath.row == 1 {
                         cell.configureCell(showingDescriptions)

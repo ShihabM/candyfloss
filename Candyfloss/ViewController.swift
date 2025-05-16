@@ -212,6 +212,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.setupListDropdown()
+        }
+    }
+    
     @objc func setUpNavigationBar() {
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = GlobalStruct.backgroundTint
@@ -280,7 +287,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         self.navigationItem.titleView = titleLabel
         var allActions0: [UIAction] = []
         if !GlobalStruct.pinnedFeeds.isEmpty {
-            let menuItem = UIAction(title: "Following", image: UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in
+            let theImage = UIImageView()
+            let symbolConfigIcon = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
+            theImage.image = UIImage(systemName: "figure.walk", withConfiguration: symbolConfigIcon)?.withTintColor(.white, renderingMode: .alwaysOriginal)
+            let menuItem = UIAction(title: "Following", image: imageWithBackground(theImage.image ?? UIImage(), backgroundColor: GlobalStruct.blueskyBlue, size: CGSize(width: 30, height: 30)).withRoundedCorners() ?? UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in
                 guard let self else { return }
                 GlobalStruct.listURI = ""
                 GlobalStruct.listName = ""
@@ -300,46 +310,92 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             allActions0.append(menuItem)
         }
         for feed in GlobalStruct.pinnedFeeds {
-            let menuItem = UIAction(title: feed.name, image: UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in
-                guard let self else { return }
-                GlobalStruct.listURI = ""
-                GlobalStruct.listName = ""
-                GlobalStruct.currentList = nil
-                GlobalStruct.currentFeedURI = feed.uri
-                GlobalStruct.currentFeedDisplayName = feed.name
-                GlobalStruct.currentFeed = feed.feedItem
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
-                saveCurrentFeedAndList()
-                setupListDropdown()
-            }
-            if GlobalStruct.currentFeedDisplayName == feed.name {
-                menuItem.state = .on
+            if let url = feed.feedItem?.avatarImageURL {
+                let theImage = UIImageView()
+                theImage.sd_setImage(with: url)
+                let menuItem = UIAction(title: feed.name, image: theImage.image?.withRoundedCorners() ?? UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in
+                    guard let self else { return }
+                    GlobalStruct.listURI = ""
+                    GlobalStruct.listName = ""
+                    GlobalStruct.currentList = nil
+                    GlobalStruct.currentFeedURI = feed.uri
+                    GlobalStruct.currentFeedDisplayName = feed.name
+                    GlobalStruct.currentFeed = feed.feedItem
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
+                    saveCurrentFeedAndList()
+                    setupListDropdown()
+                }
+                if GlobalStruct.currentFeedDisplayName == feed.name {
+                    menuItem.state = .on
+                } else {
+                    menuItem.state = .off
+                }
+                allActions0.append(menuItem)
             } else {
-                menuItem.state = .off
+                let menuItem = UIAction(title: feed.name, image: UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in
+                    guard let self else { return }
+                    GlobalStruct.listURI = ""
+                    GlobalStruct.listName = ""
+                    GlobalStruct.currentList = nil
+                    GlobalStruct.currentFeedURI = feed.uri
+                    GlobalStruct.currentFeedDisplayName = feed.name
+                    GlobalStruct.currentFeed = feed.feedItem
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "switchFeed"), object: nil)
+                    saveCurrentFeedAndList()
+                    setupListDropdown()
+                }
+                if GlobalStruct.currentFeedDisplayName == feed.name {
+                    menuItem.state = .on
+                } else {
+                    menuItem.state = .off
+                }
+                allActions0.append(menuItem)
             }
-            allActions0.append(menuItem)
         }
         let feedsSubMenu = UIMenu(title: "", options: [.displayInline], children: allActions0)
         var allActions1: [UIAction] = []
         for list in GlobalStruct.pinnedLists {
-            let menuItem = UIAction(title: list.name, image: UIImage(systemName: "list.bullet"), identifier: nil) { [weak self] action in
-                guard let self else { return }
-                GlobalStruct.listURI = list.uri
-                GlobalStruct.listName = list.name
-                GlobalStruct.currentList = list.listItem
-                GlobalStruct.currentFeedURI = ""
-                GlobalStruct.currentFeedDisplayName = ""
-                GlobalStruct.currentFeed = nil
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
-                saveCurrentFeedAndList()
-                setupListDropdown()
-            }
-            if GlobalStruct.listName == list.name {
-                menuItem.state = .on
+            if let url = list.listItem?.avatarImageURL {
+                let theImage = UIImageView()
+                theImage.sd_setImage(with: url)
+                let menuItem = UIAction(title: list.name, image: theImage.image?.withRoundedCorners() ?? UIImage(systemName: "list.bullet"), identifier: nil) { [weak self] action in
+                    guard let self else { return }
+                    GlobalStruct.listURI = list.uri
+                    GlobalStruct.listName = list.name
+                    GlobalStruct.currentList = list.listItem
+                    GlobalStruct.currentFeedURI = ""
+                    GlobalStruct.currentFeedDisplayName = ""
+                    GlobalStruct.currentFeed = nil
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
+                    saveCurrentFeedAndList()
+                    setupListDropdown()
+                }
+                if GlobalStruct.listName == list.name {
+                    menuItem.state = .on
+                } else {
+                    menuItem.state = .off
+                }
+                allActions1.append(menuItem)
             } else {
-                menuItem.state = .off
+                let menuItem = UIAction(title: list.name, image: UIImage(systemName: "list.bullet"), identifier: nil) { [weak self] action in
+                    guard let self else { return }
+                    GlobalStruct.listURI = list.uri
+                    GlobalStruct.listName = list.name
+                    GlobalStruct.currentList = list.listItem
+                    GlobalStruct.currentFeedURI = ""
+                    GlobalStruct.currentFeedDisplayName = ""
+                    GlobalStruct.currentFeed = nil
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
+                    saveCurrentFeedAndList()
+                    setupListDropdown()
+                }
+                if GlobalStruct.listName == list.name {
+                    menuItem.state = .on
+                } else {
+                    menuItem.state = .off
+                }
+                allActions1.append(menuItem)
             }
-            allActions1.append(menuItem)
         }
         let listsSubMenu = UIMenu(title: "", options: [.displayInline], children: allActions1)
         let menuItem1 = UIAction(title: "View Feeds", image: UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in

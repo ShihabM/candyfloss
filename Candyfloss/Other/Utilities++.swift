@@ -1014,6 +1014,24 @@ func imageWithImage(image: UIImage, scaledToSize newSize: CGSize) -> UIImage {
     return newImage
 }
 
+func imageWithBackground(_ image: UIImage, backgroundColor: UIColor, size: CGSize) -> UIImage {
+    let renderer = UIGraphicsImageRenderer(size: size)
+    return renderer.image { context in
+        let rect = CGRect(origin: .zero, size: size)
+        backgroundColor.setFill()
+        context.fill(rect)
+        let path = UIBezierPath(ovalIn: rect)
+        path.addClip()
+        let targetRect = CGRect(
+            x: 7,
+            y: 5,
+            width: size.width - 2 * 7,
+            height: size.height - 2 * 5
+        )
+        image.draw(in: targetRect)
+    }
+}
+
 // haptics
 
 func defaultHaptics() {

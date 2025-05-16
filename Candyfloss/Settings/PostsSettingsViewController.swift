@@ -139,6 +139,7 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell
             
+            cell.avatar.backgroundColor = GlobalStruct.baseTint
             cell.avatar.setImage(UIImage(), for: .normal)
             cell.username.text = GlobalStruct.currentUser?.displayName ?? ""
             if cell.username.text == "" {

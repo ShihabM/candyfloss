@@ -66,6 +66,7 @@
 		53A1A0472DD39EFF0040AF52 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = 53A1A0462DD39EFF0040AF52 /* MessageKit */; };
 		53A1A0492DD39F100040AF52 /* MessageChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */; };
 		53A1A04B2DD4ACD00040AF52 /* HashtagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1A04A2DD4ACA30040AF52 /* HashtagViewController.swift */; };
+		53A1A0522DD758500040AF52 /* TabSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1A0512DD7584A0040AF52 /* TabSettingsViewController.swift */; };
 		53C460E42D7B1427009F7C6B /* PostProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E32D7B1424009F7C6B /* PostProcessor.swift */; };
 		53C460E62D7B5105009F7C6B /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E52D7B5100009F7C6B /* DetailsViewController.swift */; };
 		53C460E82D7B59EF009F7C6B /* DetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E72D7B59EC009F7C6B /* DetailCell.swift */; };
@@ -174,6 +175,7 @@
 		53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedTipCell.swift; sourceTree = "<group>"; };
 		53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageChatViewController.swift; sourceTree = "<group>"; };
 		53A1A04A2DD4ACA30040AF52 /* HashtagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagViewController.swift; sourceTree = "<group>"; };
+		53A1A0512DD7584A0040AF52 /* TabSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSettingsViewController.swift; sourceTree = "<group>"; };
 		53C460E32D7B1424009F7C6B /* PostProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostProcessor.swift; sourceTree = "<group>"; };
 		53C460E52D7B5100009F7C6B /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		53C460E72D7B59EC009F7C6B /* DetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCell.swift; sourceTree = "<group>"; };
@@ -243,6 +245,7 @@
 			children = (
 				5309C2072DC0F25600380B93 /* SettingsViewController.swift */,
 				5309C20D2DC0F64600380B93 /* TintSettingsViewController.swift */,
+				53A1A0512DD7584A0040AF52 /* TabSettingsViewController.swift */,
 				5309C2132DC22C0200380B93 /* PostsSettingsViewController.swift */,
 				5309C20F2DC21A9E00380B93 /* DetailsSettingsViewController.swift */,
 				5309C2112DC2209F00380B93 /* ComposerSettingsViewController.swift */,
@@ -605,6 +608,7 @@
 				539B4CE02CC7A3E700CF6646 /* SloppySwipingNav.swift in Sources */,
 				539B4CE12CC7A3E700CF6646 /* Utilities++.swift in Sources */,
 				53C460EE2D7DB992009F7C6B /* FriendsViewController.swift in Sources */,
+				53A1A0522DD758500040AF52 /* TabSettingsViewController.swift in Sources */,
 				539B4CE22CC7A3E700CF6646 /* ActivityViewController.swift in Sources */,
 				539B4CE32CC7A3E700CF6646 /* AppDelegate.swift in Sources */,
 				53C460E62D7B5105009F7C6B /* DetailsViewController.swift in Sources */,

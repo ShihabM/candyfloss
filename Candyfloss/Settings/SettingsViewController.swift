@@ -16,7 +16,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     
     var tableView = UITableView()
     var section1Titles: [String] = ["App Icon", "App Tint", "Open Links", "Reader Mode", "Haptics"]
-    var section2Titles: [String] = ["Timelines", "Posts", "Post Details", "Post Composer"]
+    var section2Titles: [String] = ["Tabs", "Timelines", "Posts", "Post Details", "Post Composer"]
     var section3Titles: [String] = ["Bluesky Service Status"]
     var section4Titles: [String] = ["Reset App Data"]
     var fromNavigationStack: Bool = true
@@ -341,19 +341,23 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             navigationController?.pushViewController(vc, animated: true)
         }
         if indexPath.section == 1 && indexPath.row == 0 {
+            let vc = TabSettingsViewController()
+            navigationController?.pushViewController(vc, animated: true)
+        }
+        if indexPath.section == 1 && indexPath.row == 1 {
             showAlert()
 //            let vc = TimelineSettingsViewController()
 //            navigationController?.pushViewController(vc, animated: true)
         }
-        if indexPath.section == 1 && indexPath.row == 1 {
+        if indexPath.section == 1 && indexPath.row == 2 {
             let vc = PostsSettingsViewController()
             navigationController?.pushViewController(vc, animated: true)
         }
-        if indexPath.section == 1 && indexPath.row == 2 {
+        if indexPath.section == 1 && indexPath.row == 3 {
             let vc = DetailsSettingsViewController()
             navigationController?.pushViewController(vc, animated: true)
         }
-        if indexPath.section == 1 && indexPath.row == 3 {
+        if indexPath.section == 1 && indexPath.row == 4 {
             let vc = ComposerSettingsViewController()
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -430,7 +434,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
         if section == 0 {
             return "General"
         } else if section == 1 {
-            return "Sections"
+            return "Areas"
         } else if section == 2 {
             return "Extras"
         } else {

@@ -40,6 +40,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         NotificationCenter.default.addObserver(self, selector: #selector(self.showNewPostButton), name: NSNotification.Name(rawValue: "showNewPostButton"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.hideNewPostButton), name: NSNotification.Name(rawValue: "hideNewPostButton"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateNewPostPosition), name: NSNotification.Name(rawValue: "updateNewPostPosition"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateSwitchableView), name: NSNotification.Name(rawValue: "updateSwitchableView"), object: nil)
         
         let divider = UIView()
         divider.backgroundColor = UIColor.label.withAlphaComponent(0.2)
@@ -323,6 +324,37 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         }
     }
     
+    @objc func updateSwitchableView() {
+        let config = SwitchableViewConfig(
+            title: GlobalStruct.switchableView.title,
+            icon: GlobalStruct.switchableView.icon,
+            iconSelected: GlobalStruct.switchableView.iconSelected
+        )
+        if let encoded = try? JSONEncoder().encode(config) {
+            if GlobalStruct.switchableIndex == 2 {
+                UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot3")
+            } else if GlobalStruct.switchableIndex == 3 {
+                UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot4")
+            } else {
+                UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot5")
+            }
+        }
+        let vc = GlobalStruct.switchableView.view
+        if GlobalStruct.switchableView.title == "Lists" {
+            if let vc = vc as? FeedsListsViewController {
+                vc.fromTab = true
+                vc.otherListUser = GlobalStruct.currentUser?.actorHandle ?? ""
+            }
+        }
+        let vc1 = SloppySwipingNav(rootViewController: vc)
+        vc1.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: UIImage(systemName: GlobalStruct.switchableView.icon) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: UIImage(systemName: GlobalStruct.switchableView.iconSelected) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
+        vc1.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
+        vc1.accessibilityLabel = ""
+        vc1.tabBarItem.tag = GlobalStruct.switchableIndex
+        self.viewControllers?[GlobalStruct.switchableIndex] = vc1
+        self.setupContextMenus()
+    }
+    
     func contextMenuInteraction(
         _ interaction: UIContextMenuInteraction,
         previewForHighlightingMenuWithConfiguration configuration: UIContextMenuConfiguration
@@ -496,7 +528,7 @@ class AnimateTabController: UITabBarController {
         
         guard let barItemView = item.value(forKey: "view") as? UIView else { return }
         
-        if GlobalStruct.animateTabSelections {
+        if GlobalStruct.animateTabSelection {
             let timeInterval: TimeInterval = 0.45
             let propertyAnimator = UIViewPropertyAnimator(duration: timeInterval, dampingRatio: 0.85) {
                 barItemView.transform = CGAffineTransform.identity.scaledBy(x: 0.86, y: 0.86)

@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GlobalStruct.switchQuotePreviews = UserDefaults.standard.value(forKey: "switchQuotePreviews") as? Bool ?? true
         GlobalStruct.switchLinkPreviews = UserDefaults.standard.value(forKey: "switchLinkPreviews") as? Bool ?? true
         GlobalStruct.switchMedia = UserDefaults.standard.value(forKey: "switchMedia") as? Bool ?? true
+        GlobalStruct.animateTabSelection = UserDefaults.standard.value(forKey: "animateTabSelection") as? Bool ?? true
         
         // fetch all feeds
         do {

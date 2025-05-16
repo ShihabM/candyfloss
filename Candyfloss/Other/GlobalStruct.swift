@@ -73,7 +73,6 @@ struct GlobalStruct {
     static var showActionButtons: Bool = true
     static var showActionButtonCounts: Bool = true
     static var twentyFourHourFormat: Bool = true
-    static var animateTabSelections: Bool = true
     static var profilePagePicAlignment: CGFloat = 1
     static var customTextSize: CGFloat = 0
     static var customLineSize: CGFloat = 0
@@ -93,6 +92,7 @@ struct GlobalStruct {
     static var switchLinkPreviews: Bool = true
     static var switchAutoplay: Bool = true
     static var currentMaxMediaCount: Int = 4
+    static var animateTabSelection: Bool = true
     
     static var fromComposerMedia: Bool = false
     static var composerMediaIndex: Int = 0
@@ -110,6 +110,8 @@ struct GlobalStruct {
         SwitchableViews(title: "Messages", icon: "message", iconSelected: "message.fill", view: MessagesListViewController()),
         SwitchableViews(title: "Profile", icon: "person", iconSelected: "person.fill", view: ProfileViewController())
     ]
+    static var switchableView: SwitchableViews = SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController())
+    static var switchableIndex: Int = 0
     
     // action buttons
     static var bookmarkImage1 = UIImage(systemName: "bookmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))?.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal)

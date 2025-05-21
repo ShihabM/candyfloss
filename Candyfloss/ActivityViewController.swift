@@ -344,7 +344,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                     }
                 }
             } catch {
-                print("Error fetching activity: \(error.localizedDescription)")
+                print("Error fetching activity: \(error)")
                 DispatchQueue.main.async {
                     self.isFetching = false
                     self.loadingIndicator.stopAnimating()
@@ -409,7 +409,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                     }
                 }
             } catch {
-                print("Error fetching latest notifications: \(error.localizedDescription)")
+                print("Error fetching latest notifications: \(error)")
                 DispatchQueue.main.async {
                     self.refreshControl.endRefreshing()
                 }
@@ -509,7 +509,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                                 cell.repostsCount = posts.posts.first?.repostCount ?? 0
                             }
                         } catch {
-                            print("Error fetching post: \(error.localizedDescription)")
+                            print("Error fetching post: \(error)")
                         }
                     }
                 } else {
@@ -610,7 +610,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                         }
                     }
                 } catch {
-                    print("Error fetching post: \(error.localizedDescription)")
+                    print("Error fetching post: \(error)")
                 }
             }
         }

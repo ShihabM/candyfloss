@@ -198,7 +198,7 @@ class DetailImagesCell: UITableViewCell, UISheetPresentationControllerDelegate, 
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .duckOthers)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print(error.localizedDescription)
+            print(error)
         }
     }
     
@@ -210,7 +210,7 @@ class DetailImagesCell: UITableViewCell, UISheetPresentationControllerDelegate, 
                     try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .mixWithOthers)
                     try AVAudioSession.sharedInstance().setActive(true)
                 } catch {
-                    print(error.localizedDescription)
+                    print(error)
                 }
             }
             self.playerView.player?.play()
@@ -227,7 +227,7 @@ class DetailImagesCell: UITableViewCell, UISheetPresentationControllerDelegate, 
             try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .mixWithOthers)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print(error.localizedDescription)
+            print(error)
         }
         playerView.player?.play()
     }

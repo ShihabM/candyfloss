@@ -164,7 +164,7 @@ class LikesRepostsViewController: UIViewController, UITableViewDataSource, UITab
                     }
                 }
             } catch {
-                print("Error fetching users: \(error.localizedDescription)")
+                print("Error fetching users: \(error)")
                 DispatchQueue.main.async {
                     self.loadingIndicator.stopAnimating()
                     self.isFetching = false

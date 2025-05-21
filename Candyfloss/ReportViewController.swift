@@ -237,18 +237,18 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
         Task {
             do {
                 if let atProto = GlobalStruct.atProto {
-                    let atProtoAdmin = await ATProtoAdmin(sessionConfiguration: atProto.sessionConfiguration)
-                    if let _ = currentPost {
-                        let recordUri = currentPost?.uri ?? ""
-                        let recordCID = currentPost?.cid ?? ""
-                        let subject = ATUnion.CreateReportSubjectUnion.strongReference(ComAtprotoLexicon.Repository.StrongReference(recordURI: recordUri, cidHash: recordCID))
-                        let x = try await atProtoAdmin.createReport(with: reportCategory, subject: subject)
+                    if let currentPost = currentPost {
+//                        let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost?.uri ?? "")
+//                        let x = try await atProto.createReport(with: reportCategory, subject: .strongReference(strongReferenceResult))
+                        let recordUri = currentPost.uri
+                        let recordCID = currentPost.cid
+                        let x = try await atProto.createReport(with: reportCategory, subject: .strongReference(.init(recordURI: recordUri, cidHash: recordCID)))
                         print("Reported: \(x.id)")
                     } else {
 //                        let recordUri = currentPost?.post.uri ?? ""
 //                        let recordCID = currentPost?.post.cid ?? ""
 //                        let subject = ComAtprotoLexicon.Repository.StrongReference(recordURI: recordUri, cidHash: recordCID)
-//                        let x = try await atProtoAdmin.createReport(with: reportCategory, subject: subject)
+//                        let x = try await atProto.createReport(with: reportCategory, subject: subject)
 //                        print("Reported: \(x.id)")
                     }
                     DispatchQueue.main.async {
@@ -256,7 +256,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
                     }
                 }
             } catch {
-                print("Error reporting: \(error.localizedDescription)")
+                print("Error reporting: \(error)")
             }
         }
     }

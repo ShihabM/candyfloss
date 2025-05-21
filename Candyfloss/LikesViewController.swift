@@ -193,7 +193,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
                     }
                 }
             } catch {
-                print("error fetching likes: \(error.localizedDescription)")
+                print("error fetching likes: \(error)")
                 loadingIndicator.stopAnimating()
             }
         }

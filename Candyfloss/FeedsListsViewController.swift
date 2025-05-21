@@ -228,7 +228,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     }
                 }
             } catch {
-                print("Error fetching feeds: \(error.localizedDescription)")
+                print("Error fetching feeds: \(error)")
             }
         }
     }

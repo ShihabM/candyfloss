@@ -152,7 +152,7 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
                         UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
                     }
                 } catch {
-                    print("Error fetching profile: \(error.localizedDescription)")
+                    print("Error fetching profile: \(error)")
                 }
             }
         }
@@ -493,7 +493,7 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
                     }
                 }
             } catch {
-                print("Error unfollowing user: \(error.localizedDescription)")
+                print("Error unfollowing user: \(error)")
             }
         }
     }
@@ -510,7 +510,7 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
                     }
                 }
             } catch {
-                print("Error following user: \(error.localizedDescription)")
+                print("Error following user: \(error)")
             }
         }
     }

@@ -28,6 +28,8 @@
 		531980982D96E5DA006C3D22 /* ComposeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531980972D96E5D7006C3D22 /* ComposeCell.swift */; };
 		5319809A2D96E5F3006C3D22 /* MultilineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531980992D96E5EF006C3D22 /* MultilineTextField.swift */; };
 		5319809C2D96E6BB006C3D22 /* ComposerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5319809B2D96E6B6006C3D22 /* ComposerViewController.swift */; };
+		532883BC2DDDCB7F002AED8C /* ATMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 532883BB2DDDCB7F002AED8C /* ATMacro */; };
+		532883BE2DDDCB7F002AED8C /* ATProtoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 532883BD2DDDCB7F002AED8C /* ATProtoKit */; };
 		539B4CD62CC7A3E700CF6646 /* ActiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */; };
 		539B4CD72CC7A3E700CF6646 /* ActiveLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */; };
 		539B4CD82CC7A3E700CF6646 /* ActiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBC2CC7A3E700CF6646 /* ActiveType.swift */; };
@@ -61,12 +63,12 @@
 		539B4D032CC7B6BA00CF6646 /* Disk+VolumeInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CF82CC7B6BA00CF6646 /* Disk+VolumeInformation.swift */; };
 		539B50AF2CC7ED3800CF6646 /* MessagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B50AE2CC7ED3200CF6646 /* MessagesListViewController.swift */; };
 		53A19FA62DCCB49C0040AF52 /* FeedTipCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A19FA52DCCB4980040AF52 /* FeedTipCell.swift */; };
-		53A19FB22DD34C020040AF52 /* ATMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 53A19FB12DD34C020040AF52 /* ATMacro */; };
-		53A19FB42DD34C020040AF52 /* ATProtoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 53A19FB32DD34C020040AF52 /* ATProtoKit */; };
 		53A1A0472DD39EFF0040AF52 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = 53A1A0462DD39EFF0040AF52 /* MessageKit */; };
 		53A1A0492DD39F100040AF52 /* MessageChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1A0482DD39F060040AF52 /* MessageChatViewController.swift */; };
 		53A1A04B2DD4ACD00040AF52 /* HashtagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1A04A2DD4ACA30040AF52 /* HashtagViewController.swift */; };
 		53A1A0522DD758500040AF52 /* TabSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1A0512DD7584A0040AF52 /* TabSettingsViewController.swift */; };
+		53A1A05C2DDB834F0040AF52 /* ATMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 53A1A05B2DDB834F0040AF52 /* ATMacro */; };
+		53A1A05E2DDB834F0040AF52 /* ATProtoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 53A1A05D2DDB834F0040AF52 /* ATProtoKit */; };
 		53C460E42D7B1427009F7C6B /* PostProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E32D7B1424009F7C6B /* PostProcessor.swift */; };
 		53C460E62D7B5105009F7C6B /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E52D7B5100009F7C6B /* DetailsViewController.swift */; };
 		53C460E82D7B59EF009F7C6B /* DetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C460E72D7B59EC009F7C6B /* DetailCell.swift */; };
@@ -227,13 +229,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53A1A05C2DDB834F0040AF52 /* ATMacro in Frameworks */,
 				53C4659A2D8C7AFA009F7C6B /* ATMacro in Frameworks */,
 				53C939832CC6A82E009321BD /* SDWebImage in Frameworks */,
+				532883BE2DDDCB7F002AED8C /* ATProtoKit in Frameworks */,
 				53C939852CC6A82E009321BD /* SDWebImageMapKit in Frameworks */,
 				53A1A0472DD39EFF0040AF52 /* MessageKit in Frameworks */,
-				53A19FB42DD34C020040AF52 /* ATProtoKit in Frameworks */,
+				53A1A05E2DDB834F0040AF52 /* ATProtoKit in Frameworks */,
+				532883BC2DDDCB7F002AED8C /* ATMacro in Frameworks */,
 				53C4659C2D8C7AFA009F7C6B /* ATProtoKit in Frameworks */,
-				53A19FB22DD34C020040AF52 /* ATMacro in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,9 +463,11 @@
 				53C939842CC6A82E009321BD /* SDWebImageMapKit */,
 				53C465992D8C7AFA009F7C6B /* ATMacro */,
 				53C4659B2D8C7AFA009F7C6B /* ATProtoKit */,
-				53A19FB12DD34C020040AF52 /* ATMacro */,
-				53A19FB32DD34C020040AF52 /* ATProtoKit */,
 				53A1A0462DD39EFF0040AF52 /* MessageKit */,
+				53A1A05B2DDB834F0040AF52 /* ATMacro */,
+				53A1A05D2DDB834F0040AF52 /* ATProtoKit */,
+				532883BB2DDDCB7F002AED8C /* ATMacro */,
+				532883BD2DDDCB7F002AED8C /* ATProtoKit */,
 			);
 			productName = Candyfloss;
 			productReference = 53C9394E2CC69382009321BD /* Candyfloss.app */;
@@ -493,8 +499,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				53C939812CC6A82E009321BD /* XCRemoteSwiftPackageReference "SDWebImage" */,
-				53A19FB02DD34C020040AF52 /* XCRemoteSwiftPackageReference "ATProtoKit" */,
 				53A1A0452DD39EFF0040AF52 /* XCRemoteSwiftPackageReference "MessageKit" */,
+				532883BA2DDDCB7F002AED8C /* XCRemoteSwiftPackageReference "ATProtoKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 53C9394F2CC69382009321BD /* Products */;
@@ -856,12 +862,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		53A19FB02DD34C020040AF52 /* XCRemoteSwiftPackageReference "ATProtoKit" */ = {
+		532883BA2DDDCB7F002AED8C /* XCRemoteSwiftPackageReference "ATProtoKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/MasterJ93/ATProtoKit";
+			repositoryURL = "https://github.com/MasterJ93/ATProtoKit.git";
 			requirement = {
-				kind = exactVersion;
-				version = 0.26.0;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.26.6;
 			};
 		};
 		53A1A0452DD39EFF0040AF52 /* XCRemoteSwiftPackageReference "MessageKit" */ = {
@@ -883,20 +889,28 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		53A19FB12DD34C020040AF52 /* ATMacro */ = {
+		532883BB2DDDCB7F002AED8C /* ATMacro */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 53A19FB02DD34C020040AF52 /* XCRemoteSwiftPackageReference "ATProtoKit" */;
+			package = 532883BA2DDDCB7F002AED8C /* XCRemoteSwiftPackageReference "ATProtoKit" */;
 			productName = ATMacro;
 		};
-		53A19FB32DD34C020040AF52 /* ATProtoKit */ = {
+		532883BD2DDDCB7F002AED8C /* ATProtoKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 53A19FB02DD34C020040AF52 /* XCRemoteSwiftPackageReference "ATProtoKit" */;
+			package = 532883BA2DDDCB7F002AED8C /* XCRemoteSwiftPackageReference "ATProtoKit" */;
 			productName = ATProtoKit;
 		};
 		53A1A0462DD39EFF0040AF52 /* MessageKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 53A1A0452DD39EFF0040AF52 /* XCRemoteSwiftPackageReference "MessageKit" */;
 			productName = MessageKit;
+		};
+		53A1A05B2DDB834F0040AF52 /* ATMacro */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ATMacro;
+		};
+		53A1A05D2DDB834F0040AF52 /* ATProtoKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ATProtoKit;
 		};
 		53C465992D8C7AFA009F7C6B /* ATMacro */ = {
 			isa = XCSwiftPackageProductDependency;

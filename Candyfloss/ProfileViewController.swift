@@ -239,7 +239,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error updating profile header: \(error.localizedDescription)")
+                print("Error updating profile header: \(error)")
             }
         }
     }
@@ -281,7 +281,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error fetching profiles and feed: \(error.localizedDescription)")
+                print("Error fetching profiles and feed: \(error)")
                 DispatchQueue.main.async {
                     self.loadingIndicator.stopAnimating()
                     self.tableView.reloadData()
@@ -328,7 +328,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     refreshControl.endRefreshing()
                 }
             } catch {
-                print("Error fetching feed: \(error.localizedDescription)")
+                print("Error fetching feed: \(error)")
                 refreshControl.endRefreshing()
             }
         }
@@ -345,7 +345,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error fetching mutuals: \(error.localizedDescription)")
+                print("Error fetching mutuals: \(error)")
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }

@@ -257,13 +257,12 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
         actionButtonInsideRepost.contentMode = .scaleAspectFit
         actionButtonInsideRepost.imageView?.contentMode = .scaleAspectFit
         actionButtonInsideRepost.backgroundColor = .clear
-        actionButtonInsideRepost.addTarget(self, action: #selector(repostTapped(_:)), for: .touchUpInside)
         actionButtonInsideRepost.showsMenuAsPrimaryAction = false
         
         actionButtonInsideLike.contentMode = .scaleAspectFit
         actionButtonInsideLike.imageView?.contentMode = .scaleAspectFit
         actionButtonInsideLike.backgroundColor = .clear
-        actionButtonInsideLike.addTarget(self, action: #selector(likeTapped(_:)), for: .touchUpInside)
+        actionButtonInsideLike.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         actionButtonInsideLike.showsMenuAsPrimaryAction = false
         
         actionButtonInsideBookmark.setImage(GlobalStruct.bookmarkImage1, for: .normal)
@@ -324,7 +323,7 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
                         UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
                     }
                 } catch {
-                    print("Error fetching profile: \(error.localizedDescription)")
+                    print("Error fetching profile: \(error)")
                 }
             }
         }
@@ -1371,13 +1370,13 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
             }
             
             if let post = post {
-                if let _ = post.record.getRecord(ofType: AppBskyLexicon.Feed.RepostRecord.self) {
+                if post.viewer?.repostURI != nil {
                     actionButtonInsideRepost.setImage(GlobalStruct.repostImage1, for: .normal)
                 } else {
                     actionButtonInsideRepost.setImage(GlobalStruct.repostImage2, for: .normal)
                 }
                 
-                if let _ = post.record.getRecord(ofType: AppBskyLexicon.Feed.LikeRecord.self) {
+                if post.viewer?.likeURI != nil {
                     actionButtonInsideLike.setImage(GlobalStruct.likeImage1, for: .normal)
                 } else {
                     actionButtonInsideLike.setImage(GlobalStruct.likeImage2, for: .normal)
@@ -1460,12 +1459,54 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
         getTopMostViewController()?.present(nvc, animated: true, completion: nil)
     }
     
-    @objc func repostTapped(_ sender: UIButton) {
-        defaultHaptics()
-    }
-    
     @objc func likeTapped(_ sender: UIButton) {
         defaultHaptics()
+        if self.post?.viewer?.likeURI == nil {
+            actionButtonInsideLike.setImage(GlobalStruct.likeImage1, for: .normal)
+            numberLabelLike.text = "\((Int(numberLabelLike.text ?? "0") ?? 0) + 1)"
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                        let strongReferenceResult = try await ATProtoTools.createStrongReference(from: self.post?.uri ?? "")
+                        let _ = try await atProtoBluesky.createLikeRecord(strongReferenceResult)
+                        try await Task.sleep(nanoseconds: 300_000_000)
+                        let y = try await atProto.getPosts([self.post?.uri ?? ""])
+                        if let post = y.posts.first {
+                            self.post = post
+                            numberLabelLike.text = "\(self.post?.likeCount ?? 0)"
+                            GlobalStruct.updatedPost = post
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                        }
+                    }
+                } catch {
+                    print("Error updating post: \(error)")
+                }
+            }
+        } else {
+            actionButtonInsideLike.setImage(GlobalStruct.likeImage2, for: .normal)
+            numberLabelLike.text = "\((Int(numberLabelLike.text ?? "0") ?? 0) - 1)"
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                        let strongReferenceResult = try await ATProtoTools.createStrongReference(from: self.post?.uri ?? "")
+                        let x = try await atProtoBluesky.createLikeRecord(strongReferenceResult)
+                        let _ = try await atProtoBluesky.deleteLikeRecord(.recordURI(atURI: x.recordURI))
+                        try await Task.sleep(nanoseconds: 300_000_000)
+                        let y = try await atProto.getPosts([self.post?.uri ?? ""])
+                        if let post = y.posts.first {
+                            self.post = post
+                            numberLabelLike.text = "\(self.post?.likeCount ?? 0)"
+                            GlobalStruct.updatedPost = post
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                        }
+                    }
+                } catch {
+                    print("Error updating post: \(error)")
+                }
+            }
+        }
     }
     
     @objc func bookmarkTapped(_ sender: UIButton) {
@@ -1529,7 +1570,7 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .duckOthers)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print(error.localizedDescription)
+            print(error)
         }
     }
     
@@ -1541,7 +1582,7 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
                     try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .mixWithOthers)
                     try AVAudioSession.sharedInstance().setActive(true)
                 } catch {
-                    print(error.localizedDescription)
+                    print(error)
                 }
             }
             self.playerView.player?.play()
@@ -1558,7 +1599,7 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
             try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .mixWithOthers)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print(error.localizedDescription)
+            print(error)
         }
         playerView.player?.play()
     }

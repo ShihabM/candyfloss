@@ -228,7 +228,7 @@ class DetailsViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error fetching context: \(error.localizedDescription)")
+                print("Error fetching context: \(error)")
             }
         }
     }

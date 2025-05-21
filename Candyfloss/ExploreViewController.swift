@@ -17,7 +17,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     var fromNavigation: Bool = false
     
     // trending topics
-    var trendingTopics: [AppBskyLexicon.Unspecced.TrendingTopic] = []
+    var trendingTopics: [AppBskyLexicon.Unspecced.TrendingTopicDefinition] = []
     
     // suggested users
     var suggestedUsers: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
@@ -38,7 +38,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     // inline search
     var searchView: UIView = UIView()
     var searchController = UISearchController()
-    var searchResults: [AppBskyLexicon.Unspecced.TrendingTopic] = []
+    var searchResults: [AppBskyLexicon.Unspecced.TrendingTopicDefinition] = []
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
@@ -238,7 +238,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error fetching trending topics: \(error.localizedDescription)")
+                print("Error fetching trending topics: \(error)")
                 loadingIndicator.stopAnimating()
                 tableView.reloadData()
                 refreshControl.endRefreshing()
@@ -260,7 +260,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error fetching suggested users: \(error.localizedDescription)")
+                print("Error fetching suggested users: \(error)")
                 loadingIndicator.stopAnimating()
                 tableView.reloadData()
                 refreshControl.endRefreshing()
@@ -281,7 +281,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error fetching more suggested users: \(error.localizedDescription)")
+                print("Error fetching more suggested users: \(error)")
                 loadingIndicator.stopAnimating()
                 tableView.reloadData()
                 refreshControl.endRefreshing()
@@ -307,7 +307,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error fetching starter packs: \(error.localizedDescription)")
+                print("Error fetching starter packs: \(error)")
                 loadingIndicator.stopAnimating()
                 tableView.reloadData()
                 refreshControl.endRefreshing()
@@ -333,7 +333,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     fetchFeedPosts()
                 }
             } catch {
-                print("Error fetching suggested feeds: \(error.localizedDescription)")
+                print("Error fetching suggested feeds: \(error)")
                 loadingIndicator.stopAnimating()
                 tableView.reloadData()
                 refreshControl.endRefreshing()
@@ -371,7 +371,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                         }
                     }
                 } catch {
-                    print("Error fetching feed posts: \(error.localizedDescription)")
+                    print("Error fetching feed posts: \(error)")
                     loadingIndicator.stopAnimating()
                     tableView.reloadData()
                     refreshControl.endRefreshing()

@@ -98,6 +98,8 @@ struct GlobalStruct {
     static var composerMediaIndex: Int = 0
     static var currentMediaAltText: String = ""
     
+    static var updatedPost: AppBskyLexicon.Feed.PostViewDefinition? = nil
+    
     // views
     static var currentSwitchableViewAtSpot3 = SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController())
     static var currentSwitchableViewAtSpot4 = SwitchableViews(title: "Bookmarks", icon: "bookmark", iconSelected: "bookmark.fill", view: BookmarksViewController())

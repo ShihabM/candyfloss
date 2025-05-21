@@ -134,7 +134,7 @@ class AllStarterPacksViewController: UIViewController, UITableViewDataSource, UI
                     }
                 }
             } catch {
-                print("Error fetching starter packs: \(error.localizedDescription)")
+                print("Error fetching starter packs: \(error)")
                 DispatchQueue.main.async {
                     self.isFetching = false
                 }

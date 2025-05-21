@@ -384,7 +384,7 @@ extension UserDefaults {
         do {
             return try NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: colorData)
         } catch let error {
-            print("color error \(error.localizedDescription)")
+            print("color error \(error)")
             return nil
         }
     }
@@ -1065,7 +1065,7 @@ class QuoteCacheManager {
                     return quote
                 }
             } catch {
-                print("Error fetching quote: \(error.localizedDescription)")
+                print("Error fetching quote: \(error)")
             }
             return nil
         }
@@ -1124,7 +1124,46 @@ func createActionButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = n
     }
     menuActions.append(menuItem3)
     let menuItem4 = UIAction(title: "", image: UIImage(systemName: "heart"), identifier: nil) { action in
-        
+        if let currentPost = post {
+            if currentPost.viewer?.likeURI == nil {
+                Task {
+                    do {
+                        if let atProto = GlobalStruct.atProto {
+                            let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                            let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost.uri)
+                            let _ = try await atProtoBluesky.createLikeRecord(strongReferenceResult)
+                            try await Task.sleep(nanoseconds: 300_000_000)
+                            let y = try await atProto.getPosts([currentPost.uri])
+                            if let post = y.posts.first {
+                                GlobalStruct.updatedPost = post
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                            }
+                        }
+                    } catch {
+                        print("Error updating post: \(error)")
+                    }
+                }
+            } else {
+                Task {
+                    do {
+                        if let atProto = GlobalStruct.atProto {
+                            let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                            let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost.uri)
+                            let x = try await atProtoBluesky.createLikeRecord(strongReferenceResult)
+                            let _ = try await atProtoBluesky.deleteLikeRecord(.recordURI(atURI: x.recordURI))
+                            try await Task.sleep(nanoseconds: 300_000_000)
+                            let y = try await atProto.getPosts([currentPost.uri])
+                            if let post = y.posts.first {
+                                GlobalStruct.updatedPost = post
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                            }
+                        }
+                    } catch {
+                        print("Error updating post: \(error)")
+                    }
+                }
+            }
+        }
     }
     menuActions.append(menuItem4)
     let menu = UIMenu(title: "", options: [.displayInline], children: menuActions)

@@ -158,7 +158,7 @@ class HashtagViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error fetching hashtags: \(error.localizedDescription)")
+                print("Error fetching hashtags: \(error)")
                 DispatchQueue.main.async {
                     self.loadingIndicator.stopAnimating()
                     self.isFetching = false

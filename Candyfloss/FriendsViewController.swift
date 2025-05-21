@@ -252,7 +252,7 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                 }
             } catch {
-                print("Error fetching friends: \(error.localizedDescription)")
+                print("Error fetching friends: \(error)")
                 DispatchQueue.main.async {
                     self.loadingIndicator.stopAnimating()
                     self.isFetching = false

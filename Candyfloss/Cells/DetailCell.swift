@@ -217,7 +217,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
                         UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
                     }
                 } catch {
-                    print("Error fetching profile: \(error.localizedDescription)")
+                    print("Error fetching profile: \(error)")
                 }
             }
         }
@@ -870,7 +870,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .duckOthers)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print(error.localizedDescription)
+            print(error)
         }
     }
     
@@ -882,7 +882,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
                     try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .mixWithOthers)
                     try AVAudioSession.sharedInstance().setActive(true)
                 } catch {
-                    print(error.localizedDescription)
+                    print(error)
                 }
             }
             self.playerView.player?.play()
@@ -899,7 +899,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
             try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .mixWithOthers)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print(error.localizedDescription)
+            print(error)
         }
         playerView.player?.play()
     }

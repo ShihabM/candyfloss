@@ -159,7 +159,7 @@ class QuotesViewController: UIViewController, UITableViewDataSource, UITableView
                     }
                 }
             } catch {
-                print("Error fetching quotes: \(error.localizedDescription)")
+                print("Error fetching quotes: \(error)")
                 DispatchQueue.main.async {
                     self.loadingIndicator.stopAnimating()
                     self.isFetching = false

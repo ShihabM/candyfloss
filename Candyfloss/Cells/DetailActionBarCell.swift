@@ -196,7 +196,7 @@ class DetailActionBarCell: UITableViewCell, UISheetPresentationControllerDelegat
         actionButtonInsideLike.contentMode = .scaleAspectFit
         actionButtonInsideLike.imageView?.contentMode = .scaleAspectFit
         actionButtonInsideLike.backgroundColor = .clear
-        actionButtonInsideLike.addTarget(self, action: #selector(likeTapped(_:)), for: .touchUpInside)
+        actionButtonInsideLike.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         actionButtonInsideLike.showsMenuAsPrimaryAction = false
         
         actionButtonInsideBookmark.setImage(UIImage(systemName: "bookmark", withConfiguration: symbolConfig1)?.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal), for: .normal)
@@ -252,7 +252,11 @@ class DetailActionBarCell: UITableViewCell, UISheetPresentationControllerDelegat
         numberLabelReply.textColor = GlobalStruct.secondaryTextColor
         
         actionButtonInsideRepost.tag = Int(post?.id ?? "0") ?? 0
-        actionButtonInsideRepost.setImage(UIImage(systemName: "arrow.2.squarepath", withConfiguration: symbolConfig1)?.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal), for: .normal)
+        if currentPost?.viewer?.repostURI == nil {
+            actionButtonInsideRepost.setImage(UIImage(systemName: "arrow.2.squarepath", withConfiguration: symbolConfig1)?.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal), for: .normal)
+        } else {
+            actionButtonInsideRepost.setImage(UIImage(systemName: "arrow.2.squarepath", withConfiguration: symbolConfig1)?.withTintColor(.systemGreen, renderingMode: .alwaysOriginal), for: .normal)
+        }
         makeCM(actionButtonInsideRepost, index: 2)
         numberLabelRepost.text = post?.repostCount ?? 0 > 0 ? "\((post?.repostCount ?? 0).formatUsingAbbreviation())" : ""
         numberLabelRepost.textColor = GlobalStruct.secondaryTextColor
@@ -260,7 +264,11 @@ class DetailActionBarCell: UITableViewCell, UISheetPresentationControllerDelegat
         actionButtonInsideRepost.showsMenuAsPrimaryAction = true
         
         actionButtonInsideLike.tag = Int(post?.id ?? "0") ?? 0
-        actionButtonInsideLike.setImage(UIImage(systemName: "heart", withConfiguration: symbolConfig1)?.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal), for: .normal)
+        if currentPost?.viewer?.likeURI == nil {
+            actionButtonInsideLike.setImage(UIImage(systemName: "heart", withConfiguration: symbolConfig1)?.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal), for: .normal)
+        } else {
+            actionButtonInsideLike.setImage(UIImage(systemName: "heart.fill", withConfiguration: symbolConfig1)?.withTintColor(.systemPink, renderingMode: .alwaysOriginal), for: .normal)
+        }
         makeCM(actionButtonInsideLike, index: 3)
         numberLabelLike.text = post?.likeCount ?? 0 > 0 ? "\((post?.likeCount ?? 0).formatUsingAbbreviation())" : ""
         numberLabelLike.textColor = GlobalStruct.secondaryTextColor
@@ -326,6 +334,52 @@ class DetailActionBarCell: UITableViewCell, UISheetPresentationControllerDelegat
     
     @objc func likeTapped(_ sender: UIButton) {
         defaultHaptics()
+        if currentPost?.viewer?.likeURI == nil {
+            actionButtonInsideLike.setImage(UIImage(systemName: "heart.fill", withConfiguration: symbolConfig1)?.withTintColor(.systemPink, renderingMode: .alwaysOriginal), for: .normal)
+            numberLabelLike.text = "\((Int(numberLabelLike.text ?? "0") ?? 0) + 1)"
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                        let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost?.uri ?? "")
+                        let _ = try await atProtoBluesky.createLikeRecord(strongReferenceResult)
+                        try await Task.sleep(nanoseconds: 300_000_000)
+                        let y = try await atProto.getPosts([currentPost?.uri ?? ""])
+                        if let post = y.posts.first {
+                            currentPost = post
+                            numberLabelLike.text = "\(currentPost?.likeCount ?? 0)"
+                            GlobalStruct.updatedPost = post
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                        }
+                    }
+                } catch {
+                    print("Error updating post: \(error)")
+                }
+            }
+        } else {
+            actionButtonInsideLike.setImage(UIImage(systemName: "heart", withConfiguration: symbolConfig1)?.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal), for: .normal)
+            numberLabelLike.text = "\((Int(numberLabelLike.text ?? "0") ?? 0) - 1)"
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                        let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost?.uri ?? "")
+                        let x = try await atProtoBluesky.createLikeRecord(strongReferenceResult)
+                        let _ = try await atProtoBluesky.deleteLikeRecord(.recordURI(atURI: x.recordURI))
+                        try await Task.sleep(nanoseconds: 300_000_000)
+                        let y = try await atProto.getPosts([currentPost?.uri ?? ""])
+                        if let post = y.posts.first {
+                            currentPost = post
+                            numberLabelLike.text = "\(currentPost?.likeCount ?? 0)"
+                            GlobalStruct.updatedPost = post
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                        }
+                    }
+                } catch {
+                    print("Error updating post: \(error)")
+                }
+            }
+        }
     }
     
     @objc func bookmarkTapped(_ sender: UIButton) {

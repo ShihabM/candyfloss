@@ -265,7 +265,7 @@ class StarterPackViewController: UIViewController, UITableViewDataSource, UITabl
                         }
                     }
                 } catch {
-                    print("Error fetching starter pack members: \(error.localizedDescription)")
+                    print("Error fetching starter pack members: \(error)")
                     DispatchQueue.main.async {
                         self.isFetching = false
                     }
@@ -284,7 +284,7 @@ class StarterPackViewController: UIViewController, UITableViewDataSource, UITabl
                         }
                     }
                 } catch {
-                    print("Error fetching starter pack posts: \(error.localizedDescription)")
+                    print("Error fetching starter pack posts: \(error)")
                     DispatchQueue.main.async {
                         self.isFetching = false
                     }
@@ -494,7 +494,7 @@ class StarterPackViewController: UIViewController, UITableViewDataSource, UITabl
 //                        }
 //                    }
 //                } catch {
-//                    print("Error following user: \(error.localizedDescription)")
+//                    print("Error following user: \(error)")
 //                }
 //            }
 //        }

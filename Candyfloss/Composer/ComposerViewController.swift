@@ -111,7 +111,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                             }
                         }
                     } catch {
-                        print("error fetching post: \(error.localizedDescription)")
+                        print("error fetching post: \(error)")
                     }
                 }
             }
@@ -367,7 +367,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                     }
                 }
             } catch {
-                print("Error posting: \(error.localizedDescription)")
+                print("Error posting: \(error)")
                 enablePosting()
             }
         }
@@ -598,7 +598,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
                     }
                 }
             } catch {
-                print("Error fetching users: \(error.localizedDescription)")
+                print("Error fetching users: \(error)")
             }
         }
     }
@@ -1595,7 +1595,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
             try dataRepresentation.write(to: fileURL)
             completion(fileURL)
         } catch {
-            print("Error saving movie data to file: \(error.localizedDescription)")
+            print("Error saving movie data to file: \(error)")
             completion(nil)
         }
     }

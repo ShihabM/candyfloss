@@ -167,7 +167,7 @@ class MessageChatViewController: MessagesViewController {
                     }
                 }
             } catch {
-                print("Error fetching messages: \(error.localizedDescription)")
+                print("Error fetching messages: \(error)")
             }
         }
     }
@@ -183,7 +183,7 @@ class MessageChatViewController: MessagesViewController {
                     }
                 }
             } catch {
-                print("Error muting conversation: \(error.localizedDescription)")
+                print("Error muting conversation: \(error)")
             }
         }
     }
@@ -199,7 +199,7 @@ class MessageChatViewController: MessagesViewController {
                     }
                 }
             } catch {
-                print("Error unmuting conversation: \(error.localizedDescription)")
+                print("Error unmuting conversation: \(error)")
             }
         }
     }
@@ -215,7 +215,7 @@ class MessageChatViewController: MessagesViewController {
                     }
                 }
             } catch {
-                print("Error leaving conversation: \(error.localizedDescription)")
+                print("Error leaving conversation: \(error)")
             }
         }
     }
@@ -286,7 +286,7 @@ extension MessageChatViewController: InputBarAccessoryViewDelegate {
 //                    }
                 }
             } catch {
-                print("Error unmuting conversation: \(error.localizedDescription)")
+                print("Error unmuting conversation: \(error)")
             }
         }
     }

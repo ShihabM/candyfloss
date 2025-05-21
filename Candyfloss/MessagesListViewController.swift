@@ -316,7 +316,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
                     }
                 }
             } catch {
-                print("Error fetching messages: \(error.localizedDescription)")
+                print("Error fetching messages: \(error)")
                 loadingIndicator.stopAnimating()
                 refreshControl.endRefreshing()
             }
@@ -356,7 +356,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
                     }
                 }
             } catch {
-                print("Error fetching messages: \(error.localizedDescription)")
+                print("Error fetching messages: \(error)")
                 DispatchQueue.main.async {
                     self.refreshControl.endRefreshing()
                 }

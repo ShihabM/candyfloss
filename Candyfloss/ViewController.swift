@@ -153,6 +153,30 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
+    @objc func updatePost() {
+        DispatchQueue.main.async {
+            if let index = self.allPosts.firstIndex(where: { x in
+                x.id == GlobalStruct.updatedPost?.id ?? ""
+            }) {
+                Task {
+                    do {
+                        if let atProto = GlobalStruct.atProto {
+                            let post = try await atProto.getFeed(by: GlobalStruct.updatedPost?.uri ?? "")
+                            DispatchQueue.main.async {
+                                if let feedPost = post.feed.first {
+                                    self.allPosts[index] = feedPost
+                                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                                }
+                            }
+                        }
+                    } catch {
+                        print("Error refreshing post: \(error)")
+                    }
+                }
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
@@ -167,6 +191,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         NotificationCenter.default.addObserver(self, selector: #selector(self.switchFeed), name: NSNotification.Name(rawValue: "switchFeed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.switchList), name: NSNotification.Name(rawValue: "switchList"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updatePost), name: NSNotification.Name(rawValue: "updatePost"), object: nil)
         
         do {
             try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .mixWithOthers)
@@ -174,7 +199,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 try? AVAudioSession.sharedInstance().setActive(true)
             }
         } catch {
-            print(error.localizedDescription)
+            print(error)
         }
         
         setUpNavigationBar()
@@ -668,7 +693,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     }
                 }
             } catch {
-                print("Error fetching feed, refresh token and retry: \(error.localizedDescription)")
+                print("Error fetching feed, refresh token and retry: \(error)")
                 do {
                     if let atProto = GlobalStruct.atProto {
                         try await atProto.sessionConfiguration?.refreshSession()
@@ -677,7 +702,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                         }
                     }
                 } catch {
-                    print("Error fetching session: \(error.localizedDescription)")
+                    print("Error fetching session: \(error)")
                 }
                 DispatchQueue.main.async {
                     self.isFetching = false
@@ -785,7 +810,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     }
                 }
             } catch {
-                print("Error fetching feed, refresh token and retry: \(error.localizedDescription)")
+                print("Error fetching feed, refresh token and retry: \(error)")
                 do {
                     if let atProto = GlobalStruct.atProto {
                         try await atProto.sessionConfiguration?.refreshSession()
@@ -794,7 +819,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                         }
                     }
                 } catch {
-                    print("Error fetching session: \(error.localizedDescription)")
+                    print("Error fetching session: \(error)")
                 }
                 refreshControl.endRefreshing()
             }
@@ -811,7 +836,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 fetchLatest()
             }
         } catch {
-            print("Error fetching: \(error.localizedDescription)")
+            print("Error fetching: \(error)")
         }
     }
     
@@ -824,7 +849,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     currentFeedCursor = x.cursor
                 }
             } catch {
-                print("Error fetching feeds: \(error.localizedDescription)")
+                print("Error fetching feeds: \(error)")
             }
         }
     }

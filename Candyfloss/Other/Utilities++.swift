@@ -1120,10 +1120,55 @@ func createActionButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = n
     }
     menuActions.append(menuItem2)
     let menuItem3 = UIAction(title: "", image: UIImage(systemName: "arrow.2.squarepath"), identifier: nil) { action in
-        
+        if let currentPost = post {
+            if currentPost.viewer?.repostURI == nil {
+                Task {
+                    do {
+                        if let atProto = GlobalStruct.atProto {
+                            let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                            let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost.uri)
+                            let _ = try await atProtoBluesky.createRepostRecord(strongReferenceResult)
+                            try await Task.sleep(nanoseconds: 300_000_000)
+                            let y = try await atProto.getPosts([currentPost.uri])
+                            if let post = y.posts.first {
+                                GlobalStruct.updatedPost = post
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                            }
+                        }
+                    } catch {
+                        print("Error updating post: \(error)")
+                    }
+                }
+            } else {
+                Task {
+                    do {
+                        if let atProto = GlobalStruct.atProto {
+                            let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                            let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost.uri)
+                            let x = try await atProtoBluesky.createRepostRecord(strongReferenceResult)
+                            let _ = try await atProtoBluesky.deleteRepostRecord(.recordURI(atURI: x.recordURI))
+                            try await Task.sleep(nanoseconds: 300_000_000)
+                            let y = try await atProto.getPosts([currentPost.uri])
+                            if let post = y.posts.first {
+                                GlobalStruct.updatedPost = post
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                            }
+                        }
+                    } catch {
+                        print("Error updating post: \(error)")
+                    }
+                }
+            }
+        }
     }
     menuActions.append(menuItem3)
-    let menuItem4 = UIAction(title: "", image: UIImage(systemName: "heart"), identifier: nil) { action in
+    var likeImage: String = "heart"
+    if post?.viewer?.likeURI == nil {
+        likeImage = "heart"
+    } else {
+        likeImage = "heart.fill"
+    }
+    let menuItem4 = UIAction(title: "", image: UIImage(systemName: likeImage), identifier: nil) { action in
         if let currentPost = post {
             if currentPost.viewer?.likeURI == nil {
                 Task {
@@ -1173,8 +1218,53 @@ func createActionButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = n
 
 func createRepostButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = nil) -> UIMenu {
     var menuActions: [UIAction] = []
-    let menuItem1 = UIAction(title: "Repost", image: UIImage(systemName: "arrow.2.squarepath"), identifier: nil) { action in
-        
+    var repostText: String = "Repost"
+    if post?.viewer?.repostURI == nil {
+        repostText = "Repost"
+    } else {
+        repostText = "Remove Repost"
+    }
+    let menuItem1 = UIAction(title: repostText, image: UIImage(systemName: "arrow.2.squarepath"), identifier: nil) { action in
+        if let currentPost = post {
+            if currentPost.viewer?.repostURI == nil {
+                Task {
+                    do {
+                        if let atProto = GlobalStruct.atProto {
+                            let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                            let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost.uri)
+                            let _ = try await atProtoBluesky.createRepostRecord(strongReferenceResult)
+                            try await Task.sleep(nanoseconds: 300_000_000)
+                            let y = try await atProto.getPosts([currentPost.uri])
+                            if let post = y.posts.first {
+                                GlobalStruct.updatedPost = post
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                            }
+                        }
+                    } catch {
+                        print("Error updating post: \(error)")
+                    }
+                }
+            } else {
+                Task {
+                    do {
+                        if let atProto = GlobalStruct.atProto {
+                            let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                            let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost.uri)
+                            let x = try await atProtoBluesky.createRepostRecord(strongReferenceResult)
+                            let _ = try await atProtoBluesky.deleteRepostRecord(.recordURI(atURI: x.recordURI))
+                            try await Task.sleep(nanoseconds: 300_000_000)
+                            let y = try await atProto.getPosts([currentPost.uri])
+                            if let post = y.posts.first {
+                                GlobalStruct.updatedPost = post
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePost"), object: nil)
+                            }
+                        }
+                    } catch {
+                        print("Error updating post: \(error)")
+                    }
+                }
+            }
+        }
     }
     menuActions.append(menuItem1)
     let menuItem2 = UIAction(title: "Quote Post", image: UIImage(systemName: "quote.bubble"), identifier: nil) { action in

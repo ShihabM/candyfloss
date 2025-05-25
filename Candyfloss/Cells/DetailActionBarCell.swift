@@ -141,7 +141,6 @@ class DetailActionBarCell: UITableViewCell, UISheetPresentationControllerDelegat
         combinedStackViewRepost.alignment = .center
         combinedStackViewRepost.spacing = 4
         actionButtonRepost.addSubview(combinedStackViewRepost)
-        actionButtonRepost.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
         NSLayoutConstraint.activate([
             combinedStackViewRepost.centerXAnchor.constraint(equalTo: actionButtonRepost.centerXAnchor),
             combinedStackViewRepost.centerYAnchor.constraint(equalTo: actionButtonRepost.centerYAnchor)
@@ -326,10 +325,6 @@ class DetailActionBarCell: UITableViewCell, UISheetPresentationControllerDelegat
         let nvc = SloppySwipingNav(rootViewController: vc)
         nvc.isModalInPresentation = true
         getTopMostViewController()?.present(nvc, animated: true, completion: nil)
-    }
-    
-    @objc func repostTapped(_ sender: UIButton) {
-        defaultHaptics()
     }
     
     @objc func likeTapped(_ sender: UIButton) {

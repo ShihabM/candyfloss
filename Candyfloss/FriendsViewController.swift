@@ -18,7 +18,7 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
     var currentCursor: String? = nil
     var isFetching: Bool = false
     var isMutuals: Bool = false
-    var allActivityUsers: [AppBskyLexicon.Actor.ProfileViewBasicDefinition] = []
+    var allActivityUsers: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
     
     // lists
     var listName: String = ""
@@ -29,7 +29,7 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
     var searchView: UIView = UIView()
     var searchController = UISearchController()
     var searchResults: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
-    var searchResultsAlt: [AppBskyLexicon.Actor.ProfileViewBasicDefinition] = []
+    var searchResultsAlt: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
@@ -327,7 +327,7 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
         var offsetCount: Int = 0
         if allActivityUsers != [] {
             offsetCount = allActivityUsers.count
-            let user: AppBskyLexicon.Actor.ProfileViewBasicDefinition? = allActivityUsers[indexPath.row]
+            let user: AppBskyLexicon.Actor.ProfileViewDefinition? = allActivityUsers[indexPath.row]
             if let url = user?.avatarImageURL {
                 cell.avatar.sd_imageTransition = .fade
                 cell.avatar.sd_setImage(with: url, for: .normal)
@@ -337,7 +337,7 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
             }
             cell.username.text = user?.displayName ?? ""
             cell.usertag.text = "@\(user?.actorHandle ?? "")"
-            cell.configureCell(false, bioText: "", currentProfile: user)
+            cell.configureCell(false, bioText: "", defaultProfile: user)
             if isFetching == false && currentCursor != nil {
                 if indexPath.row == offsetCount - 1 || indexPath.row == offsetCount - 5 {
                     isFetching = true

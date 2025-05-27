@@ -13,9 +13,9 @@ import ATProtoKit
 
 class ActivityCell: UITableViewCell, SKPhotoBrowserDelegate, UISheetPresentationControllerDelegate, UIContextMenuInteractionDelegate {
     
-    var currentProfile1: AppBskyLexicon.Actor.ProfileViewBasicDefinition? = nil
-    var currentProfile2: AppBskyLexicon.Actor.ProfileViewBasicDefinition? = nil
-    var currentProfile3: AppBskyLexicon.Actor.ProfileViewBasicDefinition? = nil
+    var currentProfile1: AppBskyLexicon.Actor.ProfileViewDefinition? = nil
+    var currentProfile2: AppBskyLexicon.Actor.ProfileViewDefinition? = nil
+    var currentProfile3: AppBskyLexicon.Actor.ProfileViewDefinition? = nil
     
     var bgView = UIView()
     
@@ -183,11 +183,11 @@ class ActivityCell: UITableViewCell, SKPhotoBrowserDelegate, UISheetPresentation
         if let avatar = interaction.view as? UIButton {
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
                 if avatar.tag == 0 {
-                    return createMoreProfileMenu(nil, basicProfile: self.currentProfile1)
+                    return createMoreProfileMenu(nil, defaultProfile: self.currentProfile1)
                 } else if avatar.tag == 1 {
-                    return createMoreProfileMenu(nil, basicProfile: self.currentProfile2)
+                    return createMoreProfileMenu(nil, defaultProfile: self.currentProfile2)
                 } else {
-                    return createMoreProfileMenu(nil, basicProfile: self.currentProfile3)
+                    return createMoreProfileMenu(nil, defaultProfile: self.currentProfile3)
                 }
             }
         } else {

@@ -628,7 +628,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
             let vc = FriendsViewController()
             vc.profile = ""
             vc.isShowingFollowers = true
-            var allActivityUsers: [AppBskyLexicon.Actor.ProfileViewBasicDefinition] = []
+            var allActivityUsers: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
             for x in filteredNotifications[indexPath.row] {
                 allActivityUsers.append(x.author)
             }

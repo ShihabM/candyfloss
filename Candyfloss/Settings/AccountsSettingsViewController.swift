@@ -173,6 +173,7 @@ class AccountsSettingsViewController: UIViewController, UITableViewDataSource, U
         do {
             try await config.authenticate(with: user?.username ?? GlobalStruct.userHandle, password: user?.password ?? GlobalStruct.userAppPassword)
             GlobalStruct.atProto = await ATProtoKit(sessionConfiguration: config)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "resetTimelines"), object: nil)
             if saveToDisk {
                 do {
                     try Disk.save(GlobalStruct.allUsers, to: .documents, as: "allUsers")

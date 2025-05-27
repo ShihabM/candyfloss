@@ -177,6 +177,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
+    @objc func resetTimelines() {
+        DispatchQueue.main.async {
+            self.allPosts = []
+            self.fetchTimeline()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
@@ -192,6 +199,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         NotificationCenter.default.addObserver(self, selector: #selector(self.switchList), name: NSNotification.Name(rawValue: "switchList"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updatePost), name: NSNotification.Name(rawValue: "updatePost"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.resetTimelines), name: NSNotification.Name(rawValue: "resetTimelines"), object: nil)
         
         do {
             try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .mixWithOthers)

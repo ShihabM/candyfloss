@@ -183,6 +183,14 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             self.tableView.reloadData()
         }
     }
+    
+    @objc func resetTimelines() {
+        DispatchQueue.main.async {
+            self.allPosts = []
+            self.mutuals = []
+            self.fetchTimeline()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -195,6 +203,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateProfileHeader), name: Notification.Name("updateProfileHeader"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.scrollToProfilePosts), name: Notification.Name("scrollToProfilePosts"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.resetTimelines), name: NSNotification.Name(rawValue: "resetTimelines"), object: nil)
         
         setUpNavigationBar()
         

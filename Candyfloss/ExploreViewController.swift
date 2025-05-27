@@ -184,6 +184,23 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    @objc func resetTimelines() {
+        DispatchQueue.main.async {
+            self.trendingTopics = []
+            self.suggestedUsers = []
+            self.whoToFollow = []
+            self.starterPacks = []
+            self.allStarterPacks = []
+            self.suggestedFeeds = []
+            self.feedPosts1 = []
+            self.feedPosts2 = []
+            self.feedPosts3 = []
+            self.feedPosts4 = []
+            self.feedPosts5 = []
+            self.fetchTrending()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
@@ -192,6 +209,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
         NotificationCenter.default.addObserver(self, selector: #selector(self.scrollUp), name: NSNotification.Name(rawValue: "scrollUp2"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadTables), name: NSNotification.Name(rawValue: "reloadTables"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.resetTimelines), name: NSNotification.Name(rawValue: "resetTimelines"), object: nil)
         
         setUpNavigationBar()
         fetchTrending()

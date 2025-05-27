@@ -142,6 +142,14 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
         }
     }
     
+    @objc func resetTimelines() {
+        DispatchQueue.main.async {
+            self.allMessages = []
+            self.filteredMessages = []
+            self.fetchMessages()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
@@ -150,6 +158,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
         NotificationCenter.default.addObserver(self, selector: #selector(self.scrollUp), name: NSNotification.Name(rawValue: "scrollUp5"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadTables), name: NSNotification.Name(rawValue: "reloadTables"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.resetTimelines), name: NSNotification.Name(rawValue: "resetTimelines"), object: nil)
         
         setUpNavigationBar()
         

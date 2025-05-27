@@ -421,6 +421,23 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
             }
         }
         
+        if let author = filteredMessages[indexPath.row].members.first(where: { member in
+            member.actorDID != GlobalStruct.currentUser?.actorDID ?? ""
+        }) {
+            // message avatar
+            if let url = author.avatarImageURL {
+                cell.avatar.sd_setImage(with: url, for: .normal)
+            } else {
+                cell.avatar.setImage(UIImage(), for: .normal)
+            }
+            
+            // message user details
+            cell.username.text = author.displayName ?? ""
+            if cell.username.text == "" {
+                cell.username.text = " "
+            }
+            cell.usertag.text = "@\(author.actorHandle)"
+        }
         cell.avatar.tag = indexPath.row
         cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
         cell.text.numberOfLines = 2
@@ -467,7 +484,11 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     @objc func profileTapped(_ sender: UIButton) {
         defaultHaptics()
         let vc = ProfileViewController()
-        vc.profile = filteredMessages[sender.tag].members.first?.actorDID ?? ""
+        if let author = filteredMessages[sender.tag].members.first(where: { member in
+            member.actorDID != GlobalStruct.currentUser?.actorDID ?? ""
+        }) {
+            vc.profile = author.actorDID
+        }
         navigationController?.pushViewController(vc, animated: true)
     }
     

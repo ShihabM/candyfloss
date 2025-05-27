@@ -210,38 +210,20 @@ func configureActivityCell(_ cell: ActivityCell, with notification: [AppBskyLexi
 }
 
 func configureMessageCell(_ cell: MessageCell, with message: ChatBskyLexicon.Conversation.MessageViewDefinition, members: [ChatBskyLexicon.Actor.ProfileViewBasicDefinition]) {
-    if let author = members.first(where: { member in
-        member.actorDID == message.sender.authorDID
-    }) {
-        // message avatar
-        if let url = author.avatarImageURL {
-            cell.avatar.sd_setImage(with: url, for: .normal)
-        } else {
-            cell.avatar.setImage(UIImage(), for: .normal)
-        }
-        
-        // message user details
-        cell.username.text = author.displayName ?? ""
-        if cell.username.text == "" {
-            cell.username.text = " "
-        }
-        cell.usertag.text = "@\(author.actorHandle)"
-        
-        // message details
-        cell.text.text = message.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let timeSince = message.sentAt
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = GlobalStruct.dateFormatter
-        
-        if GlobalStruct.dateFormat == 0 {
-            cell.time.text = timeSince.toStringWithRelativeTime()
-        } else {
-            cell.time.text = timeSince.toString(dateStyle: .short, timeStyle: .short)
-        }
-        
-        // cell configuration
-        cell.configure(post: message)
+    // message details
+    cell.text.text = message.text.trimmingCharacters(in: .whitespacesAndNewlines)
+    let timeSince = message.sentAt
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = GlobalStruct.dateFormatter
+    
+    if GlobalStruct.dateFormat == 0 {
+        cell.time.text = timeSince.toStringWithRelativeTime()
+    } else {
+        cell.time.text = timeSince.toString(dateStyle: .short, timeStyle: .short)
     }
+    
+    // cell configuration
+    cell.configure(post: message)
 }
 
 // bookmark

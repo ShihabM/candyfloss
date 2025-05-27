@@ -30,6 +30,7 @@
 		5319809C2D96E6BB006C3D22 /* ComposerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5319809B2D96E6B6006C3D22 /* ComposerViewController.swift */; };
 		532883EA2DE49932002AED8C /* ATMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 532883E92DE49932002AED8C /* ATMacro */; };
 		532883EC2DE49932002AED8C /* ATProtoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 532883EB2DE49932002AED8C /* ATProtoKit */; };
+		532883EE2DE5C4D6002AED8C /* AccountsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883ED2DE5C4CE002AED8C /* AccountsSettingsViewController.swift */; };
 		539B4CD62CC7A3E700CF6646 /* ActiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */; };
 		539B4CD72CC7A3E700CF6646 /* ActiveLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */; };
 		539B4CD82CC7A3E700CF6646 /* ActiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBC2CC7A3E700CF6646 /* ActiveType.swift */; };
@@ -139,6 +140,7 @@
 		531980972D96E5D7006C3D22 /* ComposeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeCell.swift; sourceTree = "<group>"; };
 		531980992D96E5EF006C3D22 /* MultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTextField.swift; sourceTree = "<group>"; };
 		5319809B2D96E6B6006C3D22 /* ComposerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerViewController.swift; sourceTree = "<group>"; };
+		532883ED2DE5C4CE002AED8C /* AccountsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsSettingsViewController.swift; sourceTree = "<group>"; };
 		539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveBuilder.swift; sourceTree = "<group>"; };
 		539B4CBA2CC7A3E700CF6646 /* ActiveLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActiveLabel.h; sourceTree = "<group>"; };
 		539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 				5309C2132DC22C0200380B93 /* PostsSettingsViewController.swift */,
 				5309C20F2DC21A9E00380B93 /* DetailsSettingsViewController.swift */,
 				5309C2112DC2209F00380B93 /* ComposerSettingsViewController.swift */,
+				532883ED2DE5C4CE002AED8C /* AccountsSettingsViewController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -626,6 +629,7 @@
 				5309C21A2DC36E0F00380B93 /* NoteCell.swift in Sources */,
 				53C465A42D8DC7BE009F7C6B /* PlainCell.swift in Sources */,
 				5309C1FA2DB8089D00380B93 /* StarterPackHeaderCell.swift in Sources */,
+				532883EE2DE5C4D6002AED8C /* AccountsSettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -17,7 +17,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     var tableView = UITableView()
     var section1Titles: [String] = ["App Icon", "App Tint", "Open Links", "Reader Mode", "Haptics"]
     var section2Titles: [String] = ["Tabs", "Timelines", "Posts", "Post Details", "Post Composer"]
-    var section3Titles: [String] = ["Bluesky Service Status"]
+    var section3Titles: [String] = ["Accounts", "Bluesky Service Status"]
     var section4Titles: [String] = ["Reset App Data"]
     var fromNavigationStack: Bool = true
     let button = CustomButton(type: .system)
@@ -302,6 +302,11 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             
             cell.theTitle.text = section3Titles[indexPath.row]
             
+            if indexPath.row == 0 {
+                cell.accessoryType = .disclosureIndicator
+            } else {
+                cell.accessoryType = .none
+            }
             cell.accessoryView = .none
             cell.selectionStyle = .none
             
@@ -362,6 +367,10 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             navigationController?.pushViewController(vc, animated: true)
         }
         if indexPath.section == 2 && indexPath.row == 0 {
+            let vc = AccountsSettingsViewController()
+            navigationController?.pushViewController(vc, animated: true)
+        }
+        if indexPath.section == 2 && indexPath.row == 1 {
             if let link = URL(string: "https://status.bsky.app") {
                 if GlobalStruct.openLinksInApp {
                     let safariVC = SFSafariViewController(url: link)

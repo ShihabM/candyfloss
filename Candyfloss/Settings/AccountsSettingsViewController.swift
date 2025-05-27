@@ -47,18 +47,61 @@ class AccountsSettingsViewController: UIViewController, UITableViewDataSource, U
         view.addSubview(tableView)
         tableView.reloadData()
         
+        let addButton = CustomButton(type: .system)
+        addButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        addButton.addTarget(self, action: #selector(self.newAccount), for: .touchUpInside)
+        let navigationBarAddButtonItem = UIBarButtonItem(customView: addButton)
+        navigationBarAddButtonItem.accessibilityLabel = "New Account"
+        navigationItem.rightBarButtonItem = navigationBarAddButtonItem
+        
         fetchAccounts()
     }
     
-    func fetchAccounts() {
+    @objc func newAccount() {
+        let alert = UIAlertController(title: "Sign In", message: "Enter username and password", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "Username"
+            textField.keyboardType = .URL
+            textField.autocapitalizationType = .none
+        }
+        alert.addTextField { textField in
+            textField.placeholder = "Password"
+            textField.autocapitalizationType = .none
+            textField.isSecureTextEntry = true
+        }
+        let connectAction = UIAlertAction(title: "Sign In", style: .default) { _ in
+            let username = alert.textFields?[0].text ?? ""
+            let password = alert.textFields?[1].text ?? ""
+            let user = UserStruct(username: username, password: password)
+            GlobalStruct.allUsers.append(user)
+            GlobalStruct.currentSelectedUser = username
+            self.fetchAccounts(true)
+            Task {
+                await self.authenticate(saveToDisk: true)
+            }
+        }
+        alert.addAction(connectAction)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
+    }
+    
+    func fetchAccounts(_ latest: Bool = false) {
         Task {
             do {
                 if let atProto = GlobalStruct.atProto {
-                    for user in GlobalStruct.allUsers {
-                        let y = try await atProto.getProfile(for: user.username)
+                    if latest {
+                        let y = try await atProto.getProfile(for: GlobalStruct.allUsers.last?.username ?? "")
                         allAccounts.append(y)
                         DispatchQueue.main.async {
                             self.tableView.reloadData()
+                        }
+                    } else {
+                        for user in GlobalStruct.allUsers {
+                            let y = try await atProto.getProfile(for: user.username)
+                            allAccounts.append(y)
+                            DispatchQueue.main.async {
+                                self.tableView.reloadData()
+                            }
                         }
                     }
                     allAccounts = allAccounts.sorted(by: { x, y in
@@ -85,7 +128,7 @@ class AccountsSettingsViewController: UIViewController, UITableViewDataSource, U
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserCell
         
-        var user: AppBskyLexicon.Actor.ProfileViewDetailedDefinition? = allAccounts[indexPath.row]
+        let user: AppBskyLexicon.Actor.ProfileViewDetailedDefinition? = allAccounts[indexPath.row]
         if let url = user?.avatarImageURL {
             cell.avatar.sd_imageTransition = .fade
             cell.avatar.sd_setImage(with: url, for: .normal)
@@ -123,14 +166,23 @@ class AccountsSettingsViewController: UIViewController, UITableViewDataSource, U
         }
     }
     
-    func authenticate() async {
+    func authenticate(saveToDisk: Bool = false) async {
         let user = GlobalStruct.allUsers.first { x in
             x.username == GlobalStruct.currentSelectedUser
         }
         do {
             try await config.authenticate(with: user?.username ?? GlobalStruct.userHandle, password: user?.password ?? GlobalStruct.userAppPassword)
             GlobalStruct.atProto = await ATProtoKit(sessionConfiguration: config)
-            dismiss(animated: true)
+            if saveToDisk {
+                do {
+                    try Disk.save(GlobalStruct.allUsers, to: .documents, as: "allUsers")
+                    UserDefaults.standard.set(GlobalStruct.currentSelectedUser, forKey: "currentSelectedUser")
+                } catch {
+                    print("error saving to Disk")
+                }
+            } else {
+                dismiss(animated: true)
+            }
         } catch {
             print("Error authenticating: \(error)")
         }

@@ -19,6 +19,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     var allPosts: [AppBskyLexicon.Feed.FeedViewPostDefinition] = []
     var currentCursor: String? = nil
     var isFetching: Bool = false
+    var authenticateCount: Int = 0
     
     // feeds
     var currentFeedCursor: String? = nil
@@ -848,27 +849,30 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func authenticate(_ fetchNextimeline: Bool = true, fromSignIn: Bool = false) async {
-        let user = GlobalStruct.allUsers.first { x in
-            x.username == GlobalStruct.currentSelectedUser
-        }
-        do {
-            try await config.authenticate(with: user?.username ?? GlobalStruct.userHandle, password: user?.password ?? GlobalStruct.userAppPassword)
-            GlobalStruct.atProto = await ATProtoKit(sessionConfiguration: config)
-            if fromSignIn {
-                do {
-                    try Disk.save(GlobalStruct.allUsers, to: .documents, as: "allUsers")
-                    UserDefaults.standard.set(GlobalStruct.currentSelectedUser, forKey: "currentSelectedUser")
-                } catch {
-                    print("error saving to Disk")
+        if authenticateCount < 4 {
+            authenticateCount += 1
+            let user = GlobalStruct.allUsers.first { x in
+                x.username == GlobalStruct.currentSelectedUser
+            }
+            do {
+                try await config.authenticate(with: user?.username ?? GlobalStruct.userHandle, password: user?.password ?? GlobalStruct.userAppPassword)
+                GlobalStruct.atProto = await ATProtoKit(sessionConfiguration: config)
+                if fromSignIn {
+                    do {
+                        try Disk.save(GlobalStruct.allUsers, to: .documents, as: "allUsers")
+                        UserDefaults.standard.set(GlobalStruct.currentSelectedUser, forKey: "currentSelectedUser")
+                    } catch {
+                        print("error saving to Disk")
+                    }
                 }
+                if fetchNextimeline {
+                    fetchTimeline()
+                } else {
+                    fetchLatest()
+                }
+            } catch {
+                print("Error authenticating: \(error)")
             }
-            if fetchNextimeline {
-                fetchTimeline()
-            } else {
-                fetchLatest()
-            }
-        } catch {
-            print("Error authenticating: \(error)")
         }
     }
     

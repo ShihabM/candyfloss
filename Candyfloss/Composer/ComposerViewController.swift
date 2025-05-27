@@ -17,6 +17,12 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
     var trimmedAtString: String = ""
     var userItemsAll: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
     
+    var atProto: ATProtoKit? = nil
+    let config = ATProtocolConfiguration()
+    var allAccounts: [AppBskyLexicon.Actor.ProfileViewDetailedDefinition] = []
+    var currentSelectedUser: String = ""
+    var currentUser: AppBskyLexicon.Actor.ProfileViewDetailedDefinition? = nil
+    
     var tableView = UITableView()
     var allPosts: [AppBskyLexicon.Feed.PostViewDefinition] = []
     var formatToolbar = UIToolbar()
@@ -65,6 +71,9 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
             tableView.tableFooterView = customViewFooter
             tableView.scrollToRow(at: IndexPath(row: 0, section: 1), at: .top, animated: true)
         }
+        
+        // accounts
+        fetchAccounts()
     }
     
     @objc func restoreFromDrafts() {
@@ -96,7 +105,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
             if draft.reply != nil || draft.quote != nil {
                 Task {
                     do {
-                        if let atProto = GlobalStruct.atProto {
+                        if let atProto = self.atProto {
                             let x = try await atProto.getPosts([draft.reply?.uri ?? draft.quote?.uri ?? ""])
                             allPosts = x.posts
                             DispatchQueue.main.async {
@@ -142,6 +151,10 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         } catch {
             print("error fetching from Disk")
         }
+        
+        atProto = GlobalStruct.atProto
+        currentSelectedUser = GlobalStruct.currentSelectedUser
+        currentUser = GlobalStruct.currentUser
         
         setUpNavigationBar()
         setUpTable()
@@ -227,7 +240,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
         disablePosting()
         Task {
             do {
-                if let atProto = GlobalStruct.atProto {
+                if let atProto = self.atProto {
                     let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
                     
                     // media
@@ -451,7 +464,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ComposeCell", for: indexPath) as! ComposeCell
-            if let avatar = GlobalStruct.currentUser?.avatarImageURL {
+            if let avatar = self.currentUser?.avatarImageURL {
                 cell.avatar.sd_setImage(with: avatar, for: .normal)
             }
             cell.post.delegate = self
@@ -462,6 +475,72 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
             cell.hoverStyle = .none
             cell.separatorInset = UIEdgeInsets(top: 0, left: .greatestFiniteMagnitude, bottom: 0, right: 0)
             return cell
+        }
+    }
+    
+    // account picker
+    
+    func fetchAccounts() {
+        Task {
+            do {
+                if let atProto = self.atProto {
+                    for user in GlobalStruct.allUsers {
+                        let y = try await atProto.getProfile(for: user.username)
+                        allAccounts.append(y)
+                    }
+                    allAccounts = allAccounts.sorted(by: { x, y in
+                        x.actorHandle < y.actorHandle
+                    })
+                    accountPicker()
+                }
+            } catch {
+                print("Error fetching accounts: \(error)")
+            }
+        }
+    }
+    
+    func accountPicker() {
+        if GlobalStruct.allUsers.count > 1 {
+            if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 1)) as? ComposeCell {
+                var menuActions: [UIAction] = []
+                for user in allAccounts {
+                    if let url = user.avatarImageURL {
+                        let theImage = UIImageView()
+                        theImage.sd_setImage(with: url)
+                        let account = UIAction(title: user.displayName ?? "", subtitle: "@\(user.actorHandle)", image: theImage.image?.withRoundedCorners() ?? UIImage(systemName: ""), identifier: nil) { action in
+                            self.currentSelectedUser = user.actorHandle
+                            self.accountPicker()
+                            self.createToolbar()
+                            Task {
+                                await self.authenticate()
+                            }
+                        }
+                        if user.actorHandle == currentSelectedUser {
+                            account.state = .on
+                        } else {
+                            account.state = .off
+                        }
+                        menuActions.append(account)
+                    }
+                }
+                let menu = UIMenu(title: "Select an account to post from...", options: [.displayInline], children: menuActions)
+                cell.avatar.menu = menu
+                cell.avatar.showsMenuAsPrimaryAction = true
+            }
+        }
+    }
+    
+    func authenticate() async {
+        let user = GlobalStruct.allUsers.first { x in
+            x.username == self.currentSelectedUser
+        }
+        do {
+            try await config.authenticate(with: user?.username ?? GlobalStruct.userHandle, password: user?.password ?? GlobalStruct.userAppPassword)
+            self.atProto = await ATProtoKit(sessionConfiguration: config)
+            let y = try await self.atProto?.getProfile(for: user?.username ?? GlobalStruct.userHandle)
+            self.currentUser = y
+        } catch {
+            print("Error authenticating: \(error)")
         }
     }
     
@@ -529,7 +608,7 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
     func searchForUsers(_ user0: String) {
         Task {
             do {
-                if let atProto = GlobalStruct.atProto {
+                if let atProto = self.atProto {
                     let x = try await atProto.searchActors(matching: user0)
                     let zz = x.actors
                     DispatchQueue.main.async { [weak self] in

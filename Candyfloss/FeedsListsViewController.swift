@@ -16,6 +16,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     var isFetchingFeeds: Bool = false
     var showingDescriptions: Bool = true
     var fromTab: Bool = false
+    var isShowingFeeds: Bool = true
     
     // lists
     var tableView2 = UITableView()
@@ -37,17 +38,25 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         
         currentCursor = UserDefaults.standard.value(forKey: "currentFeedCursor") as? String ?? nil
         
-        if !fromAddPin {
-            if otherListUser != "" {
-                GlobalStruct.isShowingFeeds = false
-            } else {
-                if let x = UserDefaults.standard.value(forKey: "isShowingFeeds") as? Bool {
-                    GlobalStruct.isShowingFeeds = x
+        if fromTab {
+            isShowingFeeds = false
+        } else {
+            if !fromAddPin {
+                if otherListUser != "" {
+                    GlobalStruct.isShowingFeeds = false
+                    isShowingFeeds = GlobalStruct.isShowingFeeds
+                } else {
+                    if let x = UserDefaults.standard.value(forKey: "isShowingFeeds") as? Bool {
+                        GlobalStruct.isShowingFeeds = x
+                        isShowingFeeds = GlobalStruct.isShowingFeeds
+                    }
                 }
+            } else {
+                isShowingFeeds = GlobalStruct.isShowingFeeds
             }
         }
         
-        if GlobalStruct.isShowingFeeds {
+        if isShowingFeeds {
             navigationItem.title = "Feeds"
         } else {
             navigationItem.title = "Lists"
@@ -58,6 +67,20 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         setUpNavigationBar()
         setUpTable()
         fetchFeedsOrLists()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if fromTab {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "hideNewPostButton"), object: nil)
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if fromTab {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "showNewPostButton"), object: nil)
+        }
     }
     
     func setUpNavigationBar() {
@@ -80,7 +103,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
             closeBarButtonItem.accessibilityLabel = "Dismiss"
             navigationItem.leftBarButtonItem = closeBarButtonItem
             
-            if GlobalStruct.isShowingFeeds {
+            if isShowingFeeds {
                 let feedsButton = CustomButton(type: .system)
                 if showingDescriptions {
                     feedsButton.setImage(UIImage(systemName: "arrow.down.and.line.horizontal.and.arrow.up"), for: .normal)
@@ -100,7 +123,9 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                 navigationItem.rightBarButtonItem = navigationBarAddButtonItem
             }
             
-            setupListDropdown()
+            if !fromTab {
+                setupListDropdown()
+            }
         }
         
         if fromTab {
@@ -122,7 +147,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     
     @objc func setupListDropdown() {
         var theTitle: String = ""
-        if GlobalStruct.isShowingFeeds {
+        if isShowingFeeds {
             theTitle = "Feeds"
         } else {
             theTitle = "Lists"
@@ -144,6 +169,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         var allActions0: [UIAction] = []
         let menuItem = UIAction(title: "Feeds", image: UIImage(systemName: "rectangle"), identifier: nil) { [weak self] action in
             guard let self else { return }
+            isShowingFeeds = true
             GlobalStruct.isShowingFeeds = true
             UserDefaults.standard.set(GlobalStruct.isShowingFeeds, forKey: "isShowingFeeds")
             self.tableView.alpha = 1
@@ -151,7 +177,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
             self.fetchFeedsOrLists()
             self.setUpNavigationBar()
         }
-        if GlobalStruct.isShowingFeeds {
+        if isShowingFeeds {
             menuItem.state = .on
         } else {
             menuItem.state = .off
@@ -159,6 +185,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         allActions0.append(menuItem)
         let menuItem1 = UIAction(title: "Lists", image: UIImage(systemName: "list.bullet"), identifier: nil) { [weak self] action in
             guard let self else { return }
+            isShowingFeeds = false
             GlobalStruct.isShowingFeeds = false
             UserDefaults.standard.set(GlobalStruct.isShowingFeeds, forKey: "isShowingFeeds")
             self.tableView.alpha = 0
@@ -166,7 +193,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
             self.fetchFeedsOrLists()
             self.setUpNavigationBar()
         }
-        if GlobalStruct.isShowingFeeds {
+        if isShowingFeeds {
             menuItem1.state = .off
         } else {
             menuItem1.state = .on
@@ -199,7 +226,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         Task {
             do {
                 if let atProto = GlobalStruct.atProto {
-                    if GlobalStruct.isShowingFeeds {
+                    if isShowingFeeds {
                         let x = try await atProto.getSuggestedFeeds(cursor: currentFeedCursor)
                         GlobalStruct.allFeeds += x.feeds
                         currentFeedCursor = x.cursor
@@ -264,7 +291,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         view.addSubview(tableView2)
         tableView2.reloadData()
         
-        if GlobalStruct.isShowingFeeds {
+        if isShowingFeeds {
             tableView.alpha = 1
             tableView2.alpha = 0
         } else {

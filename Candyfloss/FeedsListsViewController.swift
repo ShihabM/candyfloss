@@ -599,7 +599,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     GlobalStruct.currentFeedURI = ""
                     GlobalStruct.currentFeedDisplayName = ""
                     GlobalStruct.currentFeed = nil
-                    if otherListUser == "" {
+                    if otherListUser == "" && !fromTab {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
                         saveCurrentFeedAndList()
                         tableView.reloadData()
@@ -619,7 +619,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     GlobalStruct.currentFeedURI = ""
                     GlobalStruct.currentFeedDisplayName = ""
                     GlobalStruct.currentFeed = nil
-                    if otherListUser == "" {
+                    if otherListUser == "" && !fromTab {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
                         saveCurrentFeedAndList()
                         tableView.reloadData()

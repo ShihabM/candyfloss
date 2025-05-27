@@ -255,11 +255,14 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func fetchTimeline() {
         Task {
+            let user = GlobalStruct.allUsers.first { x in
+                x.username == GlobalStruct.currentSelectedUser
+            }
             do {
                 if let atProto = GlobalStruct.atProto {
                     if profile == "" || profile == GlobalStruct.currentUser?.actorDID ?? "" {
                         if GlobalStruct.currentUser == nil {
-                            GlobalStruct.currentUser = try await atProto.getProfile(for: GlobalStruct.userHandle)
+                            GlobalStruct.currentUser = try await atProto.getProfile(for: user?.username ?? "")
                             tableView.reloadData()
                         }
                         let x = try await atProto.getAuthorFeed(by: GlobalStruct.currentUser?.actorDID ?? "", limit: nil, cursor: currentCursor, shouldIncludePins: true)

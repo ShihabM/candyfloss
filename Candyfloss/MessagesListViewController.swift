@@ -294,10 +294,13 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     
     func fetchMessages() {
         Task {
+            let user = GlobalStruct.allUsers.first { x in
+                x.username == GlobalStruct.currentSelectedUser
+            }
             do {
                 if let atProto = GlobalStruct.atProto {
                     if currentCursor == nil {
-                        let y = try await atProto.getProfile(for: GlobalStruct.userHandle)
+                        let y = try await atProto.getProfile(for: user?.username ?? "")
                         GlobalStruct.currentUser = y
                     }
                     let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)

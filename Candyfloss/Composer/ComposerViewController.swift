@@ -535,9 +535,9 @@ class ComposerViewController: UIViewController, UITableViewDataSource, UITableVi
             x.username == self.currentSelectedUser
         }
         do {
-            try await config.authenticate(with: user?.username ?? GlobalStruct.userHandle, password: user?.password ?? GlobalStruct.userAppPassword)
+            try await config.authenticate(with: user?.username ?? "", password: user?.password ?? "")
             self.atProto = await ATProtoKit(sessionConfiguration: config)
-            let y = try await self.atProto?.getProfile(for: user?.username ?? GlobalStruct.userHandle)
+            let y = try await self.atProto?.getProfile(for: user?.username ?? "")
             self.currentUser = y
         } catch {
             print("Error authenticating: \(error)")

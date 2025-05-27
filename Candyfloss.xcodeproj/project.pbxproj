@@ -24,7 +24,6 @@
 		5309C2142DC22C0B00380B93 /* PostsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C2132DC22C0200380B93 /* PostsSettingsViewController.swift */; };
 		5309C2182DC36CEC00380B93 /* AddAltTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C2172DC36CE500380B93 /* AddAltTextViewController.swift */; };
 		5309C21A2DC36E0F00380B93 /* NoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C2192DC36E0C00380B93 /* NoteCell.swift */; };
-		5309C21C2DC3881900380B93 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309C21B2DC3881700380B93 /* Secrets.swift */; };
 		531980982D96E5DA006C3D22 /* ComposeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531980972D96E5D7006C3D22 /* ComposeCell.swift */; };
 		5319809A2D96E5F3006C3D22 /* MultilineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531980992D96E5EF006C3D22 /* MultilineTextField.swift */; };
 		5319809C2D96E6BB006C3D22 /* ComposerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5319809B2D96E6B6006C3D22 /* ComposerViewController.swift */; };
@@ -136,7 +135,6 @@
 		5309C2132DC22C0200380B93 /* PostsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsSettingsViewController.swift; sourceTree = "<group>"; };
 		5309C2172DC36CE500380B93 /* AddAltTextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAltTextViewController.swift; sourceTree = "<group>"; };
 		5309C2192DC36E0C00380B93 /* NoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCell.swift; sourceTree = "<group>"; };
-		5309C21B2DC3881700380B93 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		531980972D96E5D7006C3D22 /* ComposeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeCell.swift; sourceTree = "<group>"; };
 		531980992D96E5EF006C3D22 /* MultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTextField.swift; sourceTree = "<group>"; };
 		5319809B2D96E6B6006C3D22 /* ComposerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerViewController.swift; sourceTree = "<group>"; };
@@ -322,7 +320,6 @@
 				53C460E32D7B1424009F7C6B /* PostProcessor.swift */,
 				539B4CC72CC7A3E700CF6646 /* Utilities++.swift */,
 				539B4CC52CC7A3E700CF6646 /* GlobalStruct.swift */,
-				5309C21B2DC3881700380B93 /* Secrets.swift */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -572,7 +569,6 @@
 				539B4CDE2CC7A3E700CF6646 /* Date.swift in Sources */,
 				53C461442D7DC52E009F7C6B /* SKPagingScrollView.swift in Sources */,
 				53C461452D7DC52E009F7C6B /* SKButtons.swift in Sources */,
-				5309C21C2DC3881900380B93 /* Secrets.swift in Sources */,
 				53A1A04B2DD4ACD00040AF52 /* HashtagViewController.swift in Sources */,
 				53C461462D7DC52E009F7C6B /* SKDetectingImageView.swift in Sources */,
 				53C461472D7DC52E009F7C6B /* SKMesurement.swift in Sources */,

@@ -603,7 +603,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 if hasAuthenticated {
                     if let atProto = GlobalStruct.atProto {
                         if currentCursor == nil {
-                            let y = try await atProto.getProfile(for: user?.username ?? GlobalStruct.userHandle)
+                            let y = try await atProto.getProfile(for: user?.username ?? "")
                             GlobalStruct.currentUser = y
                         }
                         
@@ -855,7 +855,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 x.username == GlobalStruct.currentSelectedUser
             }
             do {
-                try await config.authenticate(with: user?.username ?? GlobalStruct.userHandle, password: user?.password ?? GlobalStruct.userAppPassword)
+                try await config.authenticate(with: user?.username ?? "", password: user?.password ?? "")
                 GlobalStruct.atProto = await ATProtoKit(sessionConfiguration: config)
                 if fromSignIn {
                     do {

@@ -139,7 +139,6 @@ class PostsSettingsViewController: UIViewController, UITableViewDataSource, UITa
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell
             
-            cell.avatar.backgroundColor = GlobalStruct.baseTint
             if let url = GlobalStruct.currentUser?.avatarImageURL {
                 cell.avatar.sd_imageTransition = .fade
                 cell.avatar.sd_setImage(with: url, for: .normal)

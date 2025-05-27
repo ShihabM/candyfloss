@@ -190,4 +190,60 @@ class AccountsSettingsViewController: UIViewController, UITableViewDataSource, U
         }
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if allAccounts[indexPath.row].actorHandle != GlobalStruct.currentSelectedUser {
+            let removeAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                if let index = self.allAccounts.firstIndex(where: { x in
+                    x.actorHandle == GlobalStruct.currentSelectedUser
+                }) {
+                    self.allAccounts.remove(at: index)
+                    GlobalStruct.allUsers.remove(at: index)
+                    self.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                    do {
+                        try Disk.save(GlobalStruct.allUsers, to: .documents, as: "allUsers")
+                    } catch {
+                        print("error saving to Disk")
+                    }
+                }
+                completionHandler(true)
+            }
+            let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+            let image = UIImage(systemName: "trash.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.white, renderingMode: .alwaysOriginal) ?? UIImage()
+            if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .systemRed, diameter: 40) {
+                removeAction.image = circularImage
+            }
+            removeAction.backgroundColor = GlobalStruct.backgroundTint
+            let configuration = UISwipeActionsConfiguration(actions: [removeAction])
+            return configuration
+        } else {
+            return nil
+        }
+    }
+    
+    func createImageWithCircularBackground(icon: UIImage, backgroundColor: UIColor, diameter: CGFloat) -> UIImage? {
+        let frame = CGRect(x: 0, y: 0, width: diameter, height: diameter)
+        var scale: CGFloat = 1
+        scale = UIScreen.main.scale
+        UIGraphicsBeginImageContextWithOptions(frame.size, false, scale)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        context.setAllowsAntialiasing(true)
+        context.setShouldAntialias(true)
+        context.interpolationQuality = .high
+        let path = UIBezierPath(ovalIn: frame)
+        backgroundColor.setFill()
+        path.fill()
+        path.addClip()
+        let iconSize = icon.size
+        let iconRect = CGRect(
+            x: (diameter - iconSize.width) / 2,
+            y: (diameter - iconSize.height) / 2,
+            width: iconSize.width,
+            height: iconSize.height
+        )
+        icon.draw(in: iconRect)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
+    
 }

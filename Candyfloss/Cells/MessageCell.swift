@@ -10,7 +10,7 @@ import UIKit
 import SDWebImage
 import ATProtoKit
 
-class MessageCell: UITableViewCell, SKPhotoBrowserDelegate {
+class MessageCell: UITableViewCell, SKPhotoBrowserDelegate, UIContextMenuInteractionDelegate {
     
     // elements
     var bgView = UIView()
@@ -19,6 +19,7 @@ class MessageCell: UITableViewCell, SKPhotoBrowserDelegate {
     var username = UILabel()
     var usertag = UILabel()
     var text = ActiveLabel()
+    var currentProfile: ChatBskyLexicon.Actor.ProfileViewBasicDefinition? = nil
     
     // fonts and symbols
     let defaultFontSize = UIFont.preferredFont(forTextStyle: .title3).pointSize
@@ -48,6 +49,8 @@ class MessageCell: UITableViewCell, SKPhotoBrowserDelegate {
         avatar.imageView?.layer.masksToBounds = true
         avatar.layer.masksToBounds = true
         bgView.addSubview(avatar)
+        let interactionAvatar = UIContextMenuInteraction(delegate: self)
+        avatar.addInteraction(interactionAvatar)
         
         text.customize { text in
             text.translatesAutoresizingMaskIntoConstraints = false
@@ -118,6 +121,12 @@ class MessageCell: UITableViewCell, SKPhotoBrowserDelegate {
             text.hashtagColor = GlobalStruct.baseTint
             text.URLColor = GlobalStruct.baseTint
             text.emailColor = GlobalStruct.baseTint
+        }
+    }
+    
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            createMoreProfileMenu(nil, messageProfile: self.currentProfile)
         }
     }
 }

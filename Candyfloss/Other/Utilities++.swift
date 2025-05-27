@@ -1518,7 +1518,7 @@ func createVideoMenu(_ asset: AVAsset? = nil) -> UIMenu {
     return UIMenu(title: "", children: [save])
 }
 
-func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDefinition? = nil, basicProfile: AppBskyLexicon.Actor.ProfileViewBasicDefinition? = nil, defaultProfile: AppBskyLexicon.Actor.ProfileViewDefinition? = nil) -> UIMenu {
+func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDefinition? = nil, basicProfile: AppBskyLexicon.Actor.ProfileViewBasicDefinition? = nil, defaultProfile: AppBskyLexicon.Actor.ProfileViewDefinition? = nil, messageProfile: ChatBskyLexicon.Actor.ProfileViewBasicDefinition? = nil) -> UIMenu {
     if profile?.actorDID ?? "" == GlobalStruct.currentUser?.actorDID ?? "" || basicProfile?.actorDID ?? "" == GlobalStruct.currentUser?.actorDID ?? "" || defaultProfile?.actorDID ?? "" == GlobalStruct.currentUser?.actorDID ?? "" {
         
         var viewsActions: [UIAction] = []
@@ -1542,7 +1542,7 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         viewsActions.append(viewLikes)
         let lists = UIAction(title: "Lists", image: UIImage(systemName: "list.bullet"), identifier: nil) { action in
             let vc = FeedsListsViewController()
-            vc.otherListUser = profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? ""
+            vc.otherListUser = profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? messageProfile?.actorHandle ?? ""
             UIApplication.shared.pushToCurrentNavigationController(vc)
         }
         viewsActions.append(lists)
@@ -1562,7 +1562,7 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         let extrasMenu = UIMenu(title: "", options: [.displayInline], children: extraActions)
         var menuActions: [UIAction] = []
         let share = UIAction(title: "Share Profile", image: UIImage(systemName: "square.and.arrow.up"), identifier: nil) { action in
-            if let url = URL(string: "https://bsky.app/profile/\(profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? "")") {
+            if let url = URL(string: "https://bsky.app/profile/\(profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? messageProfile?.actorHandle ?? "")") {
                 let urlToShare = [url]
                 let activityViewController = UIActivityViewController(activityItems: urlToShare,  applicationActivities: nil)
                 activityViewController.popoverPresentationController?.sourceView = getTopMostViewController()?.view
@@ -1588,14 +1588,14 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         var extraActions: [UIAction] = []
         let profileNotes = UIAction(title: "Profile Notes", image: UIImage(systemName: "note.text"), identifier: nil) { action in
             let vc = InputTextViewController()
-            vc.currentUser = profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? ""
+            vc.currentUser = profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? messageProfile?.actorHandle ?? ""
             let nvc = SloppySwipingNav(rootViewController: vc)
             getTopMostViewController()?.present(nvc, animated: true, completion: nil)
         }
         extraActions.append(profileNotes)
         let lists = UIAction(title: "Lists", image: UIImage(systemName: "list.bullet"), identifier: nil) { action in
             let vc = FeedsListsViewController()
-            vc.otherListUser = profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? ""
+            vc.otherListUser = profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? messageProfile?.actorHandle ?? ""
             UIApplication.shared.pushToCurrentNavigationController(vc)
         }
         extraActions.append(lists)
@@ -1622,7 +1622,7 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         profileActions.append(report)
         var menuActions: [UIAction] = []
         let share = UIAction(title: "Share Profile", image: UIImage(systemName: "square.and.arrow.up"), identifier: nil) { action in
-            if let url = URL(string: "https://bsky.app/profile/\(profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? "")") {
+            if let url = URL(string: "https://bsky.app/profile/\(profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? messageProfile?.actorHandle ?? "")") {
                 let urlToShare = [url]
                 let activityViewController = UIActivityViewController(activityItems: urlToShare,  applicationActivities: nil)
                 activityViewController.popoverPresentationController?.sourceView = getTopMostViewController()?.view

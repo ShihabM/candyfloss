@@ -449,6 +449,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
                 cell.username.text = " "
             }
             cell.usertag.text = "@\(author.actorHandle)"
+            cell.currentProfile = author
         }
         cell.avatar.tag = indexPath.row
         cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)

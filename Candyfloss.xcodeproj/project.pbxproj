@@ -30,6 +30,7 @@
 		532883EE2DE5C4D6002AED8C /* AccountsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883ED2DE5C4CE002AED8C /* AccountsSettingsViewController.swift */; };
 		532883F12DE5D0DC002AED8C /* ATMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 532883F02DE5D0DC002AED8C /* ATMacro */; };
 		532883F32DE5D0DC002AED8C /* ATProtoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 532883F22DE5D0DC002AED8C /* ATProtoKit */; };
+		532883F52DE5F217002AED8C /* InputTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883F42DE5F20F002AED8C /* InputTextViewController.swift */; };
 		539B4CD62CC7A3E700CF6646 /* ActiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */; };
 		539B4CD72CC7A3E700CF6646 /* ActiveLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */; };
 		539B4CD82CC7A3E700CF6646 /* ActiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBC2CC7A3E700CF6646 /* ActiveType.swift */; };
@@ -139,6 +140,7 @@
 		531980992D96E5EF006C3D22 /* MultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTextField.swift; sourceTree = "<group>"; };
 		5319809B2D96E6B6006C3D22 /* ComposerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposerViewController.swift; sourceTree = "<group>"; };
 		532883ED2DE5C4CE002AED8C /* AccountsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsSettingsViewController.swift; sourceTree = "<group>"; };
+		532883F42DE5F20F002AED8C /* InputTextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextViewController.swift; sourceTree = "<group>"; };
 		539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveBuilder.swift; sourceTree = "<group>"; };
 		539B4CBA2CC7A3E700CF6646 /* ActiveLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActiveLabel.h; sourceTree = "<group>"; };
 		539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
@@ -348,6 +350,7 @@
 				53C4616B2D8C48F6009F7C6B /* QuotesViewController.swift */,
 				53A1A04A2DD4ACA30040AF52 /* HashtagViewController.swift */,
 				53C465A12D8DC59F009F7C6B /* ReportViewController.swift */,
+				532883F42DE5F20F002AED8C /* InputTextViewController.swift */,
 				5309C2162DC24E2C00380B93 /* Composer */,
 				5309C2152DC24E2300380B93 /* Settings */,
 				539B4CC32CC7A3E700CF6646 /* Cells */,
@@ -607,6 +610,7 @@
 				5309C2142DC22C0B00380B93 /* PostsSettingsViewController.swift in Sources */,
 				53C461592D7DC52E009F7C6B /* SKCacheable.swift in Sources */,
 				53C4615A2D7DC52E009F7C6B /* SKIndicatorView.swift in Sources */,
+				532883F52DE5F217002AED8C /* InputTextViewController.swift in Sources */,
 				539B4CDF2CC7A3E700CF6646 /* GlobalStruct.swift in Sources */,
 				5309C1EE2DB1549700380B93 /* TrendingTopicsCell.swift in Sources */,
 				53C460E82D7B59EF009F7C6B /* DetailCell.swift in Sources */,

@@ -1586,6 +1586,13 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         let mentionMenu = UIMenu(title: "", options: [.displayInline], children: mentionActions)
         
         var extraActions: [UIAction] = []
+        let profileNotes = UIAction(title: "Profile Notes", image: UIImage(systemName: "note.text"), identifier: nil) { action in
+            let vc = InputTextViewController()
+            vc.currentUser = profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? ""
+            let nvc = SloppySwipingNav(rootViewController: vc)
+            getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+        }
+        extraActions.append(profileNotes)
         let lists = UIAction(title: "Lists", image: UIImage(systemName: "list.bullet"), identifier: nil) { action in
             let vc = FeedsListsViewController()
             vc.otherListUser = profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? ""

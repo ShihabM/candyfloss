@@ -1,5 +1,5 @@
 //
-//  InputTextViewController.swift
+//  ProfileNotesViewController.swift
 //  Candyfloss
 //
 //  Created by Shihab Mehboob on 27/05/2025.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class InputTextViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate {
+class ProfileNotesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate {
     
     var tableView = UITableView()
     var currentUser: String = ""

@@ -1,14 +1,14 @@
 //
-//  NoteCell.swift
+//  TitleInputCell.swift
 //  Candyfloss
 //
-//  Created by Shihab Mehboob on 01/05/2025.
+//  Created by Shihab Mehboob on 27/05/2025.
 //
 
 import Foundation
 import UIKit
 
-class NoteCell: UITableViewCell {
+class TitleInputCell: UITableViewCell {
     
     var avatar = UIButton()
     var post = MultilineTextField()
@@ -19,9 +19,9 @@ class NoteCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         post.translatesAutoresizingMaskIntoConstraints = false
-        post.placeholder = "Profile note..."
+        post.placeholder = "List title..."
         post.placeholderColor = UIColor.placeholderText
-        post.accessibilityLabel = "Profile note..."
+        post.accessibilityLabel = "List title..."
         post.backgroundColor = .clear
         post.text = ""
         post.textColor = UIColor.label
@@ -36,9 +36,12 @@ class NoteCell: UITableViewCell {
         let viewsDict = [
             "post" : post,
         ]
+        let metricsDict: [String: Any] = [
+            "height" : UIFont.preferredFont(forTextStyle: .body).pointSize + 18
+        ]
         
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[post]-20-|", options: [], metrics: nil, views: viewsDict))
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[post(140)]-10-|", options: [], metrics: nil, views: viewsDict))
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[post(height)]-10-|", options: [], metrics: metricsDict, views: viewsDict))
     }
     
     required init?(coder aDecoder: NSCoder) {

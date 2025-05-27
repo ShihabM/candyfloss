@@ -1587,7 +1587,7 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         
         var extraActions: [UIAction] = []
         let profileNotes = UIAction(title: "Profile Notes", image: UIImage(systemName: "note.text"), identifier: nil) { action in
-            let vc = InputTextViewController()
+            let vc = ProfileNotesViewController()
             vc.currentUser = profile?.actorHandle ?? basicProfile?.actorHandle ?? defaultProfile?.actorHandle ?? messageProfile?.actorHandle ?? ""
             let nvc = SloppySwipingNav(rootViewController: vc)
             getTopMostViewController()?.present(nvc, animated: true, completion: nil)

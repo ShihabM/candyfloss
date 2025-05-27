@@ -36,6 +36,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshLists), name: NSNotification.Name(rawValue: "refreshLists"), object: nil)
+        
         currentCursor = UserDefaults.standard.value(forKey: "currentFeedCursor") as? String ?? nil
         
         if fromTab {
@@ -219,7 +221,16 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     
     @objc func newList() {
         defaultHaptics()
-        
+        let vc = NewListViewController()
+        let nvc = SloppySwipingNav(rootViewController: vc)
+        getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+    }
+    
+    @objc func refreshLists() {
+        DispatchQueue.main.async {
+            self.isShowingFeeds = false
+            self.fetchFeedsOrLists()
+        }
     }
     
     func fetchFeedsOrLists() {
@@ -358,6 +369,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     cell.configureCell(showingDescriptions)
                     if let url = GlobalStruct.pinnedFeeds[indexPath.row].feedItem?.avatarImageURL {
                         cell.avatar.sd_setImage(with: url, for: .normal)
+                    } else {
+                        cell.avatar.setImage(UIImage(), for: .normal)
                     }
                     cell.theTitle.text = GlobalStruct.pinnedFeeds[indexPath.row].feedItem?.displayName ?? ""
                     cell.theAuthor.text = "by @\(GlobalStruct.pinnedFeeds[indexPath.row].feedItem?.creator.actorHandle ?? "")"
@@ -413,6 +426,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                         cell.configureCell(showingDescriptions)
                         if let url = GlobalStruct.allFeeds[indexPath.row - 2].avatarImageURL {
                             cell.avatar.sd_setImage(with: url, for: .normal)
+                        } else {
+                            cell.avatar.setImage(UIImage(), for: .normal)
                         }
                         cell.theTitle.text = GlobalStruct.allFeeds[indexPath.row - 2].displayName
                         cell.theAuthor.text = "by @\(GlobalStruct.allFeeds[indexPath.row - 2].creator.actorHandle)"
@@ -467,6 +482,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     cell.configureCell(true)
                     if let url = GlobalStruct.pinnedLists[indexPath.row].listItem?.avatarImageURL {
                         cell.avatar.sd_setImage(with: url, for: .normal)
+                    } else {
+                        cell.avatar.setImage(UIImage(), for: .normal)
                     }
                     cell.theTitle.text = GlobalStruct.pinnedLists[indexPath.row].listItem?.name ?? ""
                     cell.theAuthor.text = "by @\(GlobalStruct.pinnedLists[indexPath.row].listItem?.creator.actorHandle ?? "")"
@@ -497,7 +514,11 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     
                     cell.configureCell(false)
                     cell.theTitle.text = "All Lists"
-                    cell.theAuthor.text = "A list of your lists"
+                    if otherListUser != "" {
+                        cell.theAuthor.text = "A list of @\(otherListUser)'s lists"
+                    } else {
+                        cell.theAuthor.text = "A list of your lists"
+                    }
                     
                     cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
                     cell.accessoryView = nil
@@ -512,6 +533,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     cell.configureCell(true)
                     if let url = allLists[indexPath.row - 1].avatarImageURL {
                         cell.avatar.sd_setImage(with: url, for: .normal)
+                    } else {
+                        cell.avatar.setImage(UIImage(), for: .normal)
                     }
                     cell.theTitle.text = allLists[indexPath.row - 1].name
                     cell.theAuthor.text = "by @\(allLists[indexPath.row - 1].creator.actorHandle)"
@@ -704,7 +727,9 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
             if indexPath.section == 0 && !GlobalStruct.pinnedLists.isEmpty {
                 let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
                     GlobalStruct.pinnedLists.remove(at: indexPath.row)
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                    if !self.fromTab {
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                    }
                     self.savePinnedListsToDisk()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         self.tableView2.reloadData()
@@ -729,7 +754,9 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                             GlobalStruct.pinnedLists = GlobalStruct.pinnedLists.filter({ x in
                                 x.name != self.allLists[indexPath.row - 1].name
                             })
-                            NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            if !self.fromTab {
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            }
                             self.savePinnedListsToDisk()
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 self.tableView2.reloadData()
@@ -747,7 +774,9 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     } else {
                         let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
                             GlobalStruct.pinnedLists.append(PinnedItems(name: self.allLists[indexPath.row - 1].name, uri: self.allLists[indexPath.row - 1].uri, feedItem: nil, listItem: self.allLists[indexPath.row - 1]))
-                            NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            if !self.fromTab {
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            }
                             self.savePinnedListsToDisk()
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 self.tableView2.reloadData()

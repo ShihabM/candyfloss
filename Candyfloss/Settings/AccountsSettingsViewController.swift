@@ -158,6 +158,7 @@ class AccountsSettingsViewController: UIViewController, UITableViewDataSource, U
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if allAccounts[indexPath.row].actorHandle != GlobalStruct.currentSelectedUser {
+            GlobalStruct.currentUser = allAccounts[indexPath.row]
             GlobalStruct.currentSelectedUser = allAccounts[indexPath.row].actorHandle
             UserDefaults.standard.set(GlobalStruct.currentSelectedUser, forKey: "currentSelectedUser")
             Task {

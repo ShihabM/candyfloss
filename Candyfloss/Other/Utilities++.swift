@@ -1074,6 +1074,13 @@ class QuoteCacheManager {
     }
 }
 
+// users
+
+struct UserStruct: Codable {
+    let username: String
+    let password: String
+}
+
 // context menus
 
 func makePostContextMenu(_ indexPathRow: Int, post: AppBskyLexicon.Feed.PostViewDefinition? = nil, reason: ATUnion.ReasonRepostUnion? = nil) -> UIMenu {

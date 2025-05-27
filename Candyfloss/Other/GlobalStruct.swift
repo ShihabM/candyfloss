@@ -13,6 +13,9 @@ struct GlobalStruct {
     static var atProto: ATProtoKit? = nil
     static var currentUser: AppBskyLexicon.Actor.ProfileViewDetailedDefinition? = nil
     
+    static var allUsers: [UserStruct] = []
+    static var currentSelectedUser: String = ""
+    
     // tints
     static var baseTint: UIColor = UIColor(named: "baseTint")!
     static var backgroundTint: UIColor = (UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false == true) ? UIColor(named: "fullBlack")! : UIColor(named: "bg")!

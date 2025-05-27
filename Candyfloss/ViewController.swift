@@ -203,35 +203,45 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
         
         setUpNavigationBar()
+        setUpTable()
         
-        if fromFeedPush {
-            switchFeed(false)
-        } else if fromListPush {
-            switchList(false)
+        do {
+            GlobalStruct.allUsers = try Disk.retrieve("allUsers", from: .documents, as: [UserStruct].self)
+            GlobalStruct.currentSelectedUser = UserDefaults.standard.value(forKey: "currentSelectedUser") as? String ?? ""
+        } catch {
+            print("error fetching from Disk")
+        }
+        if GlobalStruct.allUsers.isEmpty {
+            displayCredentialsPrompt()
         } else {
-            if let x = UserDefaults.standard.value(forKey: "isShowingFeeds") as? Bool {
-                GlobalStruct.isShowingFeeds = x
-            }
-            if let x = UserDefaults.standard.value(forKey: "currentFeedURI") as? String {
-                GlobalStruct.currentFeedURI = x
-            }
-            if let x = UserDefaults.standard.value(forKey: "currentFeedDisplayName") as? String {
-                GlobalStruct.currentFeedDisplayName = x
-            }
-            if let x = UserDefaults.standard.value(forKey: "listURI") as? String {
-                GlobalStruct.listURI = x
-            }
-            if let x = UserDefaults.standard.value(forKey: "listName") as? String {
-                GlobalStruct.listName = x
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                if GlobalStruct.currentFeedURI != "" {
-                    self.switchFeed(false)
-                } else if GlobalStruct.listURI != "" {
-                    self.switchList(false)
-                } else {
-                    self.fetchTimeline(false)
-                    self.setUpTable()
+            if fromFeedPush {
+                switchFeed(false)
+            } else if fromListPush {
+                switchList(false)
+            } else {
+                if let x = UserDefaults.standard.value(forKey: "isShowingFeeds") as? Bool {
+                    GlobalStruct.isShowingFeeds = x
+                }
+                if let x = UserDefaults.standard.value(forKey: "currentFeedURI") as? String {
+                    GlobalStruct.currentFeedURI = x
+                }
+                if let x = UserDefaults.standard.value(forKey: "currentFeedDisplayName") as? String {
+                    GlobalStruct.currentFeedDisplayName = x
+                }
+                if let x = UserDefaults.standard.value(forKey: "listURI") as? String {
+                    GlobalStruct.listURI = x
+                }
+                if let x = UserDefaults.standard.value(forKey: "listName") as? String {
+                    GlobalStruct.listName = x
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    if GlobalStruct.currentFeedURI != "" {
+                        self.switchFeed(false)
+                    } else if GlobalStruct.listURI != "" {
+                        self.switchList(false)
+                    } else {
+                        self.fetchTimeline(false)
+                    }
                 }
             }
         }
@@ -576,12 +586,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func fetchTimeline(_ hasAuthenticated: Bool = true) {
+        let user = GlobalStruct.allUsers.first { x in
+            x.username == GlobalStruct.currentSelectedUser
+        }
         Task {
             do {
                 if hasAuthenticated {
                     if let atProto = GlobalStruct.atProto {
                         if currentCursor == nil {
-                            let y = try await atProto.getProfile(for: GlobalStruct.userHandle)
+                            let y = try await atProto.getProfile(for: user?.username ?? GlobalStruct.userHandle)
                             GlobalStruct.currentUser = y
                         }
                         
@@ -826,10 +839,21 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
-    func authenticate(_ fetchNextimeline: Bool = true) async {
+    func authenticate(_ fetchNextimeline: Bool = true, fromSignIn: Bool = false) async {
+        let user = GlobalStruct.allUsers.first { x in
+            x.username == GlobalStruct.currentSelectedUser
+        }
         do {
-            try await config.authenticate(with: GlobalStruct.userHandle, password: GlobalStruct.userAppPassword)
+            try await config.authenticate(with: user?.username ?? GlobalStruct.userHandle, password: user?.password ?? GlobalStruct.userAppPassword)
             GlobalStruct.atProto = await ATProtoKit(sessionConfiguration: config)
+            if fromSignIn {
+                do {
+                    try Disk.save(GlobalStruct.allUsers, to: .documents, as: "allUsers")
+                    UserDefaults.standard.set(GlobalStruct.currentSelectedUser, forKey: "currentSelectedUser")
+                } catch {
+                    print("error saving to Disk")
+                }
+            }
             if fetchNextimeline {
                 fetchTimeline()
             } else {
@@ -838,6 +862,33 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         } catch {
             print("Error fetching: \(error)")
         }
+    }
+    
+    func displayCredentialsPrompt() {
+        let alert = UIAlertController(title: "Sign In", message: "Enter username and password", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "Username"
+            textField.keyboardType = .URL
+            textField.autocapitalizationType = .none
+        }
+        alert.addTextField { textField in
+            textField.placeholder = "Password"
+            textField.autocapitalizationType = .none
+            textField.isSecureTextEntry = true
+        }
+        let connectAction = UIAlertAction(title: "Sign In", style: .default) { _ in
+            let username = alert.textFields?[0].text ?? ""
+            let password = alert.textFields?[1].text ?? ""
+            let user = UserStruct(username: username, password: password)
+            GlobalStruct.allUsers.append(user)
+            GlobalStruct.currentSelectedUser = username
+            Task {
+                await self.authenticate(fromSignIn: true)
+            }
+        }
+        alert.addAction(connectAction)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
     }
     
     func fetchFeeds() {

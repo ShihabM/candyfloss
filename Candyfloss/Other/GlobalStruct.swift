@@ -58,6 +58,7 @@ struct GlobalStruct {
     static var currentFeedDisplayName: String = "Following"
     static var displayFeedDescriptions: Bool = true
     static var listName: String = ""
+    static var listDescription: String = ""
     static var listURI: String = ""
     static var allFeeds: [AppBskyLexicon.Feed.GeneratorViewDefinition] = []
     static var allFetchedPosts: [AppBskyLexicon.Feed.FeedViewPostDefinition] = []

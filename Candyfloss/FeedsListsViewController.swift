@@ -32,11 +32,24 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         tableView2.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
     }
     
+    @objc func updatePinned() {
+        DispatchQueue.main.async {
+            if !self.fromTab {
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+            }
+            self.savePinnedListsToDisk()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.tableView2.reloadData()
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshLists), name: NSNotification.Name(rawValue: "refreshLists"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updatePinned), name: NSNotification.Name(rawValue: "updatePinned"), object: nil)
         
         currentCursor = UserDefaults.standard.value(forKey: "currentFeedCursor") as? String ?? nil
         
@@ -616,8 +629,12 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     
                 } else {
                     defaultHaptics()
+                    let list = self.allLists.first { x in
+                        x.name == GlobalStruct.pinnedLists[indexPath.row].name
+                    }
                     GlobalStruct.listURI = GlobalStruct.pinnedLists[indexPath.row].uri
                     GlobalStruct.listName = GlobalStruct.pinnedLists[indexPath.row].name
+                    GlobalStruct.listDescription = list?.description ?? ""
                     GlobalStruct.currentList = GlobalStruct.pinnedLists[indexPath.row].listItem
                     GlobalStruct.currentFeedURI = ""
                     GlobalStruct.currentFeedDisplayName = ""
@@ -638,6 +655,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     defaultHaptics()
                     GlobalStruct.listURI = allLists[indexPath.row - 1].uri
                     GlobalStruct.listName = allLists[indexPath.row - 1].name
+                    GlobalStruct.listDescription = allLists[indexPath.row - 1].description ?? ""
                     GlobalStruct.currentList = allLists[indexPath.row - 1]
                     GlobalStruct.currentFeedURI = ""
                     GlobalStruct.currentFeedDisplayName = ""
@@ -653,6 +671,27 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     }
                     dismiss(animated: true)
                 }
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        if tableView == self.tableView {
+            return nil
+        } else {
+            if (indexPath.section == 0 && !GlobalStruct.pinnedLists.isEmpty) || (indexPath.section == 1 && indexPath.row != 0) {
+                return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+                    if indexPath.section == 0 {
+                        let list = self.allLists.first { x in
+                            x.name == GlobalStruct.pinnedLists[indexPath.row].name
+                        }
+                        return createListMenu(GlobalStruct.pinnedLists[indexPath.row].uri, listName: GlobalStruct.pinnedLists[indexPath.row].name, listDescription: list?.description ?? "")
+                    } else {
+                        return createListMenu(self.allLists[indexPath.row - 1].uri, listName: self.allLists[indexPath.row - 1].name, listDescription: self.allLists[indexPath.row - 1].description ?? "", listItem: self.allLists[indexPath.row - 1])
+                    }
+                }
+            } else {
+                return nil
             }
         }
     }

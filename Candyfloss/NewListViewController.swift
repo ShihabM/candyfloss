@@ -11,6 +11,7 @@ import ATProtoKit
 class NewListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate {
     
     var tableView = UITableView()
+    var currentListURI: String = ""
     var currentTitle: String = ""
     var currentDescription: String? = nil
     var isEditingList: Bool = false
@@ -22,7 +23,11 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.modalBackground
-        navigationItem.title = "New List"
+        if isEditingList {
+            navigationItem.title = "Update List"
+        } else {
+            navigationItem.title = "New List"
+        }
         
         setUpNavBar()
         setUpTable()
@@ -83,7 +88,11 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
                 do {
                     if let atProto = GlobalStruct.atProto {
                         let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
-                        let _ = try await atProtoBluesky.createListRecord(named: self.currentTitle, ofType: .curation, description: self.currentDescription)
+                        if self.isEditingList {
+                            let _ = try await atProtoBluesky.updateListRecord(listURI: self.currentListURI, replace: [.name(with: self.currentTitle), .description(with: self.currentDescription)])
+                        } else {
+                            let _ = try await atProtoBluesky.createListRecord(named: self.currentTitle, ofType: .curation, description: self.currentDescription)
+                        }
                         DispatchQueue.main.async {
                             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshLists"), object: nil)
                             self.dismiss(animated: true)

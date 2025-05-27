@@ -1447,6 +1447,60 @@ func createLinkMenu(_ currentLink: String) -> UIMenu {
     return UIMenu(title: "", options: [.displayInline], children: menuActions)
 }
 
+func createListMenu(_ listURI: String = "", listName: String = "", listDescription: String = "", listItem: AppBskyLexicon.Graph.ListViewDefinition? = nil) -> UIMenu {
+    var menuActions: [UIAction] = []
+    let members = UIAction(title: "People", image: UIImage(systemName: "person.2"), identifier: nil) { action in
+        let vc = FriendsViewController()
+        vc.fromList = true
+        vc.listName = listName
+        vc.listURI = listURI
+        UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+    }
+    menuActions.append(members)
+    let pin = UIAction(title: "Pin List", image: UIImage(systemName: "pin"), identifier: nil) { action in
+        GlobalStruct.pinnedLists.append(PinnedItems(name: listName, uri: listURI, feedItem: nil, listItem: listItem))
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePinned"), object: nil)
+    }
+    let removePin = UIAction(title: "Remove Pin", image: UIImage(systemName: "pin.slash"), identifier: nil) { action in
+        GlobalStruct.pinnedLists = GlobalStruct.pinnedLists.filter({ x in
+            x.name != listName
+        })
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePinned"), object: nil)
+    }
+    let contains = GlobalStruct.pinnedLists.contains { $0.name == listName }
+    if contains {
+        menuActions.append(removePin)
+    } else {
+        menuActions.append(pin)
+    }
+    let edit = UIAction(title: "Edit List", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
+        let vc = NewListViewController()
+        vc.isEditingList = true
+        vc.currentListURI = listURI
+        vc.currentTitle = listName
+        vc.currentDescription = listDescription
+        let nvc = SloppySwipingNav(rootViewController: vc)
+        getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+    }
+    menuActions.append(edit)
+    let share = UIAction(title: "Share List", image: UIImage(systemName: "square.and.arrow.up"), identifier: nil) { action in
+        if let url = URL(string: listURI) {
+            let urlToShare = [url]
+            let activityViewController = UIActivityViewController(activityItems: urlToShare,  applicationActivities: nil)
+            activityViewController.popoverPresentationController?.sourceView = getTopMostViewController()?.view
+            activityViewController.popoverPresentationController?.sourceRect = getTopMostViewController()?.view.bounds ?? .zero
+            getTopMostViewController()?.present(activityViewController, animated: true, completion: nil)
+        }
+    }
+    menuActions.append(share)
+    let delete = UIAction(title: "Delete List", image: UIImage(systemName: "trash"), identifier: nil) { action in
+        
+    }
+    delete.attributes = .destructive
+    let deleteMenu = UIMenu(title: "", options: [.displayInline, .destructive], children: [delete])
+    return UIMenu(title: "", options: [.displayInline], children: menuActions + [deleteMenu])
+}
+
 func createImageMenu(_ imageView: UIImageView? = nil, imageInstead: UIImage? = nil) -> UIMenu {
     var image: UIImage!
     if let imageToUse = imageView?.image {

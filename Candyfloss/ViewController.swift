@@ -32,6 +32,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     // lists
     var listName: String = ""
     var listURI: String = ""
+    var listDescription: String = ""
     var fromListPush: Bool = false
     
     // inline search
@@ -287,7 +288,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             let moreButton = CustomButton(type: .system)
             moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
             var menuActions: [UIAction] = []
-            let viewPeople = UIAction(title: "People", image: UIImage(systemName: "person"), identifier: nil) { action in
+            let viewPeople = UIAction(title: "People", image: UIImage(systemName: "person.2"), identifier: nil) { action in
                 let vc = FriendsViewController()
                 vc.fromList = true
                 vc.listName = self.listName
@@ -296,9 +297,25 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
             menuActions.append(viewPeople)
             let editList = UIAction(title: "Edit List", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
-                
+                let vc = NewListViewController()
+                vc.isEditingList = true
+                vc.currentListURI = self.listURI
+                vc.currentTitle = self.listName
+                vc.currentDescription = self.listDescription
+                let nvc = SloppySwipingNav(rootViewController: vc)
+                getTopMostViewController()?.present(nvc, animated: true, completion: nil)
             }
             menuActions.append(editList)
+            let share = UIAction(title: "Share List", image: UIImage(systemName: "square.and.arrow.up"), identifier: nil) { action in
+                if let url = URL(string: self.listURI) {
+                    let urlToShare = [url]
+                    let activityViewController = UIActivityViewController(activityItems: urlToShare,  applicationActivities: nil)
+                    activityViewController.popoverPresentationController?.sourceView = getTopMostViewController()?.view
+                    activityViewController.popoverPresentationController?.sourceRect = getTopMostViewController()?.view.bounds ?? .zero
+                    getTopMostViewController()?.present(activityViewController, animated: true, completion: nil)
+                }
+            }
+            menuActions.append(share)
             let menu = UIMenu(title: "", options: [.displayInline], children: menuActions)
             moreButton.menu = menu
             moreButton.showsMenuAsPrimaryAction = true
@@ -585,6 +602,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             self.navigationItem.title = GlobalStruct.listName
             self.listURI = GlobalStruct.listURI
             self.listName = GlobalStruct.listName
+            self.listDescription = GlobalStruct.listDescription
             self.allPosts = []
             self.currentCursor = nil
             self.tableView.reloadData()

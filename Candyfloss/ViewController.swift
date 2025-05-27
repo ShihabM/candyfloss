@@ -860,7 +860,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 fetchLatest()
             }
         } catch {
-            print("Error fetching: \(error)")
+            print("Error authenticating: \(error)")
         }
     }
     

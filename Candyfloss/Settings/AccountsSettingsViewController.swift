@@ -11,6 +11,8 @@ import ATProtoKit
 
 class AccountsSettingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    let config = ATProtocolConfiguration()
+    
     var tableView = UITableView()
     var allAccounts: [AppBskyLexicon.Actor.ProfileViewDetailedDefinition] = []
     
@@ -113,7 +115,24 @@ class AccountsSettingsViewController: UIViewController, UITableViewDataSource, U
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if allAccounts[indexPath.row].actorHandle != GlobalStruct.currentSelectedUser {
-            
+            GlobalStruct.currentSelectedUser = allAccounts[indexPath.row].actorHandle
+            UserDefaults.standard.set(GlobalStruct.currentSelectedUser, forKey: "currentSelectedUser")
+            Task {
+                await authenticate()
+            }
+        }
+    }
+    
+    func authenticate() async {
+        let user = GlobalStruct.allUsers.first { x in
+            x.username == GlobalStruct.currentSelectedUser
+        }
+        do {
+            try await config.authenticate(with: user?.username ?? GlobalStruct.userHandle, password: user?.password ?? GlobalStruct.userAppPassword)
+            GlobalStruct.atProto = await ATProtoKit(sessionConfiguration: config)
+            dismiss(animated: true)
+        } catch {
+            print("Error authenticating: \(error)")
         }
     }
     

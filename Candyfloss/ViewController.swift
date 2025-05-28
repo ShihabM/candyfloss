@@ -291,14 +291,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             let moreButton = CustomButton(type: .system)
             moreButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
             var menuActions: [UIAction] = []
-            let viewPeople = UIAction(title: "People", image: UIImage(systemName: "person.2"), identifier: nil) { action in
-                let vc = FriendsViewController()
-                vc.fromList = true
-                vc.listName = self.listName
-                vc.listURI = self.listURI
-                UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
-            }
-            menuActions.append(viewPeople)
             let pin = UIAction(title: "Pin List", image: UIImage(systemName: "pin"), identifier: nil) { action in
                 GlobalStruct.pinnedLists.append(PinnedItems(name: self.listName, uri: self.listURI, feedItem: nil, listItem: GlobalStruct.currentList))
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePinned"), object: nil)
@@ -315,16 +307,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             } else {
                 menuActions.append(pin)
             }
-            let editList = UIAction(title: "Edit List", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
-                let vc = NewListViewController()
-                vc.isEditingList = true
-                vc.currentListURI = self.listURI
-                vc.currentTitle = self.listName
-                vc.currentDescription = self.listDescription
-                let nvc = SloppySwipingNav(rootViewController: vc)
-                getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+            let viewPeople = UIAction(title: "People", image: UIImage(systemName: "person.2"), identifier: nil) { action in
+                let vc = FriendsViewController()
+                vc.fromList = true
+                vc.listName = self.listName
+                vc.listURI = self.listURI
+                UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
             }
-            menuActions.append(editList)
+            menuActions.append(viewPeople)
             let share = UIAction(title: "Share List", image: UIImage(systemName: "square.and.arrow.up"), identifier: nil) { action in
                 let listURIComponents = self.listURI.replacingOccurrences(of: "at://", with: "").split(separator: "/")
                 let did = "\(listURIComponents.first ?? "")"
@@ -339,8 +329,23 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 }
             }
             menuActions.append(share)
-            let menu = UIMenu(title: "", options: [.displayInline], children: menuActions)
-            moreButton.menu = menu
+            let editList = UIAction(title: "Edit List", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
+                let vc = NewListViewController()
+                vc.isEditingList = true
+                vc.currentListURI = self.listURI
+                vc.currentTitle = self.listName
+                vc.currentDescription = self.listDescription
+                let nvc = SloppySwipingNav(rootViewController: vc)
+                getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+            }
+            let editMenu = UIMenu(title: "", options: [.displayInline], children: [editList])
+            if GlobalStruct.currentList?.creator.actorDID ?? "" == GlobalStruct.currentUser?.actorDID ?? "" {
+                let menu = UIMenu(title: "", options: [.displayInline], children: menuActions + [editMenu])
+                moreButton.menu = menu
+            } else {
+                let menu = UIMenu(title: "", options: [.displayInline], children: menuActions)
+                moreButton.menu = menu
+            }
             moreButton.showsMenuAsPrimaryAction = true
             let navigationBarButtonItem = UIBarButtonItem(customView: moreButton)
             navigationBarButtonItem.accessibilityLabel = "More"

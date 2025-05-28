@@ -1449,20 +1449,6 @@ func createLinkMenu(_ currentLink: String) -> UIMenu {
 
 func createListMenu(_ listURI: String = "", listName: String = "", listDescription: String = "", listItem: AppBskyLexicon.Graph.ListViewDefinition? = nil, fromTab: Bool = false) -> UIMenu {
     var menuActions: [UIAction] = []
-    let members = UIAction(title: "People", image: UIImage(systemName: "person.2"), identifier: nil) { action in
-        let vc = FriendsViewController()
-        vc.fromList = true
-        vc.listName = listName
-        vc.listURI = listURI
-        if fromTab {
-            UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
-        } else {
-            vc.fromTab = false
-            let nvc = SloppySwipingNav(rootViewController: vc)
-            getTopMostViewController()?.present(nvc, animated: true, completion: nil)
-        }
-    }
-    menuActions.append(members)
     let pin = UIAction(title: "Pin List", image: UIImage(systemName: "pin"), identifier: nil) { action in
         GlobalStruct.pinnedLists.append(PinnedItems(name: listName, uri: listURI, feedItem: nil, listItem: listItem))
         NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePinned"), object: nil)
@@ -1479,17 +1465,20 @@ func createListMenu(_ listURI: String = "", listName: String = "", listDescripti
     } else {
         menuActions.append(pin)
     }
-    let edit = UIAction(title: "Edit List", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
-        let vc = NewListViewController()
-        vc.isEditingList = true
-        vc.currentListAvatar = listItem?.avatarImageURL
-        vc.currentListURI = listURI
-        vc.currentTitle = listName
-        vc.currentDescription = listDescription
-        let nvc = SloppySwipingNav(rootViewController: vc)
-        getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+    let members = UIAction(title: "People", image: UIImage(systemName: "person.2"), identifier: nil) { action in
+        let vc = FriendsViewController()
+        vc.fromList = true
+        vc.listName = listName
+        vc.listURI = listURI
+        if fromTab {
+            UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+        } else {
+            vc.fromTab = false
+            let nvc = SloppySwipingNav(rootViewController: vc)
+            getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+        }
     }
-    menuActions.append(edit)
+    menuActions.append(members)
     let share = UIAction(title: "Share List", image: UIImage(systemName: "square.and.arrow.up"), identifier: nil) { action in
         let listURIComponents = listURI.replacingOccurrences(of: "at://", with: "").split(separator: "/")
         let did = "\(listURIComponents.first ?? "")"
@@ -1504,6 +1493,16 @@ func createListMenu(_ listURI: String = "", listName: String = "", listDescripti
         }
     }
     menuActions.append(share)
+    let edit = UIAction(title: "Edit List", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
+        let vc = NewListViewController()
+        vc.isEditingList = true
+        vc.currentListAvatar = listItem?.avatarImageURL
+        vc.currentListURI = listURI
+        vc.currentTitle = listName
+        vc.currentDescription = listDescription
+        let nvc = SloppySwipingNav(rootViewController: vc)
+        getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+    }
     let delete = UIAction(title: "Delete List", image: UIImage(systemName: "trash"), identifier: nil) { action in
         Task {
             do {
@@ -1521,8 +1520,12 @@ func createListMenu(_ listURI: String = "", listName: String = "", listDescripti
         }
     }
     delete.attributes = .destructive
-    let deleteMenu = UIMenu(title: "", options: [.displayInline, .destructive], children: [delete])
-    return UIMenu(title: "", options: [.displayInline], children: menuActions + [deleteMenu])
+    let deleteMenu = UIMenu(title: "", options: [.displayInline], children: [edit, delete])
+    if listItem?.creator.actorDID ?? "" == GlobalStruct.currentUser?.actorDID ?? "" {
+        return UIMenu(title: "", options: [.displayInline], children: menuActions + [deleteMenu])
+    } else {
+        return UIMenu(title: "", options: [.displayInline], children: menuActions)
+    }
 }
 
 func createImageMenu(_ imageView: UIImageView? = nil, imageInstead: UIImage? = nil) -> UIMenu {

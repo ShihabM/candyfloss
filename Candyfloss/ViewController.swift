@@ -307,7 +307,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
             menuActions.append(editList)
             let share = UIAction(title: "Share List", image: UIImage(systemName: "square.and.arrow.up"), identifier: nil) { action in
-                if let url = URL(string: self.listURI) {
+                let listURIComponents = self.listURI.replacingOccurrences(of: "at://", with: "").split(separator: "/")
+                let did = "\(listURIComponents.first ?? "")"
+                let id = "\(listURIComponents.last ?? "")"
+                let fullString = "https://bsky.app/profile/\(did)/lists/\(id)"
+                if let url = URL(string: fullString) {
                     let urlToShare = [url]
                     let activityViewController = UIActivityViewController(activityItems: urlToShare,  applicationActivities: nil)
                     activityViewController.popoverPresentationController?.sourceView = getTopMostViewController()?.view

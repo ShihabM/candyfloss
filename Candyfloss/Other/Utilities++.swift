@@ -1447,14 +1447,20 @@ func createLinkMenu(_ currentLink: String) -> UIMenu {
     return UIMenu(title: "", options: [.displayInline], children: menuActions)
 }
 
-func createListMenu(_ listURI: String = "", listName: String = "", listDescription: String = "", listItem: AppBskyLexicon.Graph.ListViewDefinition? = nil) -> UIMenu {
+func createListMenu(_ listURI: String = "", listName: String = "", listDescription: String = "", listItem: AppBskyLexicon.Graph.ListViewDefinition? = nil, fromTab: Bool = false) -> UIMenu {
     var menuActions: [UIAction] = []
     let members = UIAction(title: "People", image: UIImage(systemName: "person.2"), identifier: nil) { action in
         let vc = FriendsViewController()
         vc.fromList = true
         vc.listName = listName
         vc.listURI = listURI
-        UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+        if fromTab {
+            UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+        } else {
+            vc.fromTab = false
+            let nvc = SloppySwipingNav(rootViewController: vc)
+            getTopMostViewController()?.present(nvc, animated: true, completion: nil)
+        }
     }
     menuActions.append(members)
     let pin = UIAction(title: "Pin List", image: UIImage(systemName: "pin"), identifier: nil) { action in
@@ -1484,7 +1490,11 @@ func createListMenu(_ listURI: String = "", listName: String = "", listDescripti
     }
     menuActions.append(edit)
     let share = UIAction(title: "Share List", image: UIImage(systemName: "square.and.arrow.up"), identifier: nil) { action in
-        if let url = URL(string: listURI) {
+        let listURIComponents = listURI.replacingOccurrences(of: "at://", with: "").split(separator: "/")
+        let did = "\(listURIComponents.first ?? "")"
+        let id = "\(listURIComponents.last ?? "")"
+        let fullString = "https://bsky.app/profile/\(did)/lists/\(id)"
+        if let url = URL(string: fullString) {
             let urlToShare = [url]
             let activityViewController = UIActivityViewController(activityItems: urlToShare,  applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = getTopMostViewController()?.view

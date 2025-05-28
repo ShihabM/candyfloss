@@ -19,6 +19,7 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
     var isFetching: Bool = false
     var isMutuals: Bool = false
     var allActivityUsers: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
+    var fromTab: Bool = true
     
     // lists
     var listName: String = ""
@@ -221,6 +222,22 @@ class FriendsViewController: UIViewController, UITableViewDataSource, UITableVie
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
+        
+        if !fromTab {
+            let button = CustomButton(type: .system)
+            button.setTitle("Close", for: .normal)
+            button.setTitleColor(GlobalStruct.baseTint, for: .normal)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+            button.addTarget(self, action: #selector(self.dismissView), for: .touchUpInside)
+            let barButtonItem = UIBarButtonItem(customView: button)
+            barButtonItem.accessibilityLabel = "Dismiss"
+            navigationItem.leftBarButtonItem = barButtonItem
+        }
+    }
+    
+    @objc func dismissView() {
+        defaultHaptics()
+        self.dismiss(animated: true)
     }
     
     func fetchFriends() {

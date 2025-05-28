@@ -230,6 +230,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             } else if fromListPush {
                 switchList(false)
             } else {
+//                do {
+//                    allPosts = try Disk.retrieve("allPosts.json", from: .documents, as: [AppBskyLexicon.Feed.FeedViewPostDefinition].self)
+//                    currentCursor = UserDefaults.standard.value(forKey: "currentCursor") as? String ?? ""
+//                    tableView.reloadData()
+//                    print("allPosts: \(allPosts.first?.post.record.getRecord(ofType: AppBskyLexicon.Feed.PostRecord.self)?.text)")
+//                } catch {
+//                    print("error fetching from Disk")
+//                }
                 if let x = UserDefaults.standard.value(forKey: "isShowingFeeds") as? Bool {
                     GlobalStruct.isShowingFeeds = x
                 }
@@ -720,6 +728,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                                 self.tableView.reloadData()
                                 self.isFetching = false
                             }
+                            saveToDisk()
                             
                             // prefetch feeds and lists
                             fetchFeeds()
@@ -955,6 +964,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         alert.addAction(connectAction)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(alert, animated: true)
+    }
+    
+    func saveToDisk() {
+//        do {
+//            try Disk.save(allPosts, to: .documents, as: "allPosts.json")
+//            UserDefaults.standard.set(currentCursor, forKey: "currentCursor")
+//        } catch {
+//            print("error saving to Disk")
+//        }
     }
     
     func fetchFeeds() {

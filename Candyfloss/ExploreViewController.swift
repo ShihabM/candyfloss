@@ -237,6 +237,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @objc func fetchTrending() {
+        fetchedAreasCount = 0
         guard !isSearching else {
             refreshControl.endRefreshing()
             return

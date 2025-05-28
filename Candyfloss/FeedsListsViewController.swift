@@ -34,8 +34,10 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     
     @objc func updatePinned() {
         DispatchQueue.main.async {
-            if !self.fromTab {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+            if !GlobalStruct.inVCFromList {
+                if !self.fromTab {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                }
             }
             self.savePinnedListsToDisk()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -528,7 +530,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     cell.theDescription.text = GlobalStruct.pinnedLists[indexPath.row].listItem?.description ?? ""
                     
                     if otherListUser == "" {
-                        if GlobalStruct.listName == cell.theTitle.text {
+                        if GlobalStruct.listName == cell.theTitle.text && !GlobalStruct.inVCFromList {
                             cell.accessoryType = .checkmark
                         } else {
                             cell.accessoryType = .none
@@ -586,7 +588,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     }
                     
                     if otherListUser == "" {
-                        if GlobalStruct.listName == cell.theTitle.text {
+                        if GlobalStruct.listName == cell.theTitle.text && !GlobalStruct.inVCFromList {
                             cell.accessoryType = .checkmark
                         } else {
                             cell.accessoryType = .none
@@ -665,10 +667,12 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     GlobalStruct.currentFeedDisplayName = ""
                     GlobalStruct.currentFeed = nil
                     if otherListUser == "" && !fromTab {
+                        GlobalStruct.inVCFromList = false
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
                         saveCurrentFeedAndList()
                         tableView.reloadData()
                     } else {
+                        GlobalStruct.inVCFromList = true
                         let vc = ViewController()
                         vc.fromListPush = true
                         navigationController?.pushViewController(vc, animated: true)
@@ -686,10 +690,12 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     GlobalStruct.currentFeedDisplayName = ""
                     GlobalStruct.currentFeed = nil
                     if otherListUser == "" && !fromTab {
+                        GlobalStruct.inVCFromList = false
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "switchList"), object: nil)
                         saveCurrentFeedAndList()
                         tableView.reloadData()
                     } else {
+                        GlobalStruct.inVCFromList = true
                         let vc = ViewController()
                         vc.fromListPush = true
                         navigationController?.pushViewController(vc, animated: true)

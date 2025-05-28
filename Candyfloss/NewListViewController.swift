@@ -29,7 +29,7 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.modalBackground
         if isEditingList {
-            navigationItem.title = "Update List"
+            navigationItem.title = "Edit List"
         } else {
             navigationItem.title = "New List"
         }

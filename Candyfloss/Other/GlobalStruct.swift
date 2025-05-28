@@ -69,6 +69,7 @@ struct GlobalStruct {
     static var currentFeed: AppBskyLexicon.Feed.GeneratorViewDefinition? = nil
     static var currentList: AppBskyLexicon.Graph.ListViewDefinition? = nil
     static var listURIToDelete: String = ""
+    static var inVCFromList: Bool = false
     
     // settings
     static var fullBlackBG: Bool = false

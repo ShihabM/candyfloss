@@ -260,8 +260,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.setupListDropdown()
+        if fromFeedPush || fromListPush || GlobalStruct.inVCFromList {} else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.setupListDropdown()
+            }
         }
     }
     
@@ -297,6 +299,22 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
             }
             menuActions.append(viewPeople)
+            let pin = UIAction(title: "Pin List", image: UIImage(systemName: "pin"), identifier: nil) { action in
+                GlobalStruct.pinnedLists.append(PinnedItems(name: self.listName, uri: self.listURI, feedItem: nil, listItem: GlobalStruct.currentList))
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePinned"), object: nil)
+            }
+            let removePin = UIAction(title: "Remove Pin", image: UIImage(systemName: "pin.slash"), identifier: nil) { action in
+                GlobalStruct.pinnedLists = GlobalStruct.pinnedLists.filter({ x in
+                    x.name != self.listName
+                })
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "updatePinned"), object: nil)
+            }
+            let contains = GlobalStruct.pinnedLists.contains { $0.name == listName }
+            if contains {
+                menuActions.append(removePin)
+            } else {
+                menuActions.append(pin)
+            }
             let editList = UIAction(title: "Edit List", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
                 let vc = NewListViewController()
                 vc.isEditingList = true
@@ -333,7 +351,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
         }
         
-        setupListDropdown()
+        if fromFeedPush || fromListPush || GlobalStruct.inVCFromList {} else {
+            setupListDropdown()
+        }
     }
     
     @objc func setupListDropdown() {

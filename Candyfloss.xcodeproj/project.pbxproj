@@ -33,6 +33,7 @@
 		532883F52DE5F217002AED8C /* ProfileNotesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883F42DE5F20F002AED8C /* ProfileNotesViewController.swift */; };
 		532883F72DE607EA002AED8C /* NewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883F62DE607E2002AED8C /* NewListViewController.swift */; };
 		532883F92DE60982002AED8C /* TitleInputCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883F82DE6097C002AED8C /* TitleInputCell.swift */; };
+		532883FB2DE7188F002AED8C /* AvatarInputCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883FA2DE7188A002AED8C /* AvatarInputCell.swift */; };
 		539B4CD62CC7A3E700CF6646 /* ActiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */; };
 		539B4CD72CC7A3E700CF6646 /* ActiveLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */; };
 		539B4CD82CC7A3E700CF6646 /* ActiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBC2CC7A3E700CF6646 /* ActiveType.swift */; };
@@ -145,6 +146,7 @@
 		532883F42DE5F20F002AED8C /* ProfileNotesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNotesViewController.swift; sourceTree = "<group>"; };
 		532883F62DE607E2002AED8C /* NewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewListViewController.swift; sourceTree = "<group>"; };
 		532883F82DE6097C002AED8C /* TitleInputCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleInputCell.swift; sourceTree = "<group>"; };
+		532883FA2DE7188A002AED8C /* AvatarInputCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarInputCell.swift; sourceTree = "<group>"; };
 		539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveBuilder.swift; sourceTree = "<group>"; };
 		539B4CBA2CC7A3E700CF6646 /* ActiveLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActiveLabel.h; sourceTree = "<group>"; };
 		539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
@@ -306,6 +308,7 @@
 				531980972D96E5D7006C3D22 /* ComposeCell.swift */,
 				53C460E92D7B5F2C009F7C6B /* FooterCell.swift */,
 				53C465A32D8DC7BB009F7C6B /* PlainCell.swift */,
+				532883FA2DE7188A002AED8C /* AvatarInputCell.swift */,
 				532883F82DE6097C002AED8C /* TitleInputCell.swift */,
 				5309C2192DC36E0C00380B93 /* NoteCell.swift */,
 				5309C2092DC0F3A000380B93 /* SelectionCell.swift */,
@@ -570,6 +573,7 @@
 				539B4D032CC7B6BA00CF6646 /* Disk+VolumeInformation.swift in Sources */,
 				5309C2182DC36CEC00380B93 /* AddAltTextViewController.swift in Sources */,
 				539B4CDA2CC7A3E700CF6646 /* StringTrimExtension.swift in Sources */,
+				532883FB2DE7188F002AED8C /* AvatarInputCell.swift in Sources */,
 				5309C1F62DB7CD7C00380B93 /* StarterPackViewController.swift in Sources */,
 				539B4CED2CC7A4A400CF6646 /* ExploreViewController.swift in Sources */,
 				539B4CDB2CC7A3E700CF6646 /* PostsCell.swift in Sources */,

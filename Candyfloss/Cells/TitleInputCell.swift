@@ -10,10 +10,7 @@ import UIKit
 
 class TitleInputCell: UITableViewCell {
     
-    var avatar = UIButton()
     var post = MultilineTextField()
-    var topThreadLine = UIView()
-    var counter = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

@@ -7,14 +7,19 @@
 
 import UIKit
 import ATProtoKit
+import PhotosUI
 
-class NewListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate {
+class NewListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, PHPickerViewControllerDelegate {
     
     var tableView = UITableView()
+    var currentListAvatar: URL? = nil
     var currentListURI: String = ""
     var currentTitle: String = ""
     var currentDescription: String? = nil
     var isEditingList: Bool = false
+    var photoPickerView: PHPickerViewController!
+    var photoData: Data? = nil
+    var canCreate: Bool = true
     
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
@@ -58,7 +63,7 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
         } else {
             doneButton.setTitle("Create", for: .normal)
         }
-        if currentTitle != "" {
+        if currentTitle != "" && canCreate {
             doneButton.setTitleColor(GlobalStruct.baseTint, for: .normal)
         } else {
             doneButton.setTitleColor(GlobalStruct.secondaryTextColor, for: .normal)
@@ -83,23 +88,29 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @objc func saveList() {
-        if currentTitle != "" {
-            Task {
-                do {
-                    if let atProto = GlobalStruct.atProto {
-                        let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
-                        if self.isEditingList {
-                            let _ = try await atProtoBluesky.updateListRecord(listURI: self.currentListURI, replace: [.name(with: self.currentTitle), .description(with: self.currentDescription)])
-                        } else {
-                            let _ = try await atProtoBluesky.createListRecord(named: self.currentTitle, ofType: .curation, description: self.currentDescription)
+        if canCreate {
+            if currentTitle != "" {
+                canCreate = false
+                setUpNavBar()
+                Task {
+                    do {
+                        if let atProto = GlobalStruct.atProto {
+                            let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                            if self.isEditingList {
+                                let _ = try await atProtoBluesky.updateListRecord(listURI: self.currentListURI, replace: [.name(with: self.currentTitle), .description(with: self.currentDescription), .listAvatarImage(with: .init(imageData: self.photoData ?? Data(), fileName: "\(UUID().uuidString)-listImage", altText: nil, aspectRatio: nil))])
+                            } else {
+                                let _ = try await atProtoBluesky.createListRecord(named: self.currentTitle, ofType: .curation, description: self.currentDescription, listAvatarImage: .init(imageData: self.photoData ?? Data(), fileName: "\(UUID().uuidString)-listImage", altText: nil, aspectRatio: nil))
+                            }
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshLists"), object: nil)
+                                self.dismiss(animated: true)
+                            }
                         }
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshLists"), object: nil)
-                            self.dismiss(animated: true)
-                        }
+                    } catch {
+                        print("error creating list: \(error)")
+                        canCreate = true
+                        setUpNavBar()
                     }
-                } catch {
-                    print("error creating list: \(error)")
                 }
             }
         }
@@ -110,6 +121,7 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
     func setUpTable() {
         tableView.removeFromSuperview()
         tableView = UITableView(frame: .zero, style: .insetGrouped)
+        tableView.register(AvatarInputCell.self, forCellReuseIdentifier: "AvatarInputCell")
         tableView.register(TitleInputCell.self, forCellReuseIdentifier: "TitleInputCell")
         tableView.register(NoteCell.self, forCellReuseIdentifier: "NoteCell")
         tableView.delegate = self
@@ -123,7 +135,7 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -136,6 +148,20 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "AvatarInputCell", for: indexPath) as! AvatarInputCell
+            
+            if currentListAvatar != nil {
+                cell.avatar.sd_setImage(with: currentListAvatar, for: .normal)
+            }
+            cell.avatar.addTarget(self, action: #selector(avatarTapped(_:)), for: .touchUpInside)
+            
+            let bgColorView = UIView()
+            bgColorView.backgroundColor = UIColor.clear
+            cell.selectedBackgroundView = bgColorView
+            cell.backgroundColor = .clear
+            cell.hoverStyle = .none
+            return cell
+        } else if indexPath.section == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "TitleInputCell", for: indexPath) as! TitleInputCell
             
             cell.post.text = self.currentTitle
@@ -164,6 +190,49 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.hoverStyle = .none
             return cell
         }
+    }
+    
+    @objc func avatarTapped(_ sender: UIButton) {
+        defaultHaptics()
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                var configuration = PHPickerConfiguration()
+                configuration.selectionLimit = 1
+                configuration.filter = .any(of: [.images, .screenshots, .depthEffectPhotos])
+                self.photoPickerView = PHPickerViewController(configuration: configuration)
+                self.photoPickerView.modalPresentationStyle = .popover
+                self.photoPickerView.delegate = self
+                if let presenter = self.photoPickerView.popoverPresentationController {
+                    presenter.sourceView = self.view
+                    presenter.sourceRect = self.view.bounds
+                }
+                if let sheet = self.photoPickerView.popoverPresentationController?.adaptiveSheetPresentationController {
+                    sheet.detents = [.large()]
+                }
+                self.present(self.photoPickerView, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        dismiss(animated: true, completion: nil)
+        guard !results.isEmpty else { return }
+        _ = results.map({ x in
+            if x.itemProvider.canLoadObject(ofClass: UIImage.self) {
+                x.itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+                        if let photoToAttach = image as? UIImage {
+                            if let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? AvatarInputCell {
+                                cell.avatar.setImage(photoToAttach, for: .normal)
+                                self.photoData = photoToAttach.jpegData(compressionQuality: 0.4)
+                            }
+                        }
+                    }
+                }
+            }
+        })
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

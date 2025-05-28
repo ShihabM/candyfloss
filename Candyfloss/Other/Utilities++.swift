@@ -1482,6 +1482,7 @@ func createListMenu(_ listURI: String = "", listName: String = "", listDescripti
     let edit = UIAction(title: "Edit List", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
         let vc = NewListViewController()
         vc.isEditingList = true
+        vc.currentListAvatar = listItem?.avatarImageURL
         vc.currentListURI = listURI
         vc.currentTitle = listName
         vc.currentDescription = listDescription

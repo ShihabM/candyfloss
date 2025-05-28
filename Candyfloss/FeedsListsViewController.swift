@@ -710,7 +710,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                         let list = self.allLists.first { x in
                             x.name == GlobalStruct.pinnedLists[indexPath.row].name
                         }
-                        return createListMenu(GlobalStruct.pinnedLists[indexPath.row].uri, listName: GlobalStruct.pinnedLists[indexPath.row].name, listDescription: list?.description ?? "", fromTab: self.fromTab)
+                        return createListMenu(GlobalStruct.pinnedLists[indexPath.row].uri, listName: GlobalStruct.pinnedLists[indexPath.row].name, listDescription: list?.description ?? "", listItem: list, fromTab: self.fromTab)
                     } else {
                         return createListMenu(self.allLists[indexPath.row - 1].uri, listName: self.allLists[indexPath.row - 1].name, listDescription: self.allLists[indexPath.row - 1].description ?? "", listItem: self.allLists[indexPath.row - 1], fromTab: self.fromTab)
                     }

@@ -37,7 +37,7 @@ class StarterPackListCell: UITableViewCell {
         theTitle.translatesAutoresizingMaskIntoConstraints = false
         theTitle.textColor = .label
         theTitle.textAlignment = .left
-        theTitle.font = UIFont.systemFont(ofSize: defaultFontSize + GlobalStruct.customTextSize, weight: .semibold)
+        theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .semibold)
         theTitle.isUserInteractionEnabled = false
         theTitle.numberOfLines = 0
         bgView.addSubview(theTitle)

@@ -128,7 +128,9 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             for x in self.tableView.visibleCells {
                 if let y = x as? TrendingTopicsCell {
                     y.backgroundColor = GlobalStruct.backgroundTint
-                    y.theTitle.font = UIFont.systemFont(ofSize: defaultFontSize2 + GlobalStruct.customTextSize, weight: .regular)
+                    y.theSubtitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.theDescription.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                 }
                 if let y = x as? TrendingFeedCell {
                     y.backgroundColor = GlobalStruct.backgroundTint
@@ -156,7 +158,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
                 if let y = x as? StarterPackListCell {
                     y.backgroundColor = GlobalStruct.backgroundTint
-                    y.theTitle.font = UIFont.systemFont(ofSize: defaultFontSize + GlobalStruct.customTextSize, weight: .bold)
+                    y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .semibold)
                     y.theAuthor.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                     y.theDescription.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                 }

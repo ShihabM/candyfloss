@@ -126,6 +126,12 @@ class StarterPackViewController: UIViewController, UITableViewDataSource, UITabl
                     y.theDescription.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                     y.followAllButton.backgroundColor = GlobalStruct.baseTint
                 }
+                if let y = x as? StarterPackListCell {
+                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .semibold)
+                    y.theAuthor.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.theDescription.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                }
                 if let y = x as? UserCell {
                     y.backgroundColor = GlobalStruct.backgroundTint
                     y.username.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .bold)

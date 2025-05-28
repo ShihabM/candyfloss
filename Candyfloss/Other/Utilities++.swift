@@ -1637,7 +1637,9 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         
         var extraActions: [UIAction] = []
         let addToList = UIAction(title: "Edit Profile", image: UIImage(systemName: "pencil.and.scribble"), identifier: nil) { action in
-            
+            let vc = EditProfileViewController()
+            let nvc = SloppySwipingNav(rootViewController: vc)
+            getTopMostViewController()?.present(nvc, animated: true, completion: nil)
         }
         extraActions.append(addToList)
         let extrasMenu = UIMenu(title: "", options: [.displayInline], children: extraActions)

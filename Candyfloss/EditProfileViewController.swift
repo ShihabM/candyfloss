@@ -1,22 +1,20 @@
 //
-//  NewListViewController.swift
+//  EditProfileViewController.swift
 //  Candyfloss
 //
-//  Created by Shihab Mehboob on 27/05/2025.
+//  Created by Shihab Mehboob on 28/05/2025.
 //
 
 import UIKit
 import ATProtoKit
 import PhotosUI
 
-class NewListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, PHPickerViewControllerDelegate {
+class EditProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, PHPickerViewControllerDelegate {
     
     var tableView = UITableView()
-    var currentListAvatar: URL? = nil
-    var currentListURI: String = ""
-    var currentTitle: String = ""
-    var currentDescription: String? = nil
-    var isEditingList: Bool = false
+    var currentAvatar: URL? = nil
+    var currentDisplayName: String = ""
+    var currentDescription: String = ""
     var photoPickerView: PHPickerViewController!
     var photoData: Data? = nil
     var canCreate: Bool = true
@@ -28,11 +26,11 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.modalBackground
-        if isEditingList {
-            navigationItem.title = "Edit List"
-        } else {
-            navigationItem.title = "New List"
-        }
+        navigationItem.title = "Edit Profile"
+        
+        currentAvatar = GlobalStruct.currentUser?.avatarImageURL
+        currentDisplayName = GlobalStruct.currentUser?.displayName ?? ""
+        currentDescription = GlobalStruct.currentUser?.description ?? ""
         
         setUpNavBar()
         setUpTable()
@@ -58,18 +56,14 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
         navigationItem.leftBarButtonItem = barButtonItem
         
         let doneButton = CustomButton(type: .system)
-        if isEditingList {
-            doneButton.setTitle("Update", for: .normal)
-        } else {
-            doneButton.setTitle("Create", for: .normal)
-        }
-        if currentTitle != "" && canCreate {
+        doneButton.setTitle("Update", for: .normal)
+        if currentDisplayName != "" && canCreate {
             doneButton.setTitleColor(GlobalStruct.baseTint, for: .normal)
         } else {
             doneButton.setTitleColor(GlobalStruct.secondaryTextColor, for: .normal)
         }
         doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-        doneButton.addTarget(self, action: #selector(self.saveList), for: .touchUpInside)
+        doneButton.addTarget(self, action: #selector(self.editProfile), for: .touchUpInside)
         let doneBarButtonItem = UIBarButtonItem(customView: doneButton)
         doneBarButtonItem.accessibilityLabel = "Done"
         navigationItem.rightBarButtonItem = doneBarButtonItem
@@ -87,39 +81,32 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
         self.dismiss(animated: true)
     }
     
-    @objc func saveList() {
+    @objc func editProfile() {
         if canCreate {
-            if currentTitle != "" {
+            if currentDisplayName != "" {
                 canCreate = false
                 setUpNavBar()
                 Task {
                     do {
                         if let atProto = GlobalStruct.atProto {
                             let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
-                            if self.isEditingList {
-                                if let photo = self.photoData {
-                                    let _ = try await atProtoBluesky.updateListRecord(listURI: self.currentListURI, replace: [.name(with: self.currentTitle), .description(with: self.currentDescription), .listAvatarImage(with: .init(imageData: photo, fileName: "\(UUID().uuidString)-listImage", altText: nil, aspectRatio: nil))])
-                                    DispatchQueue.main.async {
-                                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshLists"), object: nil)
-                                        self.dismiss(animated: true)
-                                    }
-                                } else {
-                                    let _ = try await atProtoBluesky.updateListRecord(listURI: self.currentListURI, replace: [.name(with: self.currentTitle), .description(with: self.currentDescription)])
-                                    DispatchQueue.main.async {
-                                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshLists"), object: nil)
-                                        self.dismiss(animated: true)
-                                    }
+                            let uri = "at://\(GlobalStruct.currentUser?.actorDID ?? "")/app.bsky.actor.profile/self"
+                            if let photo = self.photoData {
+                                let _ = try await atProtoBluesky.updateProfileRecord(profileURI: uri, replace: [.avatarImage(with: .init(imageData: photo, fileName: "\(UUID().uuidString)-profileImage", altText: nil, aspectRatio: nil)), .displayName(with: self.currentDisplayName), .description(with: self.currentDescription)])
+                                DispatchQueue.main.async {
+                                    NotificationCenter.default.post(name: Notification.Name(rawValue: "updateProfileHeader"), object: nil)
+                                    self.dismiss(animated: true)
                                 }
                             } else {
-                                let _ = try await atProtoBluesky.createListRecord(named: self.currentTitle, ofType: .curation, description: self.currentDescription, listAvatarImage: .init(imageData: self.photoData ?? Data(), fileName: "\(UUID().uuidString)-listImage", altText: nil, aspectRatio: nil))
+                                let _ = try await atProtoBluesky.updateProfileRecord(profileURI: uri, replace: [.displayName(with: self.currentDisplayName), .description(with: self.currentDescription)])
                                 DispatchQueue.main.async {
-                                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshLists"), object: nil)
+                                    NotificationCenter.default.post(name: Notification.Name(rawValue: "updateProfileHeader"), object: nil)
                                     self.dismiss(animated: true)
                                 }
                             }
                         }
                     } catch {
-                        print("error creating list: \(error)")
+                        print("error updating profile: \(error)")
                         canCreate = true
                         setUpNavBar()
                     }
@@ -162,8 +149,8 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "AvatarInputCell", for: indexPath) as! AvatarInputCell
             
-            if currentListAvatar != nil {
-                cell.avatar.sd_setImage(with: currentListAvatar, for: .normal)
+            if currentAvatar != nil {
+                cell.avatar.sd_setImage(with: currentAvatar, for: .normal)
             }
             cell.avatar.addTarget(self, action: #selector(avatarTapped(_:)), for: .touchUpInside)
             
@@ -176,7 +163,7 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
         } else if indexPath.section == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "TitleInputCell", for: indexPath) as! TitleInputCell
             
-            cell.post.text = self.currentTitle
+            cell.post.text = self.currentDisplayName
             cell.post.tag = 0
             cell.post.delegate = self
             
@@ -189,7 +176,7 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell", for: indexPath) as! NoteCell
             
-            cell.post.text = self.currentDescription ?? ""
+            cell.post.text = self.currentDescription
             cell.post.tag = 1
             cell.post.delegate = self
             cell.post.placeholder = "List description..."
@@ -253,7 +240,7 @@ class NewListViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func textViewDidChange(_ textView: UITextView) {
         if textView.tag == 0 {
-            self.currentTitle = textView.text
+            self.currentDisplayName = textView.text
         } else {
             self.currentDescription = textView.text
         }

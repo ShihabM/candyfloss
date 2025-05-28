@@ -34,6 +34,7 @@
 		532883F72DE607EA002AED8C /* NewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883F62DE607E2002AED8C /* NewListViewController.swift */; };
 		532883F92DE60982002AED8C /* TitleInputCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883F82DE6097C002AED8C /* TitleInputCell.swift */; };
 		532883FB2DE7188F002AED8C /* AvatarInputCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883FA2DE7188A002AED8C /* AvatarInputCell.swift */; };
+		532883FD2DE75D4D002AED8C /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883FC2DE75D47002AED8C /* EditProfileViewController.swift */; };
 		539B4CD62CC7A3E700CF6646 /* ActiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */; };
 		539B4CD72CC7A3E700CF6646 /* ActiveLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */; };
 		539B4CD82CC7A3E700CF6646 /* ActiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBC2CC7A3E700CF6646 /* ActiveType.swift */; };
@@ -147,6 +148,7 @@
 		532883F62DE607E2002AED8C /* NewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewListViewController.swift; sourceTree = "<group>"; };
 		532883F82DE6097C002AED8C /* TitleInputCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleInputCell.swift; sourceTree = "<group>"; };
 		532883FA2DE7188A002AED8C /* AvatarInputCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarInputCell.swift; sourceTree = "<group>"; };
+		532883FC2DE75D47002AED8C /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveBuilder.swift; sourceTree = "<group>"; };
 		539B4CBA2CC7A3E700CF6646 /* ActiveLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActiveLabel.h; sourceTree = "<group>"; };
 		539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 				53C465A12D8DC59F009F7C6B /* ReportViewController.swift */,
 				532883F42DE5F20F002AED8C /* ProfileNotesViewController.swift */,
 				532883F62DE607E2002AED8C /* NewListViewController.swift */,
+				532883FC2DE75D47002AED8C /* EditProfileViewController.swift */,
 				5309C2162DC24E2C00380B93 /* Composer */,
 				5309C2152DC24E2300380B93 /* Settings */,
 				539B4CC32CC7A3E700CF6646 /* Cells */,
@@ -591,6 +594,7 @@
 				53C461492D7DC52E009F7C6B /* SKPhotoBrowser.swift in Sources */,
 				53C4614A2D7DC52E009F7C6B /* UIImage+Rotation.swift in Sources */,
 				53C4614B2D7DC52E009F7C6B /* SKPaginationView.swift in Sources */,
+				532883FD2DE75D4D002AED8C /* EditProfileViewController.swift in Sources */,
 				53C4615C2D7E064F009F7C6B /* MessageCell.swift in Sources */,
 				53CA75FA2DA823E2007E2361 /* FeedsListsViewController.swift in Sources */,
 				53C4614C2D7DC52E009F7C6B /* UIView+Radius.swift in Sources */,

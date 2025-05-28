@@ -239,16 +239,27 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @objc func updateProfileHeader() {
-        Task {
-            do {
-                if let atProto = GlobalStruct.atProto {
-                    currentProfile = try await atProto.getProfile(for: profile)
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        var user = self.profile
+                        if user == "" {
+                            user = GlobalStruct.currentUser?.actorDID ?? ""
+                        }
+                        let y = try await atProto.getProfile(for: user)
+                        DispatchQueue.main.async {
+                            if self.profile == "" {
+                                GlobalStruct.currentUser = y
+                            } else {
+                                self.currentProfile = y
+                            }
+                            self.tableView.reloadData()
+                        }
                     }
+                } catch {
+                    print("Error updating profile header: \(error)")
                 }
-            } catch {
-                print("Error updating profile header: \(error)")
             }
         }
     }

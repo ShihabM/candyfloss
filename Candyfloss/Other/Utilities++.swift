@@ -1633,6 +1633,18 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
             UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
         }
         viewsActions.append(viewMessages)
+        let muted = UIAction(title: "Muted", image: UIImage(systemName: "speaker.slash"), identifier: nil) { action in
+            let vc = MutedBlockedViewController()
+            vc.type = .muted
+            UIApplication.shared.pushToCurrentNavigationController(vc)
+        }
+        viewsActions.append(muted)
+        let blocked = UIAction(title: "Blocked", image: UIImage(systemName: "hand.raised"), identifier: nil) { action in
+            let vc = MutedBlockedViewController()
+            vc.type = .blocked
+            UIApplication.shared.pushToCurrentNavigationController(vc)
+        }
+        viewsActions.append(blocked)
         let viewsMenu = UIMenu(title: "", options: [.displayInline], children: viewsActions)
         
         var extraActions: [UIAction] = []
@@ -1726,12 +1738,35 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         
         var profileActions: [UIAction] = []
         let mute = UIAction(title: "Mute Account", image: UIImage(systemName: "speaker.slash"), identifier: nil) { action in
-            
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let _ = try await atProto.muteActor(profile?.actorDID ?? basicProfile?.actorDID ?? defaultProfile?.actorDID ?? messageProfile?.actorDID ?? "")
+                        DispatchQueue.main.async {
+                            
+                        }
+                    }
+                } catch {
+                    print("Error muting user: \(error)")
+                }
+            }
         }
         mute.attributes = .destructive
         profileActions.append(mute)
         let block = UIAction(title: "Block Account", image: UIImage(systemName: "hand.raised"), identifier: nil) { action in
-            
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                        let _ = try await atProtoBluesky.createBlockRecord(ofType: .actorBlock(actorDID: profile?.actorDID ?? basicProfile?.actorDID ?? defaultProfile?.actorDID ?? messageProfile?.actorDID ?? ""))
+                        DispatchQueue.main.async {
+                            
+                        }
+                    }
+                } catch {
+                    print("Error blocking user: \(error)")
+                }
+            }
         }
         block.attributes = .destructive
         profileActions.append(block)

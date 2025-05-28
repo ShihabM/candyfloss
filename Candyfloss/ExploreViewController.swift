@@ -16,8 +16,8 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     var fetchedAreasCount: Int = 0
     var fromNavigation: Bool = false
     
-    // trending topics
-    var trendingTopics: [AppBskyLexicon.Unspecced.TrendingTopicDefinition] = []
+    // trends
+    var trends: [AppBskyLexicon.Unspecced.TrendViewDefinition] = []
     
     // suggested users
     var suggestedUsers: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
@@ -38,7 +38,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     // inline search
     var searchView: UIView = UIView()
     var searchController = UISearchController()
-    var searchResults: [AppBskyLexicon.Unspecced.TrendingTopicDefinition] = []
+    var searchResults: [AppBskyLexicon.Unspecced.TrendViewDefinition] = []
     var isSearching: Bool = false
     var searchFirstTime: Bool = true
     
@@ -52,23 +52,23 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func updateSearchResults(for searchController: UISearchController) {
         if searchResults.isEmpty {} else {
-            trendingTopics = searchResults
+            trends = searchResults
         }
         if let theText = searchController.searchBar.text?.lowercased() {
             if theText.isEmpty {
                 isSearching = false
                 if searchFirstTime {
                     searchFirstTime = false
-                    searchResults = trendingTopics
+                    searchResults = trends
                 } else {
-                    trendingTopics = searchResults
+                    trends = searchResults
                     tableView.reloadData()
                 }
             } else {
-                let z = trendingTopics.filter({
+                let z = trends.filter({
                     return ($0.topic).lowercased().contains(theText)
                 })
-                trendingTopics = z
+                trends = z
                 tableView.reloadData()
                 isSearching = true
             }
@@ -78,7 +78,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         isSearching = false
         if !searchResults.isEmpty {
-            trendingTopics = self.searchResults
+            trends = self.searchResults
             tableView.reloadData()
         }
         searchFirstTime = true
@@ -90,7 +90,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     @objc func scrollUp() {
-        if trendingTopics.isEmpty {} else {
+        if trends.isEmpty {} else {
             if tableView.contentOffset.y <= 60 {
                 tableView.setContentOffset(CGPoint(x: 0, y: tempScrollPosition), animated: true)
                 tempScrollPosition = tableView.contentOffset.y
@@ -186,7 +186,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     
     @objc func resetTimelines() {
         DispatchQueue.main.async {
-            self.trendingTopics = []
+            self.trends = []
             self.suggestedUsers = []
             self.whoToFollow = []
             self.starterPacks = []
@@ -244,8 +244,8 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
         Task {
             do {
                 if let atProto = GlobalStruct.atProto {
-                    let x = try await atProto.getTrendingTopics()
-                    trendingTopics = Array(x.topics.prefix(5))
+                    let x = try await atProto.getTrends(limit: 5)
+                    trends = Array(x.trends.prefix(5))
                     fetchedAreasCount += 1
                     DispatchQueue.main.async {
                         if self.fetchedAreasCount == 4 {
@@ -456,7 +456,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return trendingTopics.count
+            return trends.count
         } else if section == 1 {
             if suggestedUsers.isEmpty {
                 return 0
@@ -504,62 +504,25 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 let attributedString = NSMutableAttributedString(string: " Hot", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.white])
                 attStringNewLine000.append(attributedString)
                 cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
-                cell.theIcon.backgroundColor = GlobalStruct.baseTint
-            }
-            if indexPath.row == 1 {
-                let attachment1 = NSTextAttachment()
-                attachment1.image = UIImage(systemName: "chart.bar.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.secondaryLabel, renderingMode: .alwaysOriginal)
-                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
+                cell.theIcon.backgroundColor = .systemRed
+                cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 7, right: 10)
+            } else {
                 let attStringNewLine000 = NSMutableAttributedString()
-                let attString00 = NSAttributedString(attachment: attachment1)
-                attStringNewLine000.append(attString00)
-                let attributedString = NSMutableAttributedString(string: " Trending", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
+                let timeSince = trends[indexPath.row].startedAt
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = GlobalStruct.dateFormatter
+                let attributedString = NSMutableAttributedString(string: "\(timeSince.toStringWithRelativeTime()) ago", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
                 attStringNewLine000.append(attributedString)
                 cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
                 cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
+                cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 7, left: 10, bottom: 6, right: 10)
             }
-            if indexPath.row == 2 {
-                let attachment1 = NSTextAttachment()
-                attachment1.image = UIImage(systemName: "star.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.secondaryLabel, renderingMode: .alwaysOriginal)
-                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
-                let attStringNewLine000 = NSMutableAttributedString()
-                let attString00 = NSAttributedString(attachment: attachment1)
-                attStringNewLine000.append(attString00)
-                let attributedString = NSMutableAttributedString(string: " Popular", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
-                attStringNewLine000.append(attributedString)
-                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
-                cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
-            }
-            if indexPath.row == 3 {
-                let attachment1 = NSTextAttachment()
-                attachment1.image = UIImage(systemName: "arrowshape.up.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.secondaryLabel, renderingMode: .alwaysOriginal)
-                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
-                let attStringNewLine000 = NSMutableAttributedString()
-                let attString00 = NSAttributedString(attachment: attachment1)
-                attStringNewLine000.append(attString00)
-                let attributedString = NSMutableAttributedString(string: " Rising", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
-                attStringNewLine000.append(attributedString)
-                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
-                cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
-            }
-            if indexPath.row == 4 {
-                let attachment1 = NSTextAttachment()
-                attachment1.image = UIImage(systemName: "clock.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.secondaryLabel, renderingMode: .alwaysOriginal)
-                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
-                let attStringNewLine000 = NSMutableAttributedString()
-                let attString00 = NSAttributedString(attachment: attachment1)
-                attStringNewLine000.append(attString00)
-                let attributedString = NSMutableAttributedString(string: " New", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
-                attStringNewLine000.append(attributedString)
-                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
-                cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
-            }
-            cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 6, right: 10)
             cell.theIcon.isUserInteractionEnabled = false
             cell.theSubtitle.text = "\(indexPath.row + 1)"
-            cell.theTitle.text = trendingTopics[indexPath.row].topic
+            cell.theTitle.text = trends[indexPath.row].displayName
+            cell.theDescription.text = "\(trends[indexPath.row].postCount.formatUsingAbbreviation()) posts • \(trends[indexPath.row].category?.capitalized ?? "")"
             
-            if indexPath.row == trendingTopics.count - 1 {
+            if indexPath.row == trends.count - 1 {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             } else {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
@@ -762,7 +725,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.section == 0 {
-            let rkey: String = "\(trendingTopics[indexPath.row].link.split(separator: "/").last ?? "")"
+            let rkey: String = "\(trends[indexPath.row].link.split(separator: "/").last ?? "")"
             GlobalStruct.listURI = ""
             GlobalStruct.listName = ""
             GlobalStruct.currentList = nil
@@ -770,7 +733,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             let vc = ViewController()
             vc.fromFeedPush = true
             vc.currentFeedURI = "at://did:plc:qrz3lhbyuxbeilrc6nekdqme/app.bsky.feed.generator/\(rkey)"
-            vc.currentFeedDisplayName = trendingTopics[indexPath.row].topic
+            vc.currentFeedDisplayName = trends[indexPath.row].displayName
             navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.section == 1 {
             if indexPath.row == 0 {

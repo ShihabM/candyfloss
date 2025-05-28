@@ -107,6 +107,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        GlobalStruct.currentTab = 8
         if fromTab {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "hideNewPostButton"), object: nil)
         }

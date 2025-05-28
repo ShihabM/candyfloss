@@ -83,7 +83,7 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        GlobalStruct.currentTab = 5
+        GlobalStruct.currentTab = 7
     }
     
     @objc func scrollUp() {

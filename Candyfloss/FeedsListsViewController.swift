@@ -110,8 +110,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         if fromTab {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "showNewPostButton"), object: nil)
         }

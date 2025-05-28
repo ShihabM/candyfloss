@@ -139,8 +139,8 @@ class MessageChatViewController: MessagesViewController {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "hideNewPostButton"), object: nil)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "showNewPostButton"), object: nil)
     }
     

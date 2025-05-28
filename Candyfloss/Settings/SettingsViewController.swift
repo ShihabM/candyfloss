@@ -58,17 +58,17 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
             for x in tableView.visibleCells {
                 if let y = x as? PlainCell {
-                    y.backgroundColor = GlobalStruct.detailQuoteCell
+                    y.backgroundColor = GlobalStruct.spoilerBG
                     y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                 }
                 if let y = x as? SelectionCell {
-                    y.backgroundColor = GlobalStruct.detailQuoteCell
-                    y.bgButton.backgroundColor = GlobalStruct.detailQuoteCell
+                    y.backgroundColor = GlobalStruct.spoilerBG
+                    y.bgButton.backgroundColor = GlobalStruct.spoilerBG
                     y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                     y.theTitle2.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
                 }
                 if let y = x as? TextSizeCell {
-                    y.backgroundColor = GlobalStruct.detailQuoteCell
+                    y.backgroundColor = GlobalStruct.spoilerBG
                 }
             }
         }
@@ -179,7 +179,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 1 {
@@ -192,7 +192,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 2 {
@@ -234,7 +234,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 3 {
@@ -258,7 +258,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 cell.hoverStyle = .none
                 return cell
             } else {
@@ -281,7 +281,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 cell.hoverStyle = .none
                 return cell
             }
@@ -294,7 +294,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.hoverStyle = .none
             return cell
         } else if indexPath.section == 2 {
@@ -313,7 +313,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.hoverStyle = .none
             return cell
         } else {
@@ -328,7 +328,7 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.hoverStyle = .none
             return cell
         }

@@ -33,14 +33,14 @@ class TrendingTopicsCell: UITableViewCell {
         theSubtitle.translatesAutoresizingMaskIntoConstraints = false
         theSubtitle.textColor = .secondaryLabel
         theSubtitle.textAlignment = .left
-        theSubtitle.font = UIFont.systemFont(ofSize: defaultFontSize + GlobalStruct.customTextSize, weight: .regular)
+        theSubtitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
         theSubtitle.isUserInteractionEnabled = false
         bgView.addSubview(theSubtitle)
         
         theTitle.translatesAutoresizingMaskIntoConstraints = false
         theTitle.textColor = .label
         theTitle.textAlignment = .left
-        theTitle.font = UIFont.systemFont(ofSize: defaultFontSize + GlobalStruct.customTextSize, weight: .semibold)
+        theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .semibold)
         theTitle.isUserInteractionEnabled = false
         bgView.addSubview(theTitle)
         
@@ -52,7 +52,7 @@ class TrendingTopicsCell: UITableViewCell {
         bgView.addSubview(theDescription)
         
         theIcon.translatesAutoresizingMaskIntoConstraints = false
-        theIcon.backgroundColor = UIColor(named: "groupBG")
+        theIcon.backgroundColor = GlobalStruct.groupBG
         theIcon.layer.cornerRadius = 13
         theIcon.imageView?.contentMode = .scaleAspectFill
         theIcon.imageView?.layer.masksToBounds = true

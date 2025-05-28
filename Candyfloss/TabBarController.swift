@@ -288,7 +288,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     if switchableView.title == "Lists" {
                         if let vc = vc as? FeedsListsViewController {
                             vc.fromTab = true
-                            vc.otherListUser = GlobalStruct.currentUser?.actorHandle ?? ""
+                            vc.setUpNavigationBar()
                         }
                     }
                     let vc1 = SloppySwipingNav(rootViewController: vc)

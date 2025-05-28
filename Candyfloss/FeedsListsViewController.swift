@@ -32,6 +32,65 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         tableView2.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
     }
     
+    @objc func updateTint() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let appearance = UINavigationBarAppearance()
+            self.view.backgroundColor = GlobalStruct.backgroundTint
+            appearance.backgroundColor = self.view.backgroundColor
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+            self.navigationController?.navigationBar.standardAppearance = appearance
+            self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+            self.navigationController?.navigationBar.compactAppearance = appearance
+            let defaultFontSize = UIFont.preferredFont(forTextStyle: .title1).pointSize
+            let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
+            let smallestFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize - 2
+            for x in self.tableView.visibleCells {
+                if let y = x as? FeedTipCell {
+                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.bgView.backgroundColor = GlobalStruct.groupBG
+                    y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .semibold)
+                    y.theSubtitle.font = UIFont.systemFont(ofSize: smallestFontSize + GlobalStruct.customTextSize, weight: .regular)
+                }
+                if let y = x as? TrendingFeedCell {
+                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.theTitle.font = UIFont.systemFont(ofSize: defaultFontSize + GlobalStruct.customTextSize, weight: .semibold)
+                    y.theAuthor.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.theDescription.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                }
+                if let y = x as? FeedCell {
+                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .semibold)
+                    y.theAuthor.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.theDescription.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                }
+            }
+            self.tableView.reloadData()
+            for x in self.tableView2.visibleCells {
+                if let y = x as? FeedTipCell {
+                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.bgView.backgroundColor = GlobalStruct.groupBG
+                    y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .semibold)
+                    y.theSubtitle.font = UIFont.systemFont(ofSize: smallestFontSize + GlobalStruct.customTextSize, weight: .regular)
+                }
+                if let y = x as? TrendingFeedCell {
+                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.theTitle.font = UIFont.systemFont(ofSize: defaultFontSize + GlobalStruct.customTextSize, weight: .semibold)
+                    y.theAuthor.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.theDescription.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                }
+                if let y = x as? FeedCell {
+                    y.backgroundColor = GlobalStruct.backgroundTint
+                    y.theTitle.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .semibold)
+                    y.theAuthor.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                    y.theDescription.font = UIFont.systemFont(ofSize: smallerFontSize + GlobalStruct.customTextSize, weight: .regular)
+                }
+            }
+            self.tableView2.reloadData()
+        }
+    }
+    
     @objc func updatePinned() {
         DispatchQueue.main.async {
             if !GlobalStruct.inVCFromList {
@@ -70,6 +129,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshLists), name: NSNotification.Name(rawValue: "refreshLists"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updatePinned), name: NSNotification.Name(rawValue: "updatePinned"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.deleteList), name: NSNotification.Name(rawValue: "deleteList"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
         
         currentFeedCursor = UserDefaults.standard.value(forKey: "currentFeedCursor") as? String ?? nil
         currentListCursor = UserDefaults.standard.value(forKey: "currentListCursor") as? String ?? nil

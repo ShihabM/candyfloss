@@ -121,7 +121,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserCell
@@ -145,7 +145,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 return cell
             }
         } else if indexPath.section == 1 {
@@ -162,7 +162,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.hoverStyle = .none
             return cell
         } else {
@@ -186,7 +186,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.hoverStyle = .none
             return cell
         }

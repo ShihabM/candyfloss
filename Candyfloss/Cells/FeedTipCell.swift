@@ -27,7 +27,7 @@ class FeedTipCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         bgView.translatesAutoresizingMaskIntoConstraints = false
-        bgView.backgroundColor = UIColor(named: "groupBG")
+        bgView.backgroundColor = GlobalStruct.groupBG
         bgView.layer.cornerRadius = 12
         bgView.layer.cornerCurve = .continuous
         contentView.addSubview(bgView)

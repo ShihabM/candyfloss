@@ -99,7 +99,7 @@ class ComposerSettingsViewController: UIViewController, UITableViewDataSource, U
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.hoverStyle = .none
             return cell
         } else {
@@ -169,7 +169,7 @@ class ComposerSettingsViewController: UIViewController, UITableViewDataSource, U
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.hoverStyle = .none
             return cell
         }

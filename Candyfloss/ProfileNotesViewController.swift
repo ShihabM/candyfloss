@@ -130,7 +130,7 @@ class ProfileNotesViewController: UIViewController, UITableViewDataSource, UITab
         let bgColorView = UIView()
         bgColorView.backgroundColor = UIColor.clear
         cell.selectedBackgroundView = bgColorView
-        cell.backgroundColor = GlobalStruct.detailQuoteCell
+        cell.backgroundColor = GlobalStruct.spoilerBG
         cell.hoverStyle = .none
         return cell
     }

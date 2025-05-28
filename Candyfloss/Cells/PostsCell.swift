@@ -46,7 +46,7 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
     lazy var quoteCell: PostsCell = {
         let cell = PostsCell(style: .default, reuseIdentifier: "QuoteCell")
         cell.translatesAutoresizingMaskIntoConstraints = false
-        cell.backgroundColor = GlobalStruct.detailCell
+        cell.backgroundColor = GlobalStruct.groupBG
         cell.isHidden = true
         cell.setContentCompressionResistancePriority(.required, for: .vertical)
         return cell
@@ -416,9 +416,9 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
             mediaStackView.layer.cornerRadius = 10
         }
         if isNestedQuote {
-            linkStackView.backgroundColor = GlobalStruct.raisedBackgroundTint
+            linkStackView.backgroundColor = GlobalStruct.groupBG
         } else {
-            linkStackView.backgroundColor = GlobalStruct.detailQuoteCell
+            linkStackView.backgroundColor = GlobalStruct.groupBG
         }
         
         // layouts
@@ -1424,7 +1424,9 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
             self.quotePost = quote
             GlobalStruct.quoteTable[recordURI] = quote
             self.cellStackViewConstraintQuote?.isActive = false
-            self.quoteTableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+            if let _ = self.quotePost {
+                self.quoteTableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+            }
             DispatchQueue.main.async {
                 let height = self.quoteTableView.contentSize.height
                 self.cellStackViewConstraintQuote = self.quoteTableView.heightAnchor.constraint(equalToConstant: height)
@@ -1748,7 +1750,7 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
         let bgColorView = UIView()
         bgColorView.backgroundColor = UIColor.clear
         cell.selectedBackgroundView = bgColorView
-        cell.backgroundColor = GlobalStruct.detailQuoteCell
+        cell.backgroundColor = GlobalStruct.groupBG
         return cell
     }
     

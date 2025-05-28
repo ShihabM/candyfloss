@@ -96,7 +96,7 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 cell.hoverStyle = .none
                 return cell
             } else if indexPath.row == 1 {
@@ -128,7 +128,7 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 cell.hoverStyle = .none
                 return cell
             } else {
@@ -160,7 +160,7 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.detailQuoteCell
+                cell.backgroundColor = GlobalStruct.spoilerBG
                 cell.hoverStyle = .none
                 return cell
             }
@@ -185,7 +185,7 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
             switchView.addTarget(self, action: #selector(switchAnimateTabSelection(_:)), for: .valueChanged)
             cell.accessoryView = switchView
             cell.selectionStyle = .none
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.focusEffect = UIFocusHaloEffect()
             return cell
         }

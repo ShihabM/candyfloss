@@ -81,7 +81,7 @@ class DetailsSettingsViewController: UIViewController, UITableViewDataSource, UI
             switchView.addTarget(self, action: #selector(switchShowNextReplyButton(_:)), for: .valueChanged)
             cell.accessoryView = switchView
             cell.selectionStyle = .none
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.focusEffect = UIFocusHaloEffect()
             return cell
         } else {
@@ -135,7 +135,7 @@ class DetailsSettingsViewController: UIViewController, UITableViewDataSource, UI
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear
             cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.detailQuoteCell
+            cell.backgroundColor = GlobalStruct.spoilerBG
             cell.hoverStyle = .none
             return cell
         }

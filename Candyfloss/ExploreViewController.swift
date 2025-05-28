@@ -514,7 +514,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 let attributedString = NSMutableAttributedString(string: "\(timeSince.toStringWithRelativeTime()) ago", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
                 attStringNewLine000.append(attributedString)
                 cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
-                cell.theIcon.backgroundColor = .label.withAlphaComponent(0.08)
+                cell.theIcon.backgroundColor = GlobalStruct.groupBG
                 cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 7, left: 10, bottom: 6, right: 10)
             }
             cell.theIcon.isUserInteractionEnabled = false

@@ -41,7 +41,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
     lazy var quoteCell: PostsCell = {
         let cell = PostsCell(style: .default, reuseIdentifier: "QuoteCell")
         cell.translatesAutoresizingMaskIntoConstraints = false
-        cell.backgroundColor = GlobalStruct.detailCell
+        cell.backgroundColor = GlobalStruct.groupBG
         cell.isHidden = true
         cell.setContentCompressionResistancePriority(.required, for: .vertical)
         return cell
@@ -162,7 +162,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
         
         // link
         linkStackView.translatesAutoresizingMaskIntoConstraints = false
-        linkStackView.backgroundColor = GlobalStruct.detailCell
+        linkStackView.backgroundColor = GlobalStruct.groupBG
         linkStackView.axis = .vertical
         linkStackView.alignment = .fill
         linkStackView.distribution = .equalSpacing
@@ -448,7 +448,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
                         }
                         let mediaView = UIImageView()
                         mediaView.translatesAutoresizingMaskIntoConstraints = false
-                        mediaView.backgroundColor = UIColor(named: "groupBG")
+                        mediaView.backgroundColor = GlobalStruct.groupBG
                         mediaView.contentMode = .scaleAspectFill
                         mediaView.layer.masksToBounds = true
                         mediaView.sd_imageTransition = .fade
@@ -979,7 +979,7 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
         let bgColorView = UIView()
         bgColorView.backgroundColor = UIColor.clear
         cell.selectedBackgroundView = bgColorView
-        cell.backgroundColor = GlobalStruct.detailCell
+        cell.backgroundColor = GlobalStruct.groupBG
         return cell
     }
     

@@ -120,7 +120,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             self.navigationController?.navigationBar.standardAppearance = appearance
             self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
             self.navigationController?.navigationBar.compactAppearance = appearance
-            let defaultFontSize = UIFont.preferredFont(forTextStyle: .title1).pointSize
+            let defaultFontSize = UIFont.preferredFont(forTextStyle: .title2).pointSize + 2
             let defaultFontSize2 = UIFont.preferredFont(forTextStyle: .title3).pointSize
             let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
             let smallestFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize - 2

@@ -15,7 +15,7 @@ class TrendingFeedCell: UITableViewCell {
     var theAuthor = UILabel()
     var theDescription = UILabel()
     
-    let defaultFontSize = UIFont.preferredFont(forTextStyle: .title1).pointSize
+    let defaultFontSize = UIFont.preferredFont(forTextStyle: .title2).pointSize + 2
     let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
     let smallestFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize - 2
     let mostSmallestFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize - 4
@@ -81,11 +81,11 @@ class TrendingFeedCell: UITableViewCell {
         
         if showingDescriptions {
             theDescription.isHidden = false
-            detailConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-24-[theTitle]-2-[theAuthor]-4-[theDescription]-14-|", options: [], metrics: nil, views: viewsDict)
+            detailConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-18-[theTitle]-2-[theAuthor]-4-[theDescription]-14-|", options: [], metrics: nil, views: viewsDict)
             NSLayoutConstraint.activate(detailConstraints)
         } else {
             theDescription.isHidden = true
-            detailConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-24-[theTitle]-2-[theAuthor]-14-|", options: [], metrics: nil, views: viewsDict)
+            detailConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-18-[theTitle]-2-[theAuthor]-14-|", options: [], metrics: nil, views: viewsDict)
             NSLayoutConstraint.activate(detailConstraints)
         }
     }

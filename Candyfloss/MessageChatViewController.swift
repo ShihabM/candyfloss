@@ -278,15 +278,15 @@ extension MessageChatViewController: InputBarAccessoryViewDelegate {
         Task {
             do {
                 if let atProto = GlobalStruct.atProto {
-//                    let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
-//                    let input = ChatBskyLexicon.Conversation.MessageInputDefinition.init(from: )
-//                    let y = try await atProtoBluesky.sendMessage(to: conversation.first?.conversationID ?? "", message: input)
-//                    DispatchQueue.main.async {
-//                        
-//                    }
+                    let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+                    let messageInput = ChatBskyLexicon.Conversation.MessageInputDefinition(text: text)
+                    let y = try await atProtoBluesky.sendMessage(to: conversation.first?.conversationID ?? "", message: messageInput)
+                    DispatchQueue.main.async {
+                        print("Message sent: \(y.messageID)")
+                    }
                 }
             } catch {
-                print("Error unmuting conversation: \(error)")
+                print("Error sending message: \(error)")
             }
         }
     }

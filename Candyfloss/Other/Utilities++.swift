@@ -1515,7 +1515,7 @@ func createListMenu(_ listURI: String = "", listName: String = "", listDescripti
                     }
                 }
             } catch {
-                print("error creating list: \(error)")
+                print("error deleting list: \(error)")
             }
         }
     }
@@ -1676,11 +1676,48 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
             UIApplication.shared.pushToCurrentNavigationController(vc)
         }
         extraActions.append(lists)
-        let addToList = UIAction(title: "Add to List", image: UIImage(systemName: "text.badge.plus"), identifier: nil) { action in
-            
+        
+        var addToListActions: [UIAction] = []
+        for list in GlobalStruct.allLists {
+            if let url = list.avatarImageURL {
+                let theImage = UIImageView()
+                theImage.sd_setImage(with: url)
+                let list = UIAction(title: list.name, image: theImage.image?.withRoundedCorners() ?? UIImage(systemName: "list.bullet"), identifier: nil) { action in
+                    Task {
+                        do {
+                            if let atProto = GlobalStruct.atProto {
+                                let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                                let _ = try await atProtoBluesky.createListItemRecord(for: list.uri, subjectDID: profile?.actorDID ?? basicProfile?.actorDID ?? defaultProfile?.actorDID ?? messageProfile?.actorDID ?? "")
+                            }
+                        } catch {
+                            print("error adding to list: \(error)")
+                        }
+                    }
+                }
+                addToListActions.append(list)
+            } else {
+                let list = UIAction(title: list.name, image: UIImage(systemName: "list.bullet"), identifier: nil) { action in
+                    Task {
+                        do {
+                            if let atProto = GlobalStruct.atProto {
+                                let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                                let _ = try await atProtoBluesky.createListItemRecord(for: list.uri, subjectDID: profile?.actorDID ?? basicProfile?.actorDID ?? defaultProfile?.actorDID ?? messageProfile?.actorDID ?? "")
+                            }
+                        } catch {
+                            print("error adding to list: \(error)")
+                        }
+                    }
+                }
+                addToListActions.append(list)
+            }
         }
-        extraActions.append(addToList)
-        let extrasMenu = UIMenu(title: "", options: [.displayInline], children: extraActions)
+        let addToListMenu = UIMenu(title: "Add to List...", image: UIImage(systemName: "text.badge.plus"), options: [], children: addToListActions)
+        
+        var extrasMenu = UIMenu(title: "", options: [.displayInline], children: extraActions + [addToListMenu])
+        if GlobalStruct.allLists.isEmpty {
+            extrasMenu = UIMenu(title: "", options: [.displayInline], children: extraActions)
+        }
+        
         var profileActions: [UIAction] = []
         let mute = UIAction(title: "Mute Account", image: UIImage(systemName: "speaker.slash"), identifier: nil) { action in
             
@@ -1709,6 +1746,6 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         }
         menuActions.append(share)
         let shareMenu = UIMenu(title: "", options: [.displayInline], children: menuActions)
-        return UIMenu(title: "", options: [.displayInline], children: [mentionMenu] + [extrasMenu] + profileActions + [shareMenu])
+        return UIMenu(title: "", options: [.displayInline], children: [mentionMenu, extrasMenu] + profileActions + [shareMenu])
     }
 }

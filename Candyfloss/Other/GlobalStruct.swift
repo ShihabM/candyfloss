@@ -61,6 +61,7 @@ struct GlobalStruct {
     static var listDescription: String = ""
     static var listURI: String = ""
     static var allFeeds: [AppBskyLexicon.Feed.GeneratorViewDefinition] = []
+    static var allLists: [AppBskyLexicon.Graph.ListViewDefinition] = []
     static var allFetchedPosts: [AppBskyLexicon.Feed.FeedViewPostDefinition] = []
     static var currentFetchedCursor: String = ""
     static var pinnedFeeds: [PinnedItems] = []

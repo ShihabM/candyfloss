@@ -23,6 +23,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     // feeds
     var currentFeedCursor: String? = nil
+    var currentListCursor: String? = nil
     var fromFeedPush: Bool = false
     
     // temp feed from explore
@@ -468,6 +469,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             GlobalStruct.isShowingFeeds = true
             let vc = FeedsListsViewController()
             vc.currentFeedCursor = currentFeedCursor
+            vc.currentListCursor = currentListCursor
             vc.fromAddPin = true
             let nvc = SloppySwipingNav(rootViewController: vc)
             show(nvc, sender: self)
@@ -477,6 +479,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             GlobalStruct.isShowingFeeds = false
             let vc = FeedsListsViewController()
             vc.currentFeedCursor = currentFeedCursor
+            vc.currentListCursor = currentListCursor
             vc.fromAddPin = true
             let nvc = SloppySwipingNav(rootViewController: vc)
             show(nvc, sender: self)
@@ -581,6 +584,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         defaultHaptics()
         let vc = FeedsListsViewController()
         vc.currentFeedCursor = currentFeedCursor
+        vc.currentListCursor = currentListCursor
         let nvc = SloppySwipingNav(rootViewController: vc)
         show(nvc, sender: self)
     }
@@ -659,8 +663,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                                 self.isFetching = false
                             }
                             
-                            // prefetch feeds
+                            // prefetch feeds and lists
                             fetchFeeds()
+                            fetchLists()
                         } else if GlobalStruct.currentFeedURI == "" && !fromFeedPush {
                             let x = try await atProto.getTimeline(limit: 100, cursor: currentCursor)
                             
@@ -691,8 +696,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                                 self.isFetching = false
                             }
                             
-                            // prefetch feeds
+                            // prefetch feeds and lists
                             fetchFeeds()
+                            fetchLists()
                         } else {
                             var feedURI: String = GlobalStruct.currentFeedURI
                             if fromFeedPush {
@@ -727,8 +733,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                                 self.isFetching = false
                             }
                             
-                            // prefetch feeds
+                            // prefetch feeds and lists
                             fetchFeeds()
+                            fetchLists()
                         }
                     }
                 } else {
@@ -932,9 +939,35 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     let x = try await atProto.getSuggestedFeeds()
                     GlobalStruct.allFeeds = x.feeds
                     currentFeedCursor = x.cursor
+                    do {
+                        try Disk.save(GlobalStruct.allFeeds, to: .documents, as: "allFeeds.json")
+                        UserDefaults.standard.set(currentFeedCursor, forKey: "currentFeedCursor")
+                    } catch {
+                        print("error saving to Disk")
+                    }
                 }
             } catch {
                 print("Error fetching feeds: \(error)")
+            }
+        }
+    }
+    
+    func fetchLists() {
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let x = try await atProto.getLists(from: GlobalStruct.currentUser?.actorDID ?? "")
+                    GlobalStruct.allLists = x.lists
+                    currentListCursor = x.cursor
+                    do {
+                        try Disk.save(GlobalStruct.allLists, to: .documents, as: "allLists.json")
+                        UserDefaults.standard.set(currentListCursor, forKey: "currentListCursor")
+                    } catch {
+                        print("error saving to Disk")
+                    }
+                }
+            } catch {
+                print("Error fetching lists: \(error)")
             }
         }
     }

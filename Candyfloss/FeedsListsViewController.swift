@@ -13,6 +13,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     // feeds
     var tableView = UITableView()
     var currentFeedCursor: String? = nil
+    var currentListCursor: String? = nil
     var isFetchingFeeds: Bool = false
     var showingDescriptions: Bool = true
     var fromTab: Bool = false
@@ -21,7 +22,6 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     // lists
     var tableView2 = UITableView()
     var allLists: [AppBskyLexicon.Graph.ListViewDefinition] = []
-    var currentCursor: String? = nil
     var isFetching: Bool = false
     var otherListUser: String = ""
     
@@ -69,7 +69,8 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         NotificationCenter.default.addObserver(self, selector: #selector(self.updatePinned), name: NSNotification.Name(rawValue: "updatePinned"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.deleteList), name: NSNotification.Name(rawValue: "deleteList"), object: nil)
         
-        currentCursor = UserDefaults.standard.value(forKey: "currentFeedCursor") as? String ?? nil
+        currentFeedCursor = UserDefaults.standard.value(forKey: "currentFeedCursor") as? String ?? nil
+        currentListCursor = UserDefaults.standard.value(forKey: "currentListCursor") as? String ?? nil
         
         if fromTab {
             isShowingFeeds = false
@@ -290,9 +291,12 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                         if otherListUser != "" {
                             theUser = otherListUser
                         }
-                        let x = try await atProto.getLists(from: theUser, limit: 50, cursor: currentCursor)
+                        let x = try await atProto.getLists(from: theUser, limit: 50, cursor: currentListCursor)
                         allLists = x.lists
-                        currentCursor = x.cursor
+                        currentListCursor = x.cursor
+                        if otherListUser == "" {
+                            GlobalStruct.allLists = allLists
+                        }
                         DispatchQueue.main.async {
                             self.tableView2.reloadData()
                             self.isFetching = false
@@ -574,7 +578,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     cell.theAuthor.text = "by @\(allLists[indexPath.row - 1].creator.actorHandle)"
                     cell.theDescription.text = allLists[indexPath.row - 1].description ?? ""
                     
-                    if isFetching == false && currentCursor != nil {
+                    if isFetching == false && currentListCursor != nil {
                         if indexPath.row - 1 == allLists.count - 1 || indexPath.row - 1 == allLists.count - 5 {
                             isFetching = true
                             fetchFeedsOrLists()

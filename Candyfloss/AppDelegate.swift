@@ -45,6 +45,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             print("error fetching from Disk")
         }
+        // fetch all lists
+        do {
+            GlobalStruct.allLists = try Disk.retrieve("allLists.json", from: .documents, as: [AppBskyLexicon.Graph.ListViewDefinition].self)
+        } catch {
+            print("error fetching from Disk")
+        }
         // fetch pinned feeds
         do {
             GlobalStruct.pinnedFeeds = try Disk.retrieve("pinnedFeeds", from: .documents, as: [PinnedItems].self)

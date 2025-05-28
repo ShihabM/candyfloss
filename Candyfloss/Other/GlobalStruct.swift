@@ -67,6 +67,7 @@ struct GlobalStruct {
     static var pinnedLists: [PinnedItems] = []
     static var currentFeed: AppBskyLexicon.Feed.GeneratorViewDefinition? = nil
     static var currentList: AppBskyLexicon.Graph.ListViewDefinition? = nil
+    static var listURIToDelete: String = ""
     
     // settings
     static var fullBlackBG: Bool = false

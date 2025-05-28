@@ -44,12 +44,30 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
     
+    @objc func deleteList() {
+        DispatchQueue.main.async {
+            if let pinnedIndex = GlobalStruct.pinnedLists.firstIndex(where: { y in
+                y.uri == GlobalStruct.listURIToDelete
+            }) {
+                GlobalStruct.pinnedLists.remove(at: pinnedIndex)
+                self.updatePinned()
+            }
+            if let index = self.allLists.firstIndex(where: { y in
+                y.uri == GlobalStruct.listURIToDelete
+            }) {
+                self.allLists.remove(at: index)
+                self.updatePinned()
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshLists), name: NSNotification.Name(rawValue: "refreshLists"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updatePinned), name: NSNotification.Name(rawValue: "updatePinned"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteList), name: NSNotification.Name(rawValue: "deleteList"), object: nil)
         
         currentCursor = UserDefaults.standard.value(forKey: "currentFeedCursor") as? String ?? nil
         
@@ -242,7 +260,10 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
     @objc func refreshLists() {
         DispatchQueue.main.async {
             self.isShowingFeeds = false
-            self.fetchFeedsOrLists()
+            self.allLists = []
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.fetchFeedsOrLists()
+            }
         }
     }
     

@@ -1504,7 +1504,20 @@ func createListMenu(_ listURI: String = "", listName: String = "", listDescripti
     }
     menuActions.append(share)
     let delete = UIAction(title: "Delete List", image: UIImage(systemName: "trash"), identifier: nil) { action in
-        
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                    let _ = try await atProtoBluesky.deleteListRecord(.recordURI(atURI: listURI))
+                    DispatchQueue.main.async {
+                        GlobalStruct.listURIToDelete = listURI
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "deleteList"), object: nil)
+                    }
+                }
+            } catch {
+                print("error creating list: \(error)")
+            }
+        }
     }
     delete.attributes = .destructive
     let deleteMenu = UIMenu(title: "", options: [.displayInline, .destructive], children: [delete])

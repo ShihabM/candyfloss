@@ -372,7 +372,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             let navigationBarFeedButtonItem = UIBarButtonItem(customView: feedsButton)
             navigationBarFeedButtonItem.accessibilityLabel = "Feeds"
             if UIDevice.current.userInterfaceIdiom == .pad {
-                navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarFeedButtonItem]
+                navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarFeedButtonItem]
             } else {
                 navigationItem.leftBarButtonItems = [navigationBarFeedButtonItem]
             }

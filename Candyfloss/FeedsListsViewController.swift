@@ -228,7 +228,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                 let navigationBarAddButtonItem = UIBarButtonItem(customView: addButton)
                 navigationBarAddButtonItem.accessibilityLabel = "New List"
                 if UIDevice.current.userInterfaceIdiom == .pad {
-                    navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarAddButtonItem]
+                    navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarAddButtonItem]
                 } else {
                     navigationItem.rightBarButtonItem = navigationBarAddButtonItem
                 }

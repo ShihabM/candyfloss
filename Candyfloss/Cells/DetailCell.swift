@@ -291,8 +291,13 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[text]-18-|", options: [], metrics: nil, views: viewsDict))
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[time]-18-|", options: [], metrics: nil, views: viewsDict))
         
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[linkStackView]-18-|", options: [], metrics: nil, views: viewsDict))
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[quoteTableView]-18-|", options: [], metrics: nil, views: viewsDict))
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[linkStackView(360)]-(>=18)-|", options: [], metrics: nil, views: viewsDict))
+            self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[quoteTableView(360)]-(>=18)-|", options: [], metrics: nil, views: viewsDict))
+        } else {
+            self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[linkStackView]-18-|", options: [], metrics: nil, views: viewsDict))
+            self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[quoteTableView]-18-|", options: [], metrics: nil, views: viewsDict))
+        }
         
         cellStackViewConstraints5 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[mediaStackView]-18-|", options: [], metrics: nil, views: viewsDict)
         cellStackViewConstraints6 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[playerView]-18-|", options: [], metrics: nil, views: viewsDict)

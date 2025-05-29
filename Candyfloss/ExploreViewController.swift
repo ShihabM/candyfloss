@@ -48,6 +48,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     let loadingIndicator = UIActivityIndicatorView(style: .medium)
     
     override func viewDidLayoutSubviews() {
+        loadingIndicator.center = view.center
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
     }
@@ -269,7 +270,11 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             navigationButton.addTarget(self, action: #selector(self.goToSettings), for: .touchUpInside)
             let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
             navigationBarButtonItem.accessibilityLabel = "Settings"
-            navigationItem.leftBarButtonItem = navigationBarButtonItem
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                navigationItem.leftBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
+            } else {
+                navigationItem.leftBarButtonItem = navigationBarButtonItem
+            }
         }
     }
     

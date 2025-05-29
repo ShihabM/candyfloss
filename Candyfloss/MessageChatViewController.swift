@@ -23,6 +23,10 @@ class MessageChatViewController: MessagesViewController {
     
     // loading indicator
     let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
+    override func viewDidLayoutSubviews() {
+        loadingIndicator.center = view.center
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -227,7 +227,11 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                 addButton.addTarget(self, action: #selector(self.newList), for: .touchUpInside)
                 let navigationBarAddButtonItem = UIBarButtonItem(customView: addButton)
                 navigationBarAddButtonItem.accessibilityLabel = "New List"
-                navigationItem.rightBarButtonItem = navigationBarAddButtonItem
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarAddButtonItem]
+                } else {
+                    navigationItem.rightBarButtonItem = navigationBarAddButtonItem
+                }
             }
             
             if !fromTab {
@@ -241,7 +245,11 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
             navigationButton.addTarget(self, action: #selector(self.goToSettings), for: .touchUpInside)
             let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
             navigationBarButtonItem.accessibilityLabel = "Settings"
-            navigationItem.leftBarButtonItem = navigationBarButtonItem
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                navigationItem.leftBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
+            } else {
+                navigationItem.leftBarButtonItem = navigationBarButtonItem
+            }
         }
     }
     

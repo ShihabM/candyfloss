@@ -95,7 +95,9 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.setupNewPostButton()
+        if UIDevice.current.userInterfaceIdiom == .pad {} else {
+            self.setupNewPostButton()
+        }
     }
     
     func updateTabs() {
@@ -163,7 +165,11 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
             thirdVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
             thirdVC.accessibilityLabel = tab3Title
         }
-        thirdVC.tabBarItem.tag = 2
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            thirdVC.tabBarItem.tag = 1
+        } else {
+            thirdVC.tabBarItem.tag = 2
+        }
         
         if let data = UserDefaults.standard.data(forKey: "currentSwitchableViewAtSpot4") {
             if let decoded = try? JSONDecoder().decode(SwitchableViewConfig.self, from: data) {
@@ -195,7 +201,11 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
             fourthVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
             fourthVC.accessibilityLabel = tab4Title
         }
-        fourthVC.tabBarItem.tag = 3
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            fourthVC.tabBarItem.tag = 2
+        } else {
+            fourthVC.tabBarItem.tag = 3
+        }
         
         if let data = UserDefaults.standard.data(forKey: "currentSwitchableViewAtSpot5") {
             if let decoded = try? JSONDecoder().decode(SwitchableViewConfig.self, from: data) {
@@ -226,7 +236,11 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
             fifthVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
             fifthVC.accessibilityLabel = tab5Title
         }
-        fifthVC.tabBarItem.tag = 4
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            fifthVC.tabBarItem.tag = 3
+        } else {
+            fifthVC.tabBarItem.tag = 4
+        }
         
         let offset2 = (self.view.bounds.width/5)*3
         let offset3 = (self.view.bounds.width/5)*4
@@ -244,7 +258,11 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         overlayView4.image = UIImage(systemName: "chevron.up.chevron.down")?.withTintColor(GlobalStruct.secondaryTextColor.withAlphaComponent(0.3), renderingMode: .alwaysOriginal)
         tabBar.addSubview(overlayView4)
         
-        setViewControllers([firstVC, secondVC, thirdVC, fourthVC, fifthVC], animated: false)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            setViewControllers([firstVC, thirdVC, fourthVC, fifthVC], animated: false)
+        } else {
+            setViewControllers([firstVC, secondVC, thirdVC, fourthVC, fifthVC], animated: false)
+        }
         setupContextMenus()
         
         self.longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
@@ -352,12 +370,22 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
             iconSelected: GlobalStruct.switchableView.iconSelected
         )
         if let encoded = try? JSONEncoder().encode(config) {
-            if GlobalStruct.switchableIndex == 2 {
-                UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot3")
-            } else if GlobalStruct.switchableIndex == 3 {
-                UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot4")
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                if GlobalStruct.switchableIndex == 1 {
+                    UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot3")
+                } else if GlobalStruct.switchableIndex == 2 {
+                    UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot4")
+                } else {
+                    UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot5")
+                }
             } else {
-                UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot5")
+                if GlobalStruct.switchableIndex == 2 {
+                    UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot3")
+                } else if GlobalStruct.switchableIndex == 3 {
+                    UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot4")
+                } else {
+                    UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot5")
+                }
             }
         }
         let vc = GlobalStruct.switchableView.view

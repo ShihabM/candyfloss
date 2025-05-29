@@ -31,6 +31,7 @@ class MutedBlockedViewController: UIViewController, UITableViewDataSource, UITab
     let loadingIndicator = UIActivityIndicatorView(style: .medium)
     
     override func viewDidLayoutSubviews() {
+        loadingIndicator.center = view.center
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
         searchController.searchBar.sizeToFit()

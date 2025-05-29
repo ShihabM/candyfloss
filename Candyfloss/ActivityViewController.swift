@@ -31,6 +31,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     let loadingIndicator = UIActivityIndicatorView(style: .medium)
     
     override func viewDidLayoutSubviews() {
+        loadingIndicator.center = view.center
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
         searchController.searchBar.sizeToFit()
@@ -177,6 +178,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadTables), name: NSNotification.Name(rawValue: "reloadTables"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.resetTimelines), name: NSNotification.Name(rawValue: "resetTimelines"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.fetchActivity), name: NSNotification.Name(rawValue: "fetchActivity"), object: nil)
         
         setUpNavigationBar()
         
@@ -199,7 +201,18 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
         navigationButton.addTarget(self, action: #selector(self.goToSettings), for: .touchUpInside)
         let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
         navigationBarButtonItem.accessibilityLabel = "Settings"
-        navigationItem.leftBarButtonItem = navigationBarButtonItem
+        if UIDevice.current.userInterfaceIdiom == .pad {} else {
+            navigationItem.leftBarButtonItem = navigationBarButtonItem
+        }
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            let postButton = CustomButton(type: .system)
+            postButton.setImage(UIImage(systemName: "square.and.pencil"), for: .normal)
+            postButton.addTarget(self, action: #selector(self.goToPost), for: .touchUpInside)
+            let navigationBarPostButtonItem = UIBarButtonItem(customView: postButton)
+            navigationBarPostButtonItem.accessibilityLabel = "Post"
+            navigationItem.rightBarButtonItems = [UIBarButtonItem(), navigationBarPostButtonItem]
+        }
         
         setupListDropdown()
     }
@@ -292,7 +305,15 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
         getTopMostViewController()?.show(SloppySwipingNav(rootViewController: vc), sender: self)
     }
     
-    func fetchActivity() {
+    @objc func goToPost() {
+        defaultHaptics()
+        let vc = ComposerViewController()
+        let nvc = SloppySwipingNav(rootViewController: vc)
+        nvc.isModalInPresentation = true
+        self.present(nvc, animated: true, completion: nil)
+    }
+    
+    @objc func fetchActivity() {
         Task {
             let user = GlobalStruct.allUsers.first { x in
                 x.username == GlobalStruct.currentSelectedUser

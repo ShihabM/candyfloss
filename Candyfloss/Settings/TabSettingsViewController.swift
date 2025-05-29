@@ -83,7 +83,11 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
                         guard let self else { return }
                         GlobalStruct.currentSwitchableViewAtSpot3 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
                         GlobalStruct.switchableView = switchableView
-                        GlobalStruct.switchableIndex = 2
+                        if UIDevice.current.userInterfaceIdiom == .pad {
+                            GlobalStruct.switchableIndex = 1
+                        } else {
+                            GlobalStruct.switchableIndex = 2
+                        }
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "updateSwitchableView"), object: nil)
                         self.tableView.reloadData()
                     }
@@ -115,7 +119,11 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
                         guard let self else { return }
                         GlobalStruct.currentSwitchableViewAtSpot4 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
                         GlobalStruct.switchableView = switchableView
-                        GlobalStruct.switchableIndex = 3
+                        if UIDevice.current.userInterfaceIdiom == .pad {
+                            GlobalStruct.switchableIndex = 2
+                        } else {
+                            GlobalStruct.switchableIndex = 3
+                        }
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "updateSwitchableView"), object: nil)
                         self.tableView.reloadData()
                     }
@@ -147,7 +155,11 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
                         guard let self else { return }
                         GlobalStruct.currentSwitchableViewAtSpot5 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
                         GlobalStruct.switchableView = switchableView
-                        GlobalStruct.switchableIndex = 4
+                        if UIDevice.current.userInterfaceIdiom == .pad {
+                            GlobalStruct.switchableIndex = 3
+                        } else {
+                            GlobalStruct.switchableIndex = 4
+                        }
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "updateSwitchableView"), object: nil)
                         self.tableView.reloadData()
                     }

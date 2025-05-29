@@ -146,6 +146,11 @@ extension UIApplication {
             return "iPad slide over"
         }
     }
+    
+    public var isSplitOrSlideOver: Bool {
+        guard let window = self.windows.filter({ $0.isKeyWindow }).first else { return false }
+        return !(window.frame.width == window.screen.bounds.width)
+    }
 }
 
 internal extension UIApplication {

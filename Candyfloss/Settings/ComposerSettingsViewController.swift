@@ -56,7 +56,11 @@ class ComposerSettingsViewController: UIViewController, UITableViewDataSource, U
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section3Titles.count
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return 1
+        } else {
+            return section3Titles.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -180,7 +184,11 @@ class ComposerSettingsViewController: UIViewController, UITableViewDataSource, U
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return "\nYou can also drag the post button to set its position."
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return nil
+        } else {
+            return "\nYou can also drag the post button to set its position."
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {

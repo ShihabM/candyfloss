@@ -36,6 +36,7 @@
 		532883FF2DE76872002AED8C /* MutedBlockedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532883FE2DE7686C002AED8C /* MutedBlockedViewController.swift */; };
 		532884042DE84BA7002AED8C /* ATMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 532884032DE84BA7002AED8C /* ATMacro */; };
 		532884062DE84BA7002AED8C /* ATProtoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 532884052DE84BA7002AED8C /* ATProtoKit */; };
+		5328840A2DE8AA2F002AED8C /* PadScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532884092DE8AA28002AED8C /* PadScrollViewController.swift */; };
 		539B4CD62CC7A3E700CF6646 /* ActiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */; };
 		539B4CD72CC7A3E700CF6646 /* ActiveLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */; };
 		539B4CD82CC7A3E700CF6646 /* ActiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B4CBC2CC7A3E700CF6646 /* ActiveType.swift */; };
@@ -151,6 +152,7 @@
 		532883FA2DE7188A002AED8C /* AvatarInputCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarInputCell.swift; sourceTree = "<group>"; };
 		532883FC2DE75D47002AED8C /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		532883FE2DE7686C002AED8C /* MutedBlockedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutedBlockedViewController.swift; sourceTree = "<group>"; };
+		532884092DE8AA28002AED8C /* PadScrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadScrollViewController.swift; sourceTree = "<group>"; };
 		539B4CB92CC7A3E700CF6646 /* ActiveBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveBuilder.swift; sourceTree = "<group>"; };
 		539B4CBA2CC7A3E700CF6646 /* ActiveLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActiveLabel.h; sourceTree = "<group>"; };
 		539B4CBB2CC7A3E700CF6646 /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
@@ -343,6 +345,7 @@
 			children = (
 				539B4CCA2CC7A3E700CF6646 /* AppDelegate.swift */,
 				539B4CD22CC7A3E700CF6646 /* SceneDelegate.swift */,
+				532884092DE8AA28002AED8C /* PadScrollViewController.swift */,
 				539B4CD32CC7A3E700CF6646 /* TabBarController.swift */,
 				53CA75F92DA823DE007E2361 /* FeedsListsViewController.swift */,
 				539B4CD42CC7A3E700CF6646 /* ViewController.swift */,
@@ -559,6 +562,7 @@
 				539B4CD82CC7A3E700CF6646 /* ActiveType.swift in Sources */,
 				5309C2122DC220A800380B93 /* ComposerSettingsViewController.swift in Sources */,
 				53C4616A2D8C4583009F7C6B /* LikesRepostsViewController.swift in Sources */,
+				5328840A2DE8AA2F002AED8C /* PadScrollViewController.swift in Sources */,
 				5309C2042DC0D6DD00380B93 /* DraftsViewController.swift in Sources */,
 				53C461622D7F29AD009F7C6B /* ActivityCell.swift in Sources */,
 				539B4CD92CC7A3E700CF6646 /* RegexParser.swift in Sources */,

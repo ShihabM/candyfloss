@@ -47,6 +47,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     let loadingIndicator = UIActivityIndicatorView(style: .medium)
     
     override func viewDidLayoutSubviews() {
+        loadingIndicator.center = view.center
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
         searchController.searchBar.sizeToFit()
@@ -285,14 +286,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
         
-        if !fromFeedPush && !fromListPush {
-            let feedsButton = CustomButton(type: .system)
-            feedsButton.setImage(UIImage(systemName: "list.bullet.below.rectangle"), for: .normal)
-            feedsButton.addTarget(self, action: #selector(self.goToFeeds), for: .touchUpInside)
-            let navigationBarFeedButtonItem = UIBarButtonItem(customView: feedsButton)
-            navigationBarFeedButtonItem.accessibilityLabel = "Feeds"
-            navigationItem.leftBarButtonItem = navigationBarFeedButtonItem
+        let navigationButton = CustomButton(type: .system)
+        navigationButton.setImage(UIImage(systemName: "gear"), for: .normal)
+        navigationButton.addTarget(self, action: #selector(self.goToSettings), for: .touchUpInside)
+        let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
+        navigationBarButtonItem.accessibilityLabel = "Settings"
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            navigationItem.leftBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
         }
+        
         if listName == "" {
             navigationItem.rightBarButtonItems = []
         } else {
@@ -358,9 +360,21 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             let navigationBarButtonItem = UIBarButtonItem(customView: moreButton)
             navigationBarButtonItem.accessibilityLabel = "More"
             if GlobalStruct.isPostButtonInNavBar {
-                navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
+                navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
             } else {
                 navigationItem.rightBarButtonItems = [navigationBarButtonItem]
+            }
+        }
+        if !fromFeedPush && !fromListPush {
+            let feedsButton = CustomButton(type: .system)
+            feedsButton.setImage(UIImage(systemName: "list.bullet.below.rectangle"), for: .normal)
+            feedsButton.addTarget(self, action: #selector(self.goToFeeds), for: .touchUpInside)
+            let navigationBarFeedButtonItem = UIBarButtonItem(customView: feedsButton)
+            navigationBarFeedButtonItem.accessibilityLabel = "Feeds"
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarFeedButtonItem]
+            } else {
+                navigationItem.leftBarButtonItems = [navigationBarFeedButtonItem]
             }
         }
         
@@ -611,6 +625,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         } catch {
             print("error saving to Disk")
         }
+    }
+    
+    @objc func goToSettings() {
+        defaultHaptics()
+        let vc = SettingsViewController()
+        vc.fromNavigationStack = false
+        getTopMostViewController()?.show(SloppySwipingNav(rootViewController: vc), sender: self)
     }
     
     @objc func goToFeeds() {
@@ -932,6 +953,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     fetchTimeline()
                 } else {
                     fetchLatest()
+                }
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "fetchActivity"), object: nil)
                 }
             } catch {
                 print("Error authenticating: \(error)")

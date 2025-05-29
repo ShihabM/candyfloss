@@ -17,8 +17,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
         window?.tintColor = GlobalStruct.baseTint
-        window?.rootViewController = TabBarController()
-        window?.makeKeyAndVisible()
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            let nav1 = PadScrollViewController.shared
+            var arrToUse: [UIViewController] = []
+            let vc1 = TabBarController()
+            arrToUse.append(vc1)
+            let vc2 = ActivityViewController()
+            arrToUse.append(SloppySwipingNav(rootViewController: vc2))
+            nav1.viewControllers = arrToUse
+            self.window?.rootViewController = nav1
+            self.window?.makeKeyAndVisible()
+        } else {
+            window?.rootViewController = TabBarController()
+            window?.makeKeyAndVisible()
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

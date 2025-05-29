@@ -35,12 +35,14 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     var feedPosts4: [AppBskyLexicon.Feed.FeedViewPostDefinition] = []
     var feedPosts5: [AppBskyLexicon.Feed.FeedViewPostDefinition] = []
     
-    // inline search
+    // search
     var searchView: UIView = UIView()
     var searchController = UISearchController()
-    var searchResults: [AppBskyLexicon.Unspecced.TrendViewDefinition] = []
-    var isSearching: Bool = false
     var searchFirstTime: Bool = true
+    var isSearchingGlobal: Bool = false
+    var searchedUsers: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
+    var searchedPosts: [AppBskyLexicon.Feed.PostViewDefinition] = []
+    var searchType: Int = 0 // 0: Users, 1: Posts
     
     // loading indicator
     let loadingIndicator = UIActivityIndicatorView(style: .medium)
@@ -51,37 +53,62 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func updateSearchResults(for searchController: UISearchController) {
-        if searchResults.isEmpty {} else {
-            trends = searchResults
-        }
-        if let theText = searchController.searchBar.text?.lowercased() {
-            if theText.isEmpty {
-                isSearching = false
-                if searchFirstTime {
-                    searchFirstTime = false
-                    searchResults = trends
-                } else {
-                    trends = searchResults
-                    tableView.reloadData()
+        let searchText = searchController.searchBar.text ?? ""
+        if searchType == 0 {
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let x = try await atProto.searchActors(matching: searchText)
+                        searchedUsers = x.actors
+                        let y = try await atProto.searchPosts(matching: searchText)
+                        searchedPosts = y.posts
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                        }
+                    }
+                } catch {
+                    print("Error fetching searched content: \(error)")
                 }
-            } else {
-                let z = trends.filter({
-                    return ($0.topic).lowercased().contains(theText)
-                })
-                trends = z
-                tableView.reloadData()
-                isSearching = true
+            }
+        } else {
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let x = try await atProto.searchPosts(matching: searchText)
+                        searchedPosts = x.posts
+                        let y = try await atProto.searchActors(matching: searchText)
+                        searchedUsers = y.actors
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                        }
+                    }
+                } catch {
+                    print("Error fetching searched content: \(error)")
+                }
             }
         }
     }
     
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        isSearchingGlobal = true
+        tableView.reloadData()
+        setupListDropdown()
+    }
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        isSearching = false
-        if !searchResults.isEmpty {
-            trends = self.searchResults
-            tableView.reloadData()
-        }
+        isSearchingGlobal = false
+        searchedUsers = []
+        searchedPosts = []
+        tableView.reloadData()
         searchFirstTime = true
+        
+        let titleLabel = UIButton()
+        titleLabel.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
+        let attStringNewLine000 = NSMutableAttributedString()
+        let attStringNewLine00 = NSMutableAttributedString(string: "Explore", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold),NSAttributedString.Key.foregroundColor : UIColor.label])
+        attStringNewLine000.append(attStringNewLine00)
+        titleLabel.setAttributedTitle(attStringNewLine000, for: .normal)
+        self.navigationItem.titleView = titleLabel
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -238,9 +265,60 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    @objc func setupListDropdown() {
+        var theTitle: String = ""
+        if searchType == 0 {
+            theTitle = "Search Users"
+        } else {
+            theTitle = "Search Posts"
+        }
+        let titleLabel = UIButton()
+        titleLabel.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
+        let attachment1 = NSTextAttachment()
+        let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold)
+        let downImage1 = UIImage(systemName: "chevron.down", withConfiguration: symbolConfig1)
+        let downImage2 = imageWithImage(image: downImage1 ?? UIImage(), scaledToSize: CGSize(width: downImage1?.size.width ?? 0, height: (downImage1?.size.height ?? 0) - 3))
+        attachment1.image = downImage2.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal)
+        let attStringNewLine000 = NSMutableAttributedString()
+        let attStringNewLine00 = NSMutableAttributedString(string: "\(theTitle) ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold),NSAttributedString.Key.foregroundColor : UIColor.label])
+        let attString00 = NSAttributedString(attachment: attachment1)
+        attStringNewLine000.append(attStringNewLine00)
+        attStringNewLine000.append(attString00)
+        titleLabel.setAttributedTitle(attStringNewLine000, for: .normal)
+        self.navigationItem.titleView = titleLabel
+        var allActions0: [UIAction] = []
+        let menuItem = UIAction(title: "Users", image: UIImage(systemName: "person.2"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            searchType = 0
+            tableView.reloadData()
+            setupListDropdown()
+        }
+        if searchType == 0 {
+            menuItem.state = .on
+        } else {
+            menuItem.state = .off
+        }
+        allActions0.append(menuItem)
+        let menuItem1 = UIAction(title: "Posts", image: UIImage(systemName: "heart.text.square"), identifier: nil) { [weak self] action in
+            guard let self else { return }
+            searchType = 1
+            tableView.reloadData()
+            setupListDropdown()
+        }
+        if searchType == 1 {
+            menuItem1.state = .on
+        } else {
+            menuItem1.state = .off
+        }
+        allActions0.append(menuItem1)
+        let menu = UIMenu(title: "", options: [.displayInline], children: allActions0)
+        titleLabel.menu = menu
+        titleLabel.showsMenuAsPrimaryAction = true
+    }
+    
     @objc func fetchTrending() {
         fetchedAreasCount = 0
-        guard !isSearching else {
+        guard !isSearchingGlobal else {
             refreshControl.endRefreshing()
             return
         }
@@ -423,6 +501,8 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
         tableView.register(StarterPackListCell.self, forCellReuseIdentifier: "StarterPackListCell")
         tableView.register(TrendingFeedCell.self, forCellReuseIdentifier: "TrendingFeedCell")
         tableView.register(PostsCell.self, forCellReuseIdentifier: "PostsCell")
+        tableView.register(UserCell.self, forCellReuseIdentifier: "SearchUserCell")
+        tableView.register(PostsCell.self, forCellReuseIdentifier: "SearchPostsCell")
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = UIColor.clear
@@ -444,7 +524,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             controller.searchBar.sizeToFit()
             controller.searchBar.delegate = self
             controller.definesPresentationContext = true
-            controller.searchBar.placeholder = "Search Posts, Users, and Feeds"
+            controller.searchBar.placeholder = "Search Users and Posts"
             self.definesPresentationContext = true
             searchView.addSubview(controller.searchBar)
             tableView.tableHeaderView = searchView
@@ -458,22 +538,30 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return trends.count
-        } else if section == 1 {
-            if suggestedUsers.isEmpty {
-                return 0
+        if isSearchingGlobal {
+            if searchType == 0 {
+                return searchedUsers.count
             } else {
-                return suggestedUsers.count + 1
-            }
-        } else if section == 2 {
-            if starterPacks.isEmpty {
-                return 0
-            } else {
-                return starterPacks.count + 1
+                return searchedPosts.count
             }
         } else {
-            return suggestedFeeds.count + feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count
+            if section == 0 {
+                return trends.count
+            } else if section == 1 {
+                if suggestedUsers.isEmpty {
+                    return 0
+                } else {
+                    return suggestedUsers.count + 1
+                }
+            } else if section == 2 {
+                if starterPacks.isEmpty {
+                    return 0
+                } else {
+                    return starterPacks.count + 1
+                }
+            } else {
+                return suggestedFeeds.count + feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count
+            }
         }
     }
     
@@ -494,85 +582,28 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "TrendingTopicsCell", for: indexPath) as! TrendingTopicsCell
-            
-            if indexPath.row == 0 {
-                let attachment1 = NSTextAttachment()
-                attachment1.image = UIImage(systemName: "flame.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.white, renderingMode: .alwaysOriginal)
-                attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
-                let attStringNewLine000 = NSMutableAttributedString()
-                let attString00 = NSAttributedString(attachment: attachment1)
-                attStringNewLine000.append(attString00)
-                let attributedString = NSMutableAttributedString(string: " Hot", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.white])
-                attStringNewLine000.append(attributedString)
-                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
-                cell.theIcon.backgroundColor = .systemRed
-                cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 7, right: 10)
-            } else {
-                let attStringNewLine000 = NSMutableAttributedString()
-                let timeSince = trends[indexPath.row].startedAt
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = GlobalStruct.dateFormatter
-                let attributedString = NSMutableAttributedString(string: "\(timeSince.toStringWithRelativeTime()) ago", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
-                attStringNewLine000.append(attributedString)
-                cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
-                cell.theIcon.backgroundColor = GlobalStruct.groupBG
-                cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 7, left: 10, bottom: 6, right: 10)
-            }
-            cell.theIcon.isUserInteractionEnabled = false
-            cell.theSubtitle.text = "\(indexPath.row + 1)"
-            cell.theTitle.text = trends[indexPath.row].displayName
-            cell.theDescription.text = "\(trends[indexPath.row].postCount.formatUsingAbbreviation()) posts • \(trends[indexPath.row].category?.capitalized ?? "")"
-            
-            if indexPath.row == trends.count - 1 {
-                cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-            } else {
-                cell.separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
-            }
-            cell.accessoryView = nil
-            let bgColorView = UIView()
-            bgColorView.backgroundColor = UIColor.clear
-            cell.selectedBackgroundView = bgColorView
-            cell.backgroundColor = GlobalStruct.backgroundTint
-            return cell
-        } else if indexPath.section == 1 {
-            if indexPath.row == 0 {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "WhoToFollowCell", for: indexPath) as! TrendingFeedCell
+        if isSearchingGlobal {
+            if searchType == 0 {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "SearchUserCell", for: indexPath) as! UserCell
                 
-                cell.configureCell(false)
-                cell.theTitle.text = "Suggested Accounts"
-                cell.theAuthor.text = "Suggestions based on who you follow"
-                
-                cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                cell.accessoryType = .disclosureIndicator
-                cell.accessoryView = nil
-                let bgColorView = UIView()
-                bgColorView.backgroundColor = UIColor.clear
-                cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
-                return cell
-            } else {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserCell
-                
-                let user = suggestedUsers[indexPath.row - 1]
-                if let url = user.avatarImageURL {
+                let user: AppBskyLexicon.Actor.ProfileViewDefinition? = searchedUsers[indexPath.row]
+                if let url = user?.avatarImageURL {
                     cell.avatar.sd_imageTransition = .fade
                     cell.avatar.sd_setImage(with: url, for: .normal)
                     cell.avatar.tag = indexPath.row
                 } else {
                     cell.avatar.setImage(UIImage(), for: .normal)
                 }
-                cell.username.text = user.displayName ?? ""
-                cell.usertag.text = "@\(user.actorHandle)"
-                let bioText = user.description ?? ""
+                cell.username.text = user?.displayName ?? ""
+                cell.usertag.text = "@\(user?.actorHandle ?? "")"
+                let bioText = user?.description ?? ""
                 var followsYou: Bool = false
-                if let _ = user.viewer?.followedByURI {
+                if let _ = user?.viewer?.followedByURI {
                     followsYou = true
                 }
                 cell.configureCell(followsYou, bioText: bioText, defaultProfile: user)
                 
-                if indexPath.row == suggestedUsers.count {
+                if indexPath.row == searchedUsers.count - 1 {
                     cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
                 } else {
                     cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
@@ -584,42 +615,59 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
                 return cell
-            }
-        } else if indexPath.section == 2 {
-            if indexPath.row == 0 {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "StarterPacksCell", for: indexPath) as! TrendingFeedCell
+            } else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "SearchPostsCell", for: indexPath) as! PostsCell
+                let post = searchedPosts[indexPath.row]
+                configurePostCell(cell, with: post)
                 
-                cell.configureCell(false)
-                cell.theTitle.text = "Starter Packs"
-                cell.theAuthor.text = "Suggested starter packs"
+                cell.avatar.tag = indexPath.row
+                cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
                 
-                cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                cell.accessoryType = .disclosureIndicator
+                if indexPath.row == searchedPosts.count - 1 {
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                } else {
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                }
                 cell.accessoryView = nil
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
                 return cell
-            } else {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "StarterPackListCell", for: indexPath) as! StarterPackListCell
+            }
+        } else {
+            if indexPath.section == 0 {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "TrendingTopicsCell", for: indexPath) as! TrendingTopicsCell
                 
-                cell.configureCell()
-                if let url = starterPacks[indexPath.row - 1].creator.avatarImageURL {
-                    cell.avatar.sd_imageTransition = .fade
-                    cell.avatar.sd_setImage(with: url, for: .normal)
+                if indexPath.row == 0 {
+                    let attachment1 = NSTextAttachment()
+                    attachment1.image = UIImage(systemName: "flame.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold))?.withTintColor(.white, renderingMode: .alwaysOriginal)
+                    attachment1.bounds = CGRect(x: 0, y: -2.5, width: attachment1.image!.size.width, height: attachment1.image!.size.height)
+                    let attStringNewLine000 = NSMutableAttributedString()
+                    let attString00 = NSAttributedString(attachment: attachment1)
+                    attStringNewLine000.append(attString00)
+                    let attributedString = NSMutableAttributedString(string: " Hot", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.white])
+                    attStringNewLine000.append(attributedString)
+                    cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
+                    cell.theIcon.backgroundColor = .systemRed
+                    cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 7, right: 10)
                 } else {
-                    cell.avatar.setImage(UIImage(), for: .normal)
+                    let attStringNewLine000 = NSMutableAttributedString()
+                    let timeSince = trends[indexPath.row].startedAt
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = GlobalStruct.dateFormatter
+                    let attributedString = NSMutableAttributedString(string: "\(timeSince.toStringWithRelativeTime()) ago", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel])
+                    attStringNewLine000.append(attributedString)
+                    cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
+                    cell.theIcon.backgroundColor = GlobalStruct.groupBG
+                    cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 7, left: 10, bottom: 6, right: 10)
                 }
-                cell.avatar.backgroundColor = .systemBlue
-                cell.theAuthor.text = "@\(starterPacks[indexPath.row - 1].creator.actorHandle)"
-                if let record = starterPacks[indexPath.row - 1].record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self) {
-                    cell.theTitle.text = record.name
-                    cell.theDescription.text = record.description
-                }
-                cell.theDescription.numberOfLines = 2
+                cell.theIcon.isUserInteractionEnabled = false
+                cell.theSubtitle.text = "\(indexPath.row + 1)"
+                cell.theTitle.text = trends[indexPath.row].displayName
+                cell.theDescription.text = "\(trends[indexPath.row].postCount.formatUsingAbbreviation()) posts • \(trends[indexPath.row].category?.capitalized ?? "")"
                 
-                if indexPath.row == starterPacks.count {
+                if indexPath.row == trends.count - 1 {
                     cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
                 } else {
                     cell.separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
@@ -630,324 +678,466 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.selectedBackgroundView = bgColorView
                 cell.backgroundColor = GlobalStruct.backgroundTint
                 return cell
-            }
-        } else {
-            let headerIndexPathRows: [Int] = [0, feedPosts1.count + 1, feedPosts1.count + feedPosts2.count + 2, feedPosts1.count + feedPosts2.count + feedPosts3.count + 3, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5]
-            
-            if headerIndexPathRows.contains(indexPath.row) {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "TrendingFeedCell", for: indexPath) as! TrendingFeedCell
-                
-                let indexToUse: Int = headerIndexPathRows.firstIndex { x in
-                    x == indexPath.row
-                } ?? 0
-                
-                cell.configureCell(false)
-                cell.theTitle.text = suggestedFeeds[indexToUse].displayName
-                cell.theAuthor.text = "Feed by @\(suggestedFeeds[indexToUse].creator.actorHandle)"
-                
-                cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                cell.accessoryType = .disclosureIndicator
-                cell.accessoryView = nil
-                let bgColorView = UIView()
-                bgColorView.backgroundColor = UIColor.clear
-                cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
-                return cell
-            } else {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell
-                
-                if indexPath.row < feedPosts1.count + 1 {
-                    if !feedPosts1.isEmpty {
-                        let post = feedPosts1[indexPath.row - 1].post
-                        configurePostCell(cell, with: post, reason: feedPosts1[indexPath.row - 1].reason)
-                    }
-                    if indexPath.row == feedPosts1.count {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                    } else {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
-                    }
-                } else if indexPath.row < feedPosts1.count + feedPosts2.count + 2 {
-                    if !feedPosts2.isEmpty {
-                        let post = feedPosts2[indexPath.row - feedPosts1.count - 2].post
-                        configurePostCell(cell, with: post, reason: feedPosts2[indexPath.row - feedPosts1.count - 2].reason)
-                    }
-                    if indexPath.row == feedPosts1.count + feedPosts2.count + 1 {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                    } else {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
-                    }
-                } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + 3 {
-                    if !feedPosts3.isEmpty {
-                        let post = feedPosts3[indexPath.row - feedPosts1.count - feedPosts2.count - 3].post
-                        configurePostCell(cell, with: post, reason: feedPosts3[indexPath.row - feedPosts1.count - feedPosts2.count - 3].reason)
-                    }
-                    if indexPath.row == feedPosts1.count + feedPosts2.count + feedPosts3.count + 2 {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                    } else {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
-                    }
-                } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4 {
-                    if !feedPosts4.isEmpty {
-                        let post = feedPosts4[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].post
-                        configurePostCell(cell, with: post, reason: feedPosts4[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].reason)
-                    }
-                    if indexPath.row == feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 3 {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                    } else {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
-                    }
-                } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5 {
-                    if !feedPosts5.isEmpty {
-                        let post = feedPosts5[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].post
-                        configurePostCell(cell, with: post, reason: feedPosts5[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].reason)
-                    }
-                    if indexPath.row == feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 4 {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                    } else {
-                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
-                    }
+            } else if indexPath.section == 1 {
+                if indexPath.row == 0 {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "WhoToFollowCell", for: indexPath) as! TrendingFeedCell
+                    
+                    cell.configureCell(false)
+                    cell.theTitle.text = "Suggested Accounts"
+                    cell.theAuthor.text = "Suggestions based on who you follow"
+                    
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                    cell.accessoryType = .disclosureIndicator
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
                 } else {
-                    cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserCell
+                    
+                    let user = suggestedUsers[indexPath.row - 1]
+                    if let url = user.avatarImageURL {
+                        cell.avatar.sd_imageTransition = .fade
+                        cell.avatar.sd_setImage(with: url, for: .normal)
+                        cell.avatar.tag = indexPath.row
+                    } else {
+                        cell.avatar.setImage(UIImage(), for: .normal)
+                    }
+                    cell.username.text = user.displayName ?? ""
+                    cell.usertag.text = "@\(user.actorHandle)"
+                    let bioText = user.description ?? ""
+                    var followsYou: Bool = false
+                    if let _ = user.viewer?.followedByURI {
+                        followsYou = true
+                    }
+                    cell.configureCell(followsYou, bioText: bioText, defaultProfile: user)
+                    
+                    if indexPath.row == suggestedUsers.count {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                    } else {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                    }
+                    
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
                 }
+            } else if indexPath.section == 2 {
+                if indexPath.row == 0 {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "StarterPacksCell", for: indexPath) as! TrendingFeedCell
+                    
+                    cell.configureCell(false)
+                    cell.theTitle.text = "Starter Packs"
+                    cell.theAuthor.text = "Suggested starter packs"
+                    
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                    cell.accessoryType = .disclosureIndicator
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                } else {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "StarterPackListCell", for: indexPath) as! StarterPackListCell
+                    
+                    cell.configureCell()
+                    if let url = starterPacks[indexPath.row - 1].creator.avatarImageURL {
+                        cell.avatar.sd_imageTransition = .fade
+                        cell.avatar.sd_setImage(with: url, for: .normal)
+                    } else {
+                        cell.avatar.setImage(UIImage(), for: .normal)
+                    }
+                    cell.avatar.backgroundColor = .systemBlue
+                    cell.theAuthor.text = "@\(starterPacks[indexPath.row - 1].creator.actorHandle)"
+                    if let record = starterPacks[indexPath.row - 1].record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self) {
+                        cell.theTitle.text = record.name
+                        cell.theDescription.text = record.description
+                    }
+                    cell.theDescription.numberOfLines = 2
+                    
+                    if indexPath.row == starterPacks.count {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                    } else {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
+                    }
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                }
+            } else {
+                let headerIndexPathRows: [Int] = [0, feedPosts1.count + 1, feedPosts1.count + feedPosts2.count + 2, feedPosts1.count + feedPosts2.count + feedPosts3.count + 3, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5]
                 
-                cell.avatar.tag = indexPath.row
-                cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
-                cell.repost.tag = indexPath.row
-                cell.repost.addTarget(self, action: #selector(repostTapped(_:)), for: .touchUpInside)
-                
-                cell.accessoryView = nil
-                let bgColorView = UIView()
-                bgColorView.backgroundColor = UIColor.clear
-                cell.selectedBackgroundView = bgColorView
-                cell.backgroundColor = GlobalStruct.backgroundTint
-                return cell
+                if headerIndexPathRows.contains(indexPath.row) {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "TrendingFeedCell", for: indexPath) as! TrendingFeedCell
+                    
+                    let indexToUse: Int = headerIndexPathRows.firstIndex { x in
+                        x == indexPath.row
+                    } ?? 0
+                    
+                    cell.configureCell(false)
+                    cell.theTitle.text = suggestedFeeds[indexToUse].displayName
+                    cell.theAuthor.text = "Feed by @\(suggestedFeeds[indexToUse].creator.actorHandle)"
+                    
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                    cell.accessoryType = .disclosureIndicator
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                } else {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell
+                    
+                    if indexPath.row < feedPosts1.count + 1 {
+                        if !feedPosts1.isEmpty {
+                            let post = feedPosts1[indexPath.row - 1].post
+                            configurePostCell(cell, with: post, reason: feedPosts1[indexPath.row - 1].reason)
+                        }
+                        if indexPath.row == feedPosts1.count {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                        } else {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                        }
+                    } else if indexPath.row < feedPosts1.count + feedPosts2.count + 2 {
+                        if !feedPosts2.isEmpty {
+                            let post = feedPosts2[indexPath.row - feedPosts1.count - 2].post
+                            configurePostCell(cell, with: post, reason: feedPosts2[indexPath.row - feedPosts1.count - 2].reason)
+                        }
+                        if indexPath.row == feedPosts1.count + feedPosts2.count + 1 {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                        } else {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                        }
+                    } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + 3 {
+                        if !feedPosts3.isEmpty {
+                            let post = feedPosts3[indexPath.row - feedPosts1.count - feedPosts2.count - 3].post
+                            configurePostCell(cell, with: post, reason: feedPosts3[indexPath.row - feedPosts1.count - feedPosts2.count - 3].reason)
+                        }
+                        if indexPath.row == feedPosts1.count + feedPosts2.count + feedPosts3.count + 2 {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                        } else {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                        }
+                    } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4 {
+                        if !feedPosts4.isEmpty {
+                            let post = feedPosts4[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].post
+                            configurePostCell(cell, with: post, reason: feedPosts4[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].reason)
+                        }
+                        if indexPath.row == feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 3 {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                        } else {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                        }
+                    } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5 {
+                        if !feedPosts5.isEmpty {
+                            let post = feedPosts5[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].post
+                            configurePostCell(cell, with: post, reason: feedPosts5[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].reason)
+                        }
+                        if indexPath.row == feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 4 {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                        } else {
+                            cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                        }
+                    } else {
+                        cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
+                    }
+                    
+                    cell.avatar.tag = indexPath.row
+                    cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
+                    cell.repost.tag = indexPath.row
+                    cell.repost.addTarget(self, action: #selector(repostTapped(_:)), for: .touchUpInside)
+                    
+                    cell.accessoryView = nil
+                    let bgColorView = UIView()
+                    bgColorView.backgroundColor = UIColor.clear
+                    cell.selectedBackgroundView = bgColorView
+                    cell.backgroundColor = GlobalStruct.backgroundTint
+                    return cell
+                }
             }
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if indexPath.section == 0 {
-            let rkey: String = "\(trends[indexPath.row].link.split(separator: "/").last ?? "")"
-            GlobalStruct.listURI = ""
-            GlobalStruct.listName = ""
-            GlobalStruct.currentList = nil
-            GlobalStruct.currentFeed = nil
-            let vc = ViewController()
-            vc.fromFeedPush = true
-            vc.currentFeedURI = "at://did:plc:qrz3lhbyuxbeilrc6nekdqme/app.bsky.feed.generator/\(rkey)"
-            vc.currentFeedDisplayName = trends[indexPath.row].displayName
-            navigationController?.pushViewController(vc, animated: true)
-        } else if indexPath.section == 1 {
-            if indexPath.row == 0 {
-                let vc = SuggestedAccountsViewController()
-                vc.whoToFollow = whoToFollow
-                navigationController?.pushViewController(vc, animated: true)
-            } else {
+        if isSearchingGlobal {
+            if searchType == 0 {
                 let vc = ProfileViewController()
-                vc.profile = suggestedUsers[indexPath.row - 1].actorDID
+                vc.profile = searchedUsers[indexPath.row].actorDID
                 navigationController?.pushViewController(vc, animated: true)
-                if isSearching {
+                if isSearchingGlobal {
+                    searchController.isActive = false
+                }
+            } else {
+                let vc = DetailsViewController()
+                vc.detailPost = searchedPosts[indexPath.row]
+                navigationController?.pushViewController(vc, animated: true)
+                if isSearchingGlobal {
                     searchController.isActive = false
                 }
             }
-        } else if indexPath.section == 2 {
-            if indexPath.row == 0 {
-                let vc = AllStarterPacksViewController()
-                vc.starterPacks = allStarterPacks
-                navigationController?.pushViewController(vc, animated: true)
-            } else {
-                let vc = StarterPackViewController()
-                vc.showingMembers = true
-                if let record = starterPacks[indexPath.row - 1].record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self) {
-                    vc.starterPackURI = record.listURI
-                    vc.starterPackDisplayName = record.name
-                    vc.starterPack = starterPacks[indexPath.row - 1]
-                }
-                navigationController?.pushViewController(vc, animated: true)
-            }
         } else {
-            let headerIndexPathRows: [Int] = [0, feedPosts1.count + 1, feedPosts1.count + feedPosts2.count + 2, feedPosts1.count + feedPosts2.count + feedPosts3.count + 3, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5]
-            if headerIndexPathRows.contains(indexPath.row) {
-                let indexToUse: Int = headerIndexPathRows.firstIndex { x in
-                    x == indexPath.row
-                } ?? 0
+            if indexPath.section == 0 {
+                let rkey: String = "\(trends[indexPath.row].link.split(separator: "/").last ?? "")"
                 GlobalStruct.listURI = ""
                 GlobalStruct.listName = ""
                 GlobalStruct.currentList = nil
-                GlobalStruct.currentFeed = suggestedFeeds[indexToUse]
+                GlobalStruct.currentFeed = nil
                 let vc = ViewController()
                 vc.fromFeedPush = true
-                vc.currentFeedURI = suggestedFeeds[indexToUse].feedURI
-                vc.currentFeedDisplayName = suggestedFeeds[indexToUse].displayName
+                vc.currentFeedURI = "at://did:plc:qrz3lhbyuxbeilrc6nekdqme/app.bsky.feed.generator/\(rkey)"
+                vc.currentFeedDisplayName = trends[indexPath.row].displayName
                 navigationController?.pushViewController(vc, animated: true)
+            } else if indexPath.section == 1 {
+                if indexPath.row == 0 {
+                    let vc = SuggestedAccountsViewController()
+                    vc.whoToFollow = whoToFollow
+                    navigationController?.pushViewController(vc, animated: true)
+                } else {
+                    let vc = ProfileViewController()
+                    vc.profile = suggestedUsers[indexPath.row - 1].actorDID
+                    navigationController?.pushViewController(vc, animated: true)
+                    if isSearchingGlobal {
+                        searchController.isActive = false
+                    }
+                }
+            } else if indexPath.section == 2 {
+                if indexPath.row == 0 {
+                    let vc = AllStarterPacksViewController()
+                    vc.starterPacks = allStarterPacks
+                    navigationController?.pushViewController(vc, animated: true)
+                } else {
+                    let vc = StarterPackViewController()
+                    vc.showingMembers = true
+                    if let record = starterPacks[indexPath.row - 1].record.getRecord(ofType: AppBskyLexicon.Graph.StarterpackRecord.self) {
+                        vc.starterPackURI = record.listURI
+                        vc.starterPackDisplayName = record.name
+                        vc.starterPack = starterPacks[indexPath.row - 1]
+                    }
+                    navigationController?.pushViewController(vc, animated: true)
+                }
             } else {
-                let vc = DetailsViewController()
-                if indexPath.row < feedPosts1.count + 1 {
-                    vc.detailPost = feedPosts1[indexPath.row - 1].post
-                } else if indexPath.row < feedPosts1.count + feedPosts2.count + 2 {
-                    vc.detailPost = feedPosts2[indexPath.row - feedPosts1.count - 2].post
-                } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + 3 {
-                    vc.detailPost = feedPosts3[indexPath.row - feedPosts1.count - feedPosts2.count - 3].post
-                } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4 {
-                    vc.detailPost = feedPosts4[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].post
-                } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5 {
-                    vc.detailPost = feedPosts5[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].post
+                let headerIndexPathRows: [Int] = [0, feedPosts1.count + 1, feedPosts1.count + feedPosts2.count + 2, feedPosts1.count + feedPosts2.count + feedPosts3.count + 3, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5]
+                if headerIndexPathRows.contains(indexPath.row) {
+                    let indexToUse: Int = headerIndexPathRows.firstIndex { x in
+                        x == indexPath.row
+                    } ?? 0
+                    GlobalStruct.listURI = ""
+                    GlobalStruct.listName = ""
+                    GlobalStruct.currentList = nil
+                    GlobalStruct.currentFeed = suggestedFeeds[indexToUse]
+                    let vc = ViewController()
+                    vc.fromFeedPush = true
+                    vc.currentFeedURI = suggestedFeeds[indexToUse].feedURI
+                    vc.currentFeedDisplayName = suggestedFeeds[indexToUse].displayName
+                    navigationController?.pushViewController(vc, animated: true)
+                } else {
+                    let vc = DetailsViewController()
+                    if indexPath.row < feedPosts1.count + 1 {
+                        vc.detailPost = feedPosts1[indexPath.row - 1].post
+                    } else if indexPath.row < feedPosts1.count + feedPosts2.count + 2 {
+                        vc.detailPost = feedPosts2[indexPath.row - feedPosts1.count - 2].post
+                    } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + 3 {
+                        vc.detailPost = feedPosts3[indexPath.row - feedPosts1.count - feedPosts2.count - 3].post
+                    } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4 {
+                        vc.detailPost = feedPosts4[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].post
+                    } else if indexPath.row < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5 {
+                        vc.detailPost = feedPosts5[indexPath.row - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].post
+                    }
+                    navigationController?.pushViewController(vc, animated: true)
+                    if isSearchingGlobal {
+                        searchController.isActive = false
+                    }
                 }
-                navigationController?.pushViewController(vc, animated: true)
-                if isSearching {
-                    searchController.isActive = false
-                }
-                
             }
         }
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        if indexPath.section > 2 {
-            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-                if indexPath.row < self.feedPosts1.count + 1 {
-                    return makePostContextMenu(indexPath.row - 1, post: self.feedPosts1[indexPath.row - 1].post)
-                } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + 2 {
-                    return makePostContextMenu(indexPath.row - self.feedPosts1.count - 2, post: self.feedPosts2[indexPath.row - self.feedPosts1.count - 2].post)
-                } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + 3 {
-                    return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - 3, post: self.feedPosts3[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - 3].post)
-                } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + self.feedPosts4.count + 4 {
-                    return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - 4, post: self.feedPosts4[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - 4].post)
-                } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + self.feedPosts4.count + self.feedPosts5.count + 5 {
-                    return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - self.feedPosts4.count - 5, post: self.feedPosts5[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - self.feedPosts4.count - 5].post)
-                } else {
-                    return nil
+        if isSearchingGlobal {
+            if searchType == 0 {
+                return nil
+            } else {
+                return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+                    return makePostContextMenu(indexPath.row, post: self.searchedPosts[indexPath.row])
                 }
             }
         } else {
-            return nil
+            if indexPath.section > 2 {
+                return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+                    if indexPath.row < self.feedPosts1.count + 1 {
+                        return makePostContextMenu(indexPath.row - 1, post: self.feedPosts1[indexPath.row - 1].post)
+                    } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + 2 {
+                        return makePostContextMenu(indexPath.row - self.feedPosts1.count - 2, post: self.feedPosts2[indexPath.row - self.feedPosts1.count - 2].post)
+                    } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + 3 {
+                        return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - 3, post: self.feedPosts3[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - 3].post)
+                    } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + self.feedPosts4.count + 4 {
+                        return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - 4, post: self.feedPosts4[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - 4].post)
+                    } else if indexPath.row < self.feedPosts1.count + self.feedPosts2.count + self.feedPosts3.count + self.feedPosts4.count + self.feedPosts5.count + 5 {
+                        return makePostContextMenu(indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - self.feedPosts4.count - 5, post: self.feedPosts5[indexPath.row - self.feedPosts1.count - self.feedPosts2.count - self.feedPosts3.count - self.feedPosts4.count - 5].post)
+                    } else {
+                        return nil
+                    }
+                }
+            } else {
+                return nil
+            }
         }
     }
     
     @objc func profileTapped(_ sender: UIButton) {
         defaultHaptics()
-        let vc = ProfileViewController()
-        if sender.tag < feedPosts1.count + 1 {
-            vc.profile = feedPosts1[sender.tag - 1].post.author.actorDID
-        } else if sender.tag < feedPosts1.count + feedPosts2.count + 2 {
-            vc.profile = feedPosts2[sender.tag - feedPosts1.count - 2].post.author.actorDID
-        } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + 3 {
-            vc.profile = feedPosts3[sender.tag - feedPosts1.count - feedPosts2.count - 3].post.author.actorDID
-        } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4 {
-            vc.profile = feedPosts4[sender.tag - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].post.author.actorDID
-        } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5 {
-            vc.profile = feedPosts5[sender.tag - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].post.author.actorDID
+        if isSearchingGlobal {
+            if searchType == 0 {
+                let vc = ProfileViewController()
+                vc.profile = searchedUsers[sender.tag].actorDID
+                navigationController?.pushViewController(vc, animated: true)
+            } else {
+                let vc = ProfileViewController()
+                vc.profile = searchedPosts[sender.tag].author.actorDID
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        } else {
+            let vc = ProfileViewController()
+            if sender.tag < feedPosts1.count + 1 {
+                vc.profile = feedPosts1[sender.tag - 1].post.author.actorDID
+            } else if sender.tag < feedPosts1.count + feedPosts2.count + 2 {
+                vc.profile = feedPosts2[sender.tag - feedPosts1.count - 2].post.author.actorDID
+            } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + 3 {
+                vc.profile = feedPosts3[sender.tag - feedPosts1.count - feedPosts2.count - 3].post.author.actorDID
+            } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4 {
+                vc.profile = feedPosts4[sender.tag - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].post.author.actorDID
+            } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5 {
+                vc.profile = feedPosts5[sender.tag - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].post.author.actorDID
+            }
+            navigationController?.pushViewController(vc, animated: true)
         }
-        navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc func repostTapped(_ sender: UIButton) {
         defaultHaptics()
-        if sender.tag < feedPosts1.count + 1 {
-            if let reason = feedPosts1[sender.tag - 1].reason {
-                switch reason {
-                case .reasonRepost(let repost):
-                    let vc = ProfileViewController()
-                    vc.profile = repost.by.actorDID
-                    navigationController?.pushViewController(vc, animated: true)
-                default:
-                    break
+        if isSearchingGlobal {
+            
+        } else {
+            if sender.tag < feedPosts1.count + 1 {
+                if let reason = feedPosts1[sender.tag - 1].reason {
+                    switch reason {
+                    case .reasonRepost(let repost):
+                        let vc = ProfileViewController()
+                        vc.profile = repost.by.actorDID
+                        navigationController?.pushViewController(vc, animated: true)
+                    default:
+                        break
+                    }
                 }
-            }
-        } else if sender.tag < feedPosts1.count + feedPosts2.count + 2 {
-            if let reason = feedPosts2[sender.tag - feedPosts1.count - 2].reason {
-                switch reason {
-                case .reasonRepost(let repost):
-                    let vc = ProfileViewController()
-                    vc.profile = repost.by.actorDID
-                    navigationController?.pushViewController(vc, animated: true)
-                default:
-                    break
+            } else if sender.tag < feedPosts1.count + feedPosts2.count + 2 {
+                if let reason = feedPosts2[sender.tag - feedPosts1.count - 2].reason {
+                    switch reason {
+                    case .reasonRepost(let repost):
+                        let vc = ProfileViewController()
+                        vc.profile = repost.by.actorDID
+                        navigationController?.pushViewController(vc, animated: true)
+                    default:
+                        break
+                    }
                 }
-            }
-        } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + 3 {
-            if let reason = feedPosts3[sender.tag - feedPosts1.count - feedPosts2.count - 3].reason {
-                switch reason {
-                case .reasonRepost(let repost):
-                    let vc = ProfileViewController()
-                    vc.profile = repost.by.actorDID
-                    navigationController?.pushViewController(vc, animated: true)
-                default:
-                    break
+            } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + 3 {
+                if let reason = feedPosts3[sender.tag - feedPosts1.count - feedPosts2.count - 3].reason {
+                    switch reason {
+                    case .reasonRepost(let repost):
+                        let vc = ProfileViewController()
+                        vc.profile = repost.by.actorDID
+                        navigationController?.pushViewController(vc, animated: true)
+                    default:
+                        break
+                    }
                 }
-            }
-        } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4 {
-            if let reason = feedPosts4[sender.tag - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].reason {
-                switch reason {
-                case .reasonRepost(let repost):
-                    let vc = ProfileViewController()
-                    vc.profile = repost.by.actorDID
-                    navigationController?.pushViewController(vc, animated: true)
-                default:
-                    break
+            } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4 {
+                if let reason = feedPosts4[sender.tag - feedPosts1.count - feedPosts2.count - feedPosts3.count - 4].reason {
+                    switch reason {
+                    case .reasonRepost(let repost):
+                        let vc = ProfileViewController()
+                        vc.profile = repost.by.actorDID
+                        navigationController?.pushViewController(vc, animated: true)
+                    default:
+                        break
+                    }
                 }
-            }
-        } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5 {
-            if let reason = feedPosts5[sender.tag - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].reason {
-                switch reason {
-                case .reasonRepost(let repost):
-                    let vc = ProfileViewController()
-                    vc.profile = repost.by.actorDID
-                    navigationController?.pushViewController(vc, animated: true)
-                default:
-                    break
+            } else if sender.tag < feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5 {
+                if let reason = feedPosts5[sender.tag - feedPosts1.count - feedPosts2.count - feedPosts3.count - feedPosts4.count - 5].reason {
+                    switch reason {
+                    case .reasonRepost(let repost):
+                        let vc = ProfileViewController()
+                        vc.profile = repost.by.actorDID
+                        navigationController?.pushViewController(vc, animated: true)
+                    default:
+                        break
+                    }
                 }
             }
         }
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        if indexPath.section > 2 {
-            let headerIndexPathRows: [Int] = [0, feedPosts1.count + 1, feedPosts1.count + feedPosts2.count + 2, feedPosts1.count + feedPosts2.count + feedPosts3.count + 3, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5]
-            if headerIndexPathRows.contains(indexPath.row) {
-                let indexToUse: Int = headerIndexPathRows.firstIndex { x in
-                    x == indexPath.row
-                } ?? 0
-                let contains = GlobalStruct.pinnedFeeds.contains { $0.name == self.suggestedFeeds[indexToUse].displayName }
-                if contains {
-                    let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
-                        GlobalStruct.pinnedFeeds = GlobalStruct.pinnedFeeds.filter({ x in
-                            x.name != self.suggestedFeeds[indexToUse].displayName
-                        })
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
-                        self.savePinnedFeedsToDisk()
-                        completionHandler(true)
+        if isSearchingGlobal {
+            return nil
+        } else {
+            if indexPath.section > 2 {
+                let headerIndexPathRows: [Int] = [0, feedPosts1.count + 1, feedPosts1.count + feedPosts2.count + 2, feedPosts1.count + feedPosts2.count + feedPosts3.count + 3, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5]
+                if headerIndexPathRows.contains(indexPath.row) {
+                    let indexToUse: Int = headerIndexPathRows.firstIndex { x in
+                        x == indexPath.row
+                    } ?? 0
+                    let contains = GlobalStruct.pinnedFeeds.contains { $0.name == self.suggestedFeeds[indexToUse].displayName }
+                    if contains {
+                        let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                            GlobalStruct.pinnedFeeds = GlobalStruct.pinnedFeeds.filter({ x in
+                                x.name != self.suggestedFeeds[indexToUse].displayName
+                            })
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            self.savePinnedFeedsToDisk()
+                            completionHandler(true)
+                        }
+                        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                        let image = UIImage(systemName: "pin.slash.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemRed, renderingMode: .alwaysOriginal) ?? UIImage()
+                        if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                            pinAction.image = circularImage
+                        }
+                        pinAction.backgroundColor = GlobalStruct.backgroundTint
+                        let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                        return configuration
+                    } else {
+                        let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
+                            GlobalStruct.pinnedFeeds.append(PinnedItems(name: self.suggestedFeeds[indexToUse].displayName, uri: self.suggestedFeeds[indexToUse].feedURI, feedItem: self.suggestedFeeds[indexToUse], listItem: nil))
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
+                            self.savePinnedFeedsToDisk()
+                            completionHandler(true)
+                        }
+                        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+                        let image = UIImage(systemName: "pin.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemOrange, renderingMode: .alwaysOriginal) ?? UIImage()
+                        if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
+                            pinAction.image = circularImage
+                        }
+                        pinAction.backgroundColor = GlobalStruct.backgroundTint
+                        let configuration = UISwipeActionsConfiguration(actions: [pinAction])
+                        return configuration
                     }
-                    let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
-                    let image = UIImage(systemName: "pin.slash.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemRed, renderingMode: .alwaysOriginal) ?? UIImage()
-                    if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
-                        pinAction.image = circularImage
-                    }
-                    pinAction.backgroundColor = GlobalStruct.backgroundTint
-                    let configuration = UISwipeActionsConfiguration(actions: [pinAction])
-                    return configuration
                 } else {
-                    let pinAction = UIContextualAction(style: .normal, title: nil) { (action, view, completionHandler) in
-                        GlobalStruct.pinnedFeeds.append(PinnedItems(name: self.suggestedFeeds[indexToUse].displayName, uri: self.suggestedFeeds[indexToUse].feedURI, feedItem: self.suggestedFeeds[indexToUse], listItem: nil))
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "setupListDropdown"), object: nil)
-                        self.savePinnedFeedsToDisk()
-                        completionHandler(true)
-                    }
-                    let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
-                    let image = UIImage(systemName: "pin.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemOrange, renderingMode: .alwaysOriginal) ?? UIImage()
-                    if let circularImage = createImageWithCircularBackground(icon: image, backgroundColor: .clear, diameter: 40) {
-                        pinAction.image = circularImage
-                    }
-                    pinAction.backgroundColor = GlobalStruct.backgroundTint
-                    let configuration = UISwipeActionsConfiguration(actions: [pinAction])
-                    return configuration
+                    return nil
                 }
             } else {
                 return nil
             }
-        } else {
-            return nil
         }
     }
     

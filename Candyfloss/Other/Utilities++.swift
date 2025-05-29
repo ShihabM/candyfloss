@@ -1701,16 +1701,7 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
                 let theImage = UIImageView()
                 theImage.sd_setImage(with: url)
                 let list = UIAction(title: list.name, image: theImage.image?.withRoundedCorners() ?? UIImage(systemName: "list.bullet"), identifier: nil) { action in
-                    Task {
-                        do {
-                            if let atProto = GlobalStruct.atProto {
-                                let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
-                                let _ = try await atProtoBluesky.createListItemRecord(for: list.uri, subjectDID: profile?.actorDID ?? basicProfile?.actorDID ?? defaultProfile?.actorDID ?? messageProfile?.actorDID ?? "")
-                            }
-                        } catch {
-                            print("error adding to list: \(error)")
-                        }
-                    }
+                    listAction(list, profile: profile, basicProfile: basicProfile, defaultProfile: defaultProfile, messageProfile: messageProfile)
                 }
                 addToListActions.append(list)
             } else {
@@ -1788,5 +1779,27 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
         menuActions.append(share)
         let shareMenu = UIMenu(title: "", options: [.displayInline], children: menuActions)
         return UIMenu(title: "", options: [.displayInline], children: [mentionMenu, extrasMenu] + profileActions + [shareMenu])
+    }
+    
+    func listAction(_ list: AppBskyLexicon.Graph.ListViewDefinition? = nil, profile: AppBskyLexicon.Actor.ProfileViewDetailedDefinition? = nil, basicProfile: AppBskyLexicon.Actor.ProfileViewBasicDefinition? = nil, defaultProfile: AppBskyLexicon.Actor.ProfileViewDefinition? = nil, messageProfile: ChatBskyLexicon.Actor.ProfileViewBasicDefinition? = nil) {
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
+                    let record = try await atProtoBluesky.createListItemRecord(for: list?.uri ?? "", subjectDID: profile?.actorDID ?? basicProfile?.actorDID ?? defaultProfile?.actorDID ?? messageProfile?.actorDID ?? "")
+                    let x = try await atProto.getList(from: list?.uri ?? "")
+                    let followers = x.items.map({ item in
+                        item.subject
+                    })
+                    if followers.contains(where: { x in
+                        x.actorDID == profile?.actorDID ?? basicProfile?.actorDID ?? defaultProfile?.actorDID ?? messageProfile?.actorDID ?? ""
+                    }) {
+                        let _ = try await atProtoBluesky.deleteListItemRecord(.recordURI(atURI: record.recordURI))
+                    }
+                }
+            } catch {
+                print("error adding to list: \(error)")
+            }
+        }
     }
 }

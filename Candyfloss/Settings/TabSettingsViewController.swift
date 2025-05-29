@@ -54,7 +54,11 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
     //MARK: TableView
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return 1
+        } else {
+            return 2
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -206,10 +210,14 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == 0 {
-            return "\nYou can also long-press the tabs themselves to switch views."
-        } else {
+        if UIDevice.current.userInterfaceIdiom == .pad {
             return nil
+        } else {
+            if section == 0 {
+                return "\nYou can also long-press the tabs themselves to switch views."
+            } else {
+                return nil
+            }
         }
     }
     

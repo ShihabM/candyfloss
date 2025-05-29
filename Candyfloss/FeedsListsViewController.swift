@@ -160,6 +160,16 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
         
         showingDescriptions = UserDefaults.standard.value(forKey: "showingDescriptions") as? Bool ?? true
         
+        if fromTab {
+            let titleLabel = UIButton()
+            titleLabel.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
+            let attStringNewLine000 = NSMutableAttributedString()
+            let attStringNewLine00 = NSMutableAttributedString(string: "Lists", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold),NSAttributedString.Key.foregroundColor : UIColor.label])
+            attStringNewLine000.append(attStringNewLine00)
+            titleLabel.setAttributedTitle(attStringNewLine000, for: .normal)
+            self.navigationItem.titleView = titleLabel
+        }
+        
         setUpNavigationBar()
         setUpTable()
         fetchFeedsOrLists()

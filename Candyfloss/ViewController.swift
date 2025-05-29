@@ -935,6 +935,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 }
             } catch {
                 print("Error authenticating: \(error)")
+                displayCredentialsPrompt()
             }
         }
     }

@@ -101,12 +101,24 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     func updateTabs() {
         let rootViewController1 = ViewController()
         firstVC = SloppySwipingNav(rootViewController: rootViewController1)
+        var tab1Title: String = ""
+        var tab2Title: String = ""
+        var tab3Title: String = ""
+        var tab4Title: String = ""
+        var tab5Title: String = ""
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            tab1Title = "Home"
+            tab2Title = "Activity"
+            tab3Title = GlobalStruct.currentSwitchableViewAtSpot3.title
+            tab4Title = GlobalStruct.currentSwitchableViewAtSpot4.title
+            tab5Title = GlobalStruct.currentSwitchableViewAtSpot5.title
+        }
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
             let image = UIImage(systemName: "heart.text.square")
             let image2 = UIImage(systemName: "heart.text.square.fill")
-            firstVC.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
+            firstVC.tabBarItem = UITabBarItem(title: tab1Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             firstVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
-            firstVC.accessibilityLabel = ""
+            firstVC.accessibilityLabel = tab1Title
         }
         firstVC.tabBarItem.tag = 0
         
@@ -115,9 +127,9 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
             let image = UIImage(systemName: "bell")
             let image2 = UIImage(systemName: "bell.fill")
-            secondVC.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
+            secondVC.tabBarItem = UITabBarItem(title: tab2Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             secondVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
-            secondVC.accessibilityLabel = ""
+            secondVC.accessibilityLabel = tab2Title
         }
         secondVC.tabBarItem.tag = 1
         
@@ -130,6 +142,9 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     iconSelected: decoded.iconSelected,
                     view: viewController
                 )
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    tab3Title = GlobalStruct.currentSwitchableViewAtSpot3.title
+                }
             }
         }
         
@@ -144,9 +159,9 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
             let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot3.icon)
             let image2 = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot3.iconSelected)
-            thirdVC.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
+            thirdVC.tabBarItem = UITabBarItem(title: tab3Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             thirdVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
-            thirdVC.accessibilityLabel = ""
+            thirdVC.accessibilityLabel = tab3Title
         }
         thirdVC.tabBarItem.tag = 2
         
@@ -159,6 +174,9 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     iconSelected: decoded.iconSelected,
                     view: viewController
                 )
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    tab4Title = GlobalStruct.currentSwitchableViewAtSpot4.title
+                }
             }
         }
         
@@ -173,9 +191,9 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
             let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot4.icon)
             let image2 = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot4.iconSelected)
-            fourthVC.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
+            fourthVC.tabBarItem = UITabBarItem(title: tab4Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             fourthVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
-            fourthVC.accessibilityLabel = ""
+            fourthVC.accessibilityLabel = tab4Title
         }
         fourthVC.tabBarItem.tag = 3
         
@@ -188,6 +206,9 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     iconSelected: decoded.iconSelected,
                     view: viewController
                 )
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    tab5Title = GlobalStruct.currentSwitchableViewAtSpot5.title
+                }
             }
         }
         
@@ -201,9 +222,9 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
             let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot5.icon)
             let image2 = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot5.iconSelected)
-            fifthVC.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
+            fifthVC.tabBarItem = UITabBarItem(title: tab5Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             fifthVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
-            fifthVC.accessibilityLabel = ""
+            fifthVC.accessibilityLabel = tab5Title
         }
         fifthVC.tabBarItem.tag = 4
         
@@ -346,8 +367,12 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                 vc.otherListUser = GlobalStruct.currentUser?.actorHandle ?? ""
             }
         }
+        var tabTitle: String = ""
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            tabTitle = GlobalStruct.switchableView.title
+        }
         let vc1 = SloppySwipingNav(rootViewController: vc)
-        vc1.tabBarItem = UITabBarItem(title: "", image: imageWithImage(image: UIImage(systemName: GlobalStruct.switchableView.icon) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: UIImage(systemName: GlobalStruct.switchableView.iconSelected) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
+        vc1.tabBarItem = UITabBarItem(title: tabTitle, image: imageWithImage(image: UIImage(systemName: GlobalStruct.switchableView.icon) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: UIImage(systemName: GlobalStruct.switchableView.iconSelected) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
         vc1.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
         vc1.accessibilityLabel = ""
         vc1.tabBarItem.tag = GlobalStruct.switchableIndex

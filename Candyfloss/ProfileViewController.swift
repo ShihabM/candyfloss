@@ -205,6 +205,13 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.resetTimelines), name: NSNotification.Name(rawValue: "resetTimelines"), object: nil)
         
+        let titleLabel = UIButton()
+        titleLabel.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
+        let attStringNewLine000 = NSMutableAttributedString()
+        let attStringNewLine00 = NSMutableAttributedString(string: "Profile", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold),NSAttributedString.Key.foregroundColor : UIColor.label])
+        attStringNewLine000.append(attStringNewLine00)
+        titleLabel.setAttributedTitle(attStringNewLine000, for: .normal)
+        self.navigationItem.titleView = titleLabel
         setUpNavigationBar()
         
         fetchTimeline()

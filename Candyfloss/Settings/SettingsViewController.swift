@@ -153,7 +153,11 @@ class SettingsViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return section1Titles.count
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                return section1Titles.count - 1
+            } else {
+                return section1Titles.count
+            }
         } else if section == 1 {
             return section2Titles.count
         } else if section == 2 {

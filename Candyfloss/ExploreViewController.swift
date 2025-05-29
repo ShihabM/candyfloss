@@ -51,6 +51,9 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
         loadingIndicator.center = view.center
         tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
+        searchController.searchBar.sizeToFit()
+        searchController.searchBar.frame.size.width = searchView.frame.size.width
+        searchController.searchBar.frame.size.height = searchView.frame.size.height
     }
     
     func updateSearchResults(for searchController: UISearchController) {
@@ -901,6 +904,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             }
         } else {
             if indexPath.section == 0 {
+                GlobalStruct.inVCFromList = true
                 let rkey: String = "\(trends[indexPath.row].link.split(separator: "/").last ?? "")"
                 GlobalStruct.listURI = ""
                 GlobalStruct.listName = ""

@@ -292,7 +292,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
         navigationBarButtonItem.accessibilityLabel = "Settings"
         if UIDevice.current.userInterfaceIdiom == .pad {
-            navigationItem.leftBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
+            if !GlobalStruct.inVCFromList {
+                navigationItem.leftBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
+            }
         }
         
         if listName == "" {
@@ -322,7 +324,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 vc.fromList = true
                 vc.listName = self.listName
                 vc.listURI = self.listURI
-                UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    self.navigationController?.pushViewController(vc, animated: true)
+                } else {
+                    UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+                }
             }
             menuActions.append(viewPeople)
             let share = UIAction(title: "Share List", image: UIImage(systemName: "square.and.arrow.up"), identifier: nil) { action in

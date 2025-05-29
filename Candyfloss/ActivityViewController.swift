@@ -657,7 +657,11 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                 allActivityUsers.append(x.author)
             }
             vc.allActivityUsers = allActivityUsers
-            UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                navigationController?.pushViewController(vc, animated: true)
+            } else {
+                UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+            }
         }
         if isSearching {
             searchController.isActive = false

@@ -75,9 +75,9 @@ class PadScrollViewController: UIViewController, UIGestureRecognizerDelegate, UI
                 self.scrollView.touchesShouldCancel(in: viewController.view)
                 viewController.view.layer.cornerRadius = 0
                 if c == 0 {
-                    viewController.view.frame = CGRect(x: 0, y: 0, width: width * 0.6, height: self.view.bounds.height)
+                    viewController.view.frame = CGRect(x: 0, y: 0, width: width * 0.58, height: self.view.bounds.height)
                 } else {
-                    viewController.view.frame = CGRect(x: (width * 0.6) + 0.82, y: 0, width: (width * 0.4) - 0.82, height: self.view.bounds.height)
+                    viewController.view.frame = CGRect(x: (width * 0.58) + 0.82, y: 0, width: (width * 0.42) - 0.82, height: self.view.bounds.height)
                 }
                 viewController.view.layer.borderWidth = 0
             }

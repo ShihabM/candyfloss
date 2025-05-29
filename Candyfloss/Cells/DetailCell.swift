@@ -299,8 +299,13 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
             self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[quoteTableView]-18-|", options: [], metrics: nil, views: viewsDict))
         }
         
-        cellStackViewConstraints5 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[mediaStackView]-18-|", options: [], metrics: nil, views: viewsDict)
-        cellStackViewConstraints6 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[playerView]-18-|", options: [], metrics: nil, views: viewsDict)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            cellStackViewConstraints5 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[mediaStackView(360)]-(>=18)-|", options: [], metrics: nil, views: viewsDict)
+            cellStackViewConstraints6 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[playerView(360)]-(>=18)-|", options: [], metrics: nil, views: viewsDict)
+        } else {
+            cellStackViewConstraints5 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[mediaStackView]-18-|", options: [], metrics: nil, views: viewsDict)
+            cellStackViewConstraints6 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[playerView]-18-|", options: [], metrics: nil, views: viewsDict)
+        }
         NSLayoutConstraint.activate(cellStackViewConstraints5 + cellStackViewConstraints6)
         
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-14-[avatar(44)]-(>=14)-|", options: [], metrics: nil, views: viewsDict))
@@ -709,13 +714,23 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
             if imageRatio >= 0.6 {
                 // landscape
                 // fixed width, variable height
-                let theWidth: CGFloat = UIScreen.main.bounds.width - 92
+                var theWidth: CGFloat = UIScreen.main.bounds.width - 92
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    if theWidth > 360 {
+                        theWidth = 360
+                    }
+                }
                 let theHeight: CGFloat = theWidth/imageRatio
                 mediaHeight = "\(Int(theHeight))"
             } else {
                 // portrait
                 // fixed height, variable width
-                let theWidth: CGFloat = 320 * CGFloat(imageRatio)
+                var theWidth: CGFloat = 320 * CGFloat(imageRatio)
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    if theWidth > 360 {
+                        theWidth = 360
+                    }
+                }
                 mediaHeight = "320"
                 NSLayoutConstraint.deactivate(cellStackViewConstraints5 + cellStackViewConstraints6)
                 cellStackViewConstraints5 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[avatar(44)]-12-[mediaStackView(\(theWidth))]-(>=18)-|", options: [], metrics: nil, views: viewsDict)
@@ -727,13 +742,23 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
             if videoRatio >= 0.6 {
                 // landscape
                 // fixed width, variable height
-                let theWidth: CGFloat = UIScreen.main.bounds.width - 92
+                var theWidth: CGFloat = UIScreen.main.bounds.width - 92
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    if theWidth > 360 {
+                        theWidth = 360
+                    }
+                }
                 let theHeight: CGFloat = theWidth/videoRatio
                 mediaHeight = "\(Int(theHeight))"
             } else {
                 // portrait
                 // fixed height, variable width
-                let theWidth: CGFloat = 320 * CGFloat(videoRatio)
+                var theWidth: CGFloat = 320 * CGFloat(videoRatio)
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    if theWidth > 360 {
+                        theWidth = 360
+                    }
+                }
                 mediaHeight = "320"
                 NSLayoutConstraint.deactivate(cellStackViewConstraints5 + cellStackViewConstraints6)
                 cellStackViewConstraints5 = NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[avatar(44)]-12-[mediaStackView(\(theWidth))]-(>=18)-|", options: [], metrics: nil, views: viewsDict)

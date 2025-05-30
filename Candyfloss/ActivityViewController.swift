@@ -176,6 +176,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.scrollUp), name: NSNotification.Name(rawValue: "scrollUp1"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadTables), name: NSNotification.Name(rawValue: "reloadTables"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.setUpNavigationBar), name: NSNotification.Name(rawValue: "setUpNavigationBar"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.resetTimelines), name: NSNotification.Name(rawValue: "resetTimelines"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.fetchActivity), name: NSNotification.Name(rawValue: "fetchActivity"), object: nil)
@@ -186,7 +187,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
         setUpTable()
     }
     
-    func setUpNavigationBar() {
+    @objc func setUpNavigationBar() {
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = GlobalStruct.backgroundTint
         appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
@@ -205,7 +206,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
             navigationItem.leftBarButtonItem = navigationBarButtonItem
         }
         
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
             let postButton = CustomButton(type: .system)
             postButton.setImage(UIImage(systemName: "square.and.pencil"), for: .normal)
             postButton.addTarget(self, action: #selector(self.goToPost), for: .touchUpInside)

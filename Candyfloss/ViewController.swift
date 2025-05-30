@@ -291,7 +291,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         navigationButton.addTarget(self, action: #selector(self.goToSettings), for: .touchUpInside)
         let navigationBarButtonItem = UIBarButtonItem(customView: navigationButton)
         navigationBarButtonItem.accessibilityLabel = "Settings"
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
             if !GlobalStruct.inVCFromList {
                 navigationItem.leftBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
             }
@@ -377,7 +377,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             feedsButton.addTarget(self, action: #selector(self.goToFeeds), for: .touchUpInside)
             let navigationBarFeedButtonItem = UIBarButtonItem(customView: feedsButton)
             navigationBarFeedButtonItem.accessibilityLabel = "Feeds"
-            if UIDevice.current.userInterfaceIdiom == .pad {
+            if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
                 navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarFeedButtonItem]
             } else {
                 navigationItem.leftBarButtonItems = [navigationBarFeedButtonItem]

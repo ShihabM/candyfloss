@@ -108,9 +108,11 @@ struct GlobalStruct {
     
     static var updatedPost: AppBskyLexicon.Feed.PostViewDefinition? = nil
     
-    // iPad views
+    // iPad
+    static var inSlideOver: Bool = false
     static var padScrollViewController = PadScrollViewController.shared
     static var vc1 = TabBarController()
+    static var vc2 = SloppySwipingNav(rootViewController: ActivityViewController())
     
     // views
     static var currentSwitchableViewAtSpot3 = SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController())
@@ -118,7 +120,7 @@ struct GlobalStruct {
     static var currentSwitchableViewAtSpot5 = SwitchableViews(title: "Profile", icon: "person", iconSelected: "person.fill", view: ProfileViewController())
     static var switchableViews: [SwitchableViews] = [
         SwitchableViews(title: "Bookmarks", icon: "bookmark", iconSelected: "bookmark.fill", view: BookmarksViewController()),
-        SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController()),
+        SwitchableViews(title: "Explore", icon: "signpost.right.and.left", iconSelected: "signpost.right.and.left.fill", view: ExploreViewController()),
         SwitchableViews(title: "Likes", icon: "heart", iconSelected: "heart.fill", view: LikesViewController()),
         SwitchableViews(title: "Lists", icon: "list.bullet", iconSelected: "list.bullet", view: FeedsListsViewController()),
         SwitchableViews(title: "Messages", icon: "message", iconSelected: "message.fill", view: MessagesListViewController()),

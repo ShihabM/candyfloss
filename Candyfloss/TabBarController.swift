@@ -35,6 +35,8 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         tabBar.backgroundColor = view.backgroundColor
         tabBar.barTintColor = view.backgroundColor
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.addNewPostButton), name: NSNotification.Name(rawValue: "addNewPostButton"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.removeNewPostButton), name: NSNotification.Name(rawValue: "removeNewPostButton"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTintMain), name: NSNotification.Name(rawValue: "updateTintMain"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTintFullBlack), name: NSNotification.Name(rawValue: "updateTintFullBlack"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.showNewPostButton), name: NSNotification.Name(rawValue: "showNewPostButton"), object: nil)
@@ -68,7 +70,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         if UIDevice.current.userInterfaceIdiom == .phone {
             let image1 = UIImage(systemName: "heart.text.square.fill")
             let image2 = UIImage(systemName: "bell.fill")
-            let image3 = UIImage(systemName: "magnifyingglass")
+            let image3 = UIImage(systemName: "signpost.right.and.left.fill")
             let image4 = UIImage(systemName: "bookmark.fill")
             let image5 = UIImage(systemName: "person.fill")
             self.viewControllers?[0].tabBarItem.selectedImage = imageWithImage(image: image1 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint)
@@ -100,22 +102,23 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         }
     }
     
+    @objc func addNewPostButton() {
+        self.setupNewPostButton()
+    }
+    
+    @objc func removeNewPostButton() {
+        self.newPostButton.removeFromSuperview()
+    }
+    
     func updateTabs() {
         let rootViewController1 = ViewController()
         firstVC = SloppySwipingNav(rootViewController: rootViewController1)
-        var tab1Title: String = ""
-        var tab2Title: String = ""
-        var tab3Title: String = ""
-        var tab4Title: String = ""
-        var tab5Title: String = ""
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            tab1Title = "Home"
-            tab2Title = "Activity"
-            tab3Title = GlobalStruct.currentSwitchableViewAtSpot3.title
-            tab4Title = GlobalStruct.currentSwitchableViewAtSpot4.title
-            tab5Title = GlobalStruct.currentSwitchableViewAtSpot5.title
-        }
-        if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
+        let tab1Title: String = ""
+        let tab2Title: String = ""
+        let tab3Title: String = ""
+        let tab4Title: String = ""
+        let tab5Title: String = ""
+        if true {
             let image = UIImage(systemName: "heart.text.square")
             let image2 = UIImage(systemName: "heart.text.square.fill")
             firstVC.tabBarItem = UITabBarItem(title: tab1Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
@@ -126,7 +129,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         
         let rootViewController2 = ActivityViewController()
         secondVC = SloppySwipingNav(rootViewController: rootViewController2)
-        if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
+        if true {
             let image = UIImage(systemName: "bell")
             let image2 = UIImage(systemName: "bell.fill")
             secondVC.tabBarItem = UITabBarItem(title: tab2Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
@@ -144,9 +147,6 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     iconSelected: decoded.iconSelected,
                     view: viewController
                 )
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    tab3Title = GlobalStruct.currentSwitchableViewAtSpot3.title
-                }
             }
         }
         
@@ -158,14 +158,14 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
             }
         }
         thirdVC = SloppySwipingNav(rootViewController: rootViewController3)
-        if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
+        if true {
             let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot3.icon)
             let image2 = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot3.iconSelected)
             thirdVC.tabBarItem = UITabBarItem(title: tab3Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             thirdVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
             thirdVC.accessibilityLabel = tab3Title
         }
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
             thirdVC.tabBarItem.tag = 1
         } else {
             thirdVC.tabBarItem.tag = 2
@@ -180,9 +180,6 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     iconSelected: decoded.iconSelected,
                     view: viewController
                 )
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    tab4Title = GlobalStruct.currentSwitchableViewAtSpot4.title
-                }
             }
         }
         
@@ -194,14 +191,14 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
             }
         }
         fourthVC = SloppySwipingNav(rootViewController: rootViewController4)
-        if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
+        if true {
             let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot4.icon)
             let image2 = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot4.iconSelected)
             fourthVC.tabBarItem = UITabBarItem(title: tab4Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             fourthVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
             fourthVC.accessibilityLabel = tab4Title
         }
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
             fourthVC.tabBarItem.tag = 2
         } else {
             fourthVC.tabBarItem.tag = 3
@@ -216,9 +213,6 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     iconSelected: decoded.iconSelected,
                     view: viewController
                 )
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    tab5Title = GlobalStruct.currentSwitchableViewAtSpot5.title
-                }
             }
         }
         
@@ -229,14 +223,14 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
             }
         }
         fifthVC = SloppySwipingNav(rootViewController: rootViewController5)
-        if UIDevice.current.userInterfaceIdiom == .phone || UIApplication.shared.windowMode().contains("slide") {
+        if true {
             let image = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot5.icon)
             let image2 = UIImage(systemName: GlobalStruct.currentSwitchableViewAtSpot5.iconSelected)
             fifthVC.tabBarItem = UITabBarItem(title: tab5Title, image: imageWithImage(image: image ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: image2 ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
             fifthVC.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
             fifthVC.accessibilityLabel = tab5Title
         }
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
             fifthVC.tabBarItem.tag = 3
         } else {
             fifthVC.tabBarItem.tag = 4
@@ -258,16 +252,22 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
         overlayView4.image = UIImage(systemName: "chevron.up.chevron.down")?.withTintColor(GlobalStruct.secondaryTextColor.withAlphaComponent(0.3), renderingMode: .alwaysOriginal)
         tabBar.addSubview(overlayView4)
         
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        updateVCs()
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {} else {
+            self.setupContextMenus()
+            self.longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
+            self.longPressRecognizer.minimumPressDuration = 0.33
+            self.tabBar.addGestureRecognizer(self.longPressRecognizer)
+        }
+    }
+    
+    func updateVCs() {
+        if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
             setViewControllers([firstVC, thirdVC, fourthVC, fifthVC], animated: false)
         } else {
             setViewControllers([firstVC, secondVC, thirdVC, fourthVC, fifthVC], animated: false)
         }
-        setupContextMenus()
-        
-        self.longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
-        self.longPressRecognizer.minimumPressDuration = 0.33
-        self.tabBar.addGestureRecognizer(self.longPressRecognizer)
     }
     
     func viewController(for title: String) -> UIViewController {
@@ -370,7 +370,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
             iconSelected: GlobalStruct.switchableView.iconSelected
         )
         if let encoded = try? JSONEncoder().encode(config) {
-            if UIDevice.current.userInterfaceIdiom == .pad {
+            if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
                 if GlobalStruct.switchableIndex == 1 {
                     UserDefaults.standard.set(encoded, forKey: "currentSwitchableViewAtSpot3")
                 } else if GlobalStruct.switchableIndex == 2 {
@@ -395,10 +395,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                 vc.otherListUser = GlobalStruct.currentUser?.actorHandle ?? ""
             }
         }
-        var tabTitle: String = ""
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            tabTitle = GlobalStruct.switchableView.title
-        }
+        let tabTitle: String = ""
         let vc1 = SloppySwipingNav(rootViewController: vc)
         vc1.tabBarItem = UITabBarItem(title: tabTitle, image: imageWithImage(image: UIImage(systemName: GlobalStruct.switchableView.icon) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(UIColor.label.withAlphaComponent(0.34)), selectedImage: imageWithImage(image: UIImage(systemName: GlobalStruct.switchableView.iconSelected) ?? UIImage(), scaledToSize: CGSize(width: 28, height: 28)).withRenderingMode(.alwaysOriginal).withTintColor(GlobalStruct.baseTint))
         vc1.tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
@@ -465,7 +462,11 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     
     @objc func updateNewPostPosition() {
         if GlobalStruct.startLocation == 0 {
-            newPostButton.frame = CGRect(x: view.bounds.width - 62, y: (view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0.0) - 9, width: 60, height: 60)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                newPostButton.frame = CGRect(x: view.bounds.width - 62, y: (view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0.0) - 6, width: 60, height: 60)
+            } else {
+                newPostButton.frame = CGRect(x: view.bounds.width - 62, y: (view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0.0) - 9, width: 60, height: 60)
+            }
         } else if GlobalStruct.startLocation == 1 {
             newPostButton.frame = CGRect(x: 20, y: view.bounds.height - 70 - tabBar.bounds.height, width: 60, height: 60)
         } else if GlobalStruct.startLocation == 2 {
@@ -533,7 +534,11 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
                     // move to nav bar
                     self.newPostButton.backgroundColor = UIColor.clear
                     self.newPostButton.setImage(UIImage(systemName: "square.and.pencil", withConfiguration: symbolConfig)?.withTintColor(GlobalStruct.baseTint, renderingMode: .alwaysOriginal), for: .normal)
-                    self.newPostButton.frame = CGRect(x: self.view.bounds.width - 62, y: (self.view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0.0) - 9, width: 60, height: 60)
+                    if UIDevice.current.userInterfaceIdiom == .pad {
+                        self.newPostButton.frame = CGRect(x: self.view.bounds.width - 62, y: (self.view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0.0) - 6, width: 60, height: 60)
+                    } else {
+                        self.newPostButton.frame = CGRect(x: self.view.bounds.width - 62, y: (self.view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0.0) - 9, width: 60, height: 60)
+                    }
                     GlobalStruct.startLocation = 0
                     UserDefaults.standard.set(GlobalStruct.startLocation, forKey: "startLocation")
                 } else {

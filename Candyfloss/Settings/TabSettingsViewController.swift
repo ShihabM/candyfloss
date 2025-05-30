@@ -83,7 +83,7 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
                         guard let self else { return }
                         GlobalStruct.currentSwitchableViewAtSpot3 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
                         GlobalStruct.switchableView = switchableView
-                        if UIDevice.current.userInterfaceIdiom == .pad {
+                        if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
                             GlobalStruct.switchableIndex = 1
                         } else {
                             GlobalStruct.switchableIndex = 2
@@ -119,7 +119,7 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
                         guard let self else { return }
                         GlobalStruct.currentSwitchableViewAtSpot4 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
                         GlobalStruct.switchableView = switchableView
-                        if UIDevice.current.userInterfaceIdiom == .pad {
+                        if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
                             GlobalStruct.switchableIndex = 2
                         } else {
                             GlobalStruct.switchableIndex = 3
@@ -155,7 +155,7 @@ class TabSettingsViewController: UIViewController, UITableViewDataSource, UITabl
                         guard let self else { return }
                         GlobalStruct.currentSwitchableViewAtSpot5 = SwitchableViews(title: switchableView.title, icon: switchableView.icon, iconSelected: switchableView.iconSelected, view: switchableView.view)
                         GlobalStruct.switchableView = switchableView
-                        if UIDevice.current.userInterfaceIdiom == .pad {
+                        if UIDevice.current.userInterfaceIdiom == .pad && !GlobalStruct.inSlideOver {
                             GlobalStruct.switchableIndex = 3
                         } else {
                             GlobalStruct.switchableIndex = 4

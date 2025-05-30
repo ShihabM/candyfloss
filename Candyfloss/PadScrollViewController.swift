@@ -12,7 +12,6 @@ class PadScrollViewController: UIViewController, UIGestureRecognizerDelegate, UI
     
     public static let shared = PadScrollViewController()
     
-    var doneOnceLayout: Bool = false
     var scrollView = UIScrollView()
     var viewControllers: [UIViewController] = [] {
         didSet {
@@ -27,8 +26,6 @@ class PadScrollViewController: UIViewController, UIGestureRecognizerDelegate, UI
         }
     }
     
-    var overlayView = UIView()
-    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
@@ -40,7 +37,6 @@ class PadScrollViewController: UIViewController, UIGestureRecognizerDelegate, UI
         GlobalStruct.pollBar = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "sepiaBG")! : ((UserDefaults.standard.value(forKey: "fullBlackBG") as? Bool ?? false) ? UIColor(named: "spoilerBGFullBlack")! : UIColor(named: "pollBar")!)
         GlobalStruct.textColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "sepiaPrimary")! : UIColor(named: "textColor")!
         GlobalStruct.secondaryTextColor = (UserDefaults.standard.value(forKey: "sepiaBG") as? Bool ?? false) ? UIColor(named: "sepiaSecondary")! : UIColor(named: "secondaryTextColor")!
-        overlayView.backgroundColor = GlobalStruct.backgroundTint
     }
     
     override func viewDidLayoutSubviews() {
@@ -67,20 +63,19 @@ class PadScrollViewController: UIViewController, UIGestureRecognizerDelegate, UI
     }
     
     @objc func layoutAll() {
-        if self.doneOnceLayout == false {
-            let width: CGFloat = (getTopMostViewController()?.view.bounds.width ?? UIScreen.main.bounds.width)
-            let spacer: CGFloat = 1
-            self.scrollView.contentSize = CGSize(width: (CGFloat(width * CGFloat(viewControllers.count))) + (CGFloat(spacer * CGFloat(viewControllers.count + 1))), height: CGFloat(self.view.bounds.height))
-            for (c, viewController) in viewControllers.enumerated() {
-                self.scrollView.touchesShouldCancel(in: viewController.view)
-                viewController.view.layer.cornerRadius = 0
-                if c == 0 {
-                    viewController.view.frame = CGRect(x: 0, y: 0, width: width * 0.58, height: self.view.bounds.height)
-                } else {
-                    viewController.view.frame = CGRect(x: (width * 0.58) + 0.82, y: 0, width: (width * 0.42) - 0.82, height: self.view.bounds.height)
-                }
-                viewController.view.layer.borderWidth = 0
+        let width: CGFloat = (getTopMostViewController()?.view.bounds.width ?? UIScreen.main.bounds.width)
+        let spacer: CGFloat = 1
+        self.scrollView.contentSize = CGSize(width: (CGFloat(width * CGFloat(viewControllers.count))) + (CGFloat(spacer * CGFloat(viewControllers.count + 1))), height: CGFloat(self.view.bounds.height))
+        for (c, viewController) in viewControllers.enumerated() {
+            self.scrollView.touchesShouldCancel(in: viewController.view)
+            viewController.view.layer.cornerRadius = 0
+            if c == 0 {
+                viewController.view.frame = CGRect(x: 0, y: 0, width: width * 0.58, height: self.view.bounds.height)
+            } else {
+                viewController.view.frame = CGRect(x: (width * 0.58), y: 0, width: (width * 0.42), height: self.view.bounds.height)
             }
+            viewController.view.layer.borderWidth = 0.42
+            viewController.view.layer.borderColor = GlobalStruct.separator.cgColor
         }
     }
 }

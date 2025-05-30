@@ -116,7 +116,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
             if let post = currentPost {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell
                 configurePostCell(cell, with: post, showActionButtons: false)
-                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width * 2, bottom: 0, right: 0)
                 cell.accessoryView = nil
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
@@ -140,7 +140,7 @@ class ReportViewController: UIViewController, UITableViewDataSource, UITableView
                     }
                     cell.configureCell(followsYou, bioText: bioText, defaultProfile: user)
                 }
-                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width * 2, bottom: 0, right: 0)
                 cell.accessoryView = nil
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear

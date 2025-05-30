@@ -62,8 +62,8 @@ class DetailActionBarCell: UITableViewCell, UISheetPresentationControllerDelegat
         borderDividerLayer.removeFromSuperlayer()
         
         let cornerRadius: CGFloat = 10
-        let width = bgView.bounds.width
-        let height = bgView.bounds.height
+        let width: CGFloat = self.contentView.frame.size.width - 20
+        let height: CGFloat = 50
         
         let borderPath = UIBezierPath()
         borderPath.move(to: CGPoint(x: 0, y: 0))

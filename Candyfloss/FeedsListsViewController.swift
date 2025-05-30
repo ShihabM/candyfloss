@@ -475,7 +475,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     cell.theTitle.text = "Swipe to Pin"
                     cell.theSubtitle.text = "Swipe feeds left to pin them for quick access from the home tab"
                     
-                    cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width * 2, bottom: 0, right: 0)
                     cell.accessoryView = nil
                     let bgColorView = UIView()
                     bgColorView.backgroundColor = UIColor.clear
@@ -588,7 +588,7 @@ class FeedsListsViewController: UIViewController, UITableViewDataSource, UITable
                     cell.theTitle.text = "Swipe to Pin"
                     cell.theSubtitle.text = "Swipe lists left to pin them for quick access from the home tab"
                     
-                    cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                    cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width * 2, bottom: 0, right: 0)
                     cell.accessoryView = nil
                     let bgColorView = UIView()
                     bgColorView.backgroundColor = UIColor.clear

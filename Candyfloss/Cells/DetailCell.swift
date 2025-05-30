@@ -92,11 +92,12 @@ class DetailCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource
     override func layoutSubviews() {
         super.layoutSubviews()
         
+        bgView.layoutIfNeeded()
         borderLayer.removeFromSuperlayer()
         
         let cornerRadius: CGFloat = 10
-        let width = bgView.bounds.width
-        let height = bgView.bounds.height
+        let width: CGFloat = self.contentView.frame.size.width - 20
+        let height: CGFloat = self.contentView.frame.size.height - 20
         
         let borderPath = UIBezierPath()
         borderPath.move(to: CGPoint(x: 0, y: height))

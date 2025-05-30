@@ -939,7 +939,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func authenticate(_ fetchNextimeline: Bool = true, fromSignIn: Bool = false) async {
-        if authenticateCount < 4 {
+        if authenticateCount < 3 {
             authenticateCount += 1
             let user = GlobalStruct.allUsers.first { x in
                 x.username == GlobalStruct.currentSelectedUser

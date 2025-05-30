@@ -401,7 +401,7 @@ class DetailsViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.avatar.addTarget(self, action: #selector(parentProfileTapped(_:)), for: .touchUpInside)
             
             if indexPath.row == allParents.count - 1 {
-                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width * 2, bottom: 0, right: 0)
             } else {
                 cell.separatorInset = UIEdgeInsets(top: 0, left: 74, bottom: 0, right: 0)
             }
@@ -422,7 +422,7 @@ class DetailsViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.avatar.tag = indexPath.row
                 cell.avatar.addTarget(self, action: #selector(profileTapped(_:)), for: .touchUpInside)
                 
-                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width * 2, bottom: 0, right: 0)
                 cell.accessoryView = nil
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
@@ -475,7 +475,7 @@ class DetailsViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
                 cell.configureCell(video)
                 
-                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+                cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width * 2, bottom: 0, right: 0)
                 cell.accessoryView = nil
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = UIColor.clear
@@ -509,7 +509,7 @@ class DetailsViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.borderDividerLayer.isHidden = false
             }
             
-            cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+            cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width * 2, bottom: 0, right: 0)
             cell.accessoryView = nil
             let bgColorView = UIView()
             bgColorView.backgroundColor = UIColor.clear

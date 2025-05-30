@@ -501,7 +501,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.selectedBackgroundView = bgColorView
             cell.backgroundColor = GlobalStruct.backgroundTint
             cell.hoverStyle = .none
-            cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width, bottom: 0, right: 0)
+            cell.separatorInset = UIEdgeInsets(top: 0, left: view.bounds.width * 2, bottom: 0, right: 0)
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell

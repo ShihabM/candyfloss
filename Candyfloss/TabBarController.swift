@@ -111,13 +111,14 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     }
     
     func updateTabs() {
-        let rootViewController1 = ViewController()
-        firstVC = SloppySwipingNav(rootViewController: rootViewController1)
         let tab1Title: String = ""
         let tab2Title: String = ""
         let tab3Title: String = ""
         let tab4Title: String = ""
         let tab5Title: String = ""
+        
+        let rootViewController1 = ViewController()
+        firstVC = SloppySwipingNav(rootViewController: rootViewController1)
         if true {
             let image = UIImage(systemName: "heart.text.square")
             let image2 = UIImage(systemName: "heart.text.square.fill")

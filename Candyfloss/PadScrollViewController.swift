@@ -63,7 +63,7 @@ class PadScrollViewController: UIViewController, UIGestureRecognizerDelegate, UI
     }
     
     @objc func layoutAll() {
-        let width: CGFloat = (getTopMostViewController()?.view.bounds.width ?? UIScreen.main.bounds.width)
+        let width: CGFloat = UIScreen.main.bounds.width
         let spacer: CGFloat = 1
         self.scrollView.contentSize = CGSize(width: (CGFloat(width * CGFloat(viewControllers.count))) + (CGFloat(spacer * CGFloat(viewControllers.count + 1))), height: CGFloat(self.view.bounds.height))
         for (c, viewController) in viewControllers.enumerated() {

@@ -9,8 +9,10 @@ import Foundation
 import UIKit
 import SDWebImage
 import ATProtoKit
+import SafariServices
+import MessageUI
 
-class UserCell: UITableViewCell, UIContextMenuInteractionDelegate {
+class UserCell: UITableViewCell, UIContextMenuInteractionDelegate, MFMailComposeViewControllerDelegate {
     
     var currentProfile: AppBskyLexicon.Actor.ProfileViewBasicDefinition? = nil
     var defaultProfile: AppBskyLexicon.Actor.ProfileViewDefinition? = nil
@@ -22,6 +24,9 @@ class UserCell: UITableViewCell, UIContextMenuInteractionDelegate {
     var usertag = UILabel()
     var followsYouTag = UIButton()
     var bio = ActiveLabel()
+    
+    var emailAddress: String = ""
+    var currentLink: String = ""
     
     let defaultFontSize = UIFont.preferredFont(forTextStyle: .title3).pointSize
     let smallerFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
@@ -88,6 +93,43 @@ class UserCell: UITableViewCell, UIContextMenuInteractionDelegate {
             bio.emailColor = GlobalStruct.baseTint
             bio.urlMaximumLength = 40
             bgView.addSubview(bio)
+        }
+        bio.handleMentionTap { (str) in
+            defaultHaptics()
+            Task {
+                do {
+                    if let atProto = GlobalStruct.atProto {
+                        let x = try await atProto.getProfile(for: str)
+                        let vc = ProfileViewController()
+                        vc.profile = x.actorDID
+                        UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+                    }
+                } catch {
+                    print("Error fetching profile: \(error)")
+                }
+            }
+        }
+        bio.handleHashtagTap { (str) in
+            defaultHaptics()
+            let vc = HashtagViewController()
+            vc.hashtag = str
+            UIApplication.shared.pushToCurrentNavigationController(vc, animated: true)
+        }
+        bio.handleURLTap { (str) in
+            defaultHaptics()
+            if let link = URL(string: self.currentLink) {
+                if GlobalStruct.openLinksInApp {
+                    let safariVC = SFSafariViewController(url: link)
+                    getTopMostViewController()?.present(safariVC, animated: true, completion: nil)
+                } else {
+                    UIApplication.shared.open(link, options: [:], completionHandler: nil)
+                }
+            }
+        }
+        bio.handleEmailTap { (str) in
+            defaultHaptics()
+            self.emailAddress = str
+            self.goToMail()
         }
         
         let viewsDict = [
@@ -172,6 +214,31 @@ class UserCell: UITableViewCell, UIContextMenuInteractionDelegate {
         } else {
             return nil
         }
+    }
+    
+    // mail
+    
+    @objc func goToMail() {
+        if MFMailComposeViewController.canSendMail() {
+            let mail = MFMailComposeViewController()
+            mail.mailComposeDelegate = self
+            mail.setToRecipients([emailAddress])
+            getTopMostViewController()?.present(mail, animated: true)
+        } else {
+            let alert = UIAlertController(title: "The Mail app is not installed", message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel , handler:{ (UIAlertAction) in
+                
+            }))
+            if let presenter = alert.popoverPresentationController {
+                presenter.sourceView = getTopMostViewController()?.view ?? UIView()
+                presenter.sourceRect = getTopMostViewController()?.view.bounds ?? .zero
+            }
+            getTopMostViewController()?.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true)
     }
     
 }

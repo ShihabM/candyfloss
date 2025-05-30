@@ -665,7 +665,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
                     let attributedString = NSMutableAttributedString(string: " Hot", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.white])
                     attStringNewLine000.append(attributedString)
                     cell.theIcon.setAttributedTitle(attStringNewLine000, for: .normal)
-                    cell.theIcon.backgroundColor = .systemRed
+                    cell.theIcon.backgroundColor = .systemPink
                     cell.theIcon.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 7, right: 10)
                 } else {
                     let attStringNewLine000 = NSMutableAttributedString()
@@ -946,6 +946,7 @@ class ExploreViewController: UIViewController, UITableViewDataSource, UITableVie
             } else {
                 let headerIndexPathRows: [Int] = [0, feedPosts1.count + 1, feedPosts1.count + feedPosts2.count + 2, feedPosts1.count + feedPosts2.count + feedPosts3.count + 3, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + 4, feedPosts1.count + feedPosts2.count + feedPosts3.count + feedPosts4.count + feedPosts5.count + 5]
                 if headerIndexPathRows.contains(indexPath.row) {
+                    GlobalStruct.inVCFromList = true
                     let indexToUse: Int = headerIndexPathRows.firstIndex { x in
                         x == indexPath.row
                     } ?? 0

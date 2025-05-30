@@ -967,6 +967,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 print("Error authenticating: \(error)")
                 displayCredentialsPrompt()
             }
+        } else {
+            DispatchQueue.main.async {
+                self.loadingIndicator.stopAnimating()
+            }
         }
     }
     

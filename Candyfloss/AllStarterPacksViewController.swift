@@ -24,6 +24,7 @@ class AllStarterPacksViewController: UIViewController, UITableViewDataSource, UI
     var searchFirstTime: Bool = true
     
     override func viewDidLayoutSubviews() {
+        tableView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
         tableView.tableHeaderView?.frame.size.height = 56
         searchController.searchBar.sizeToFit()
         searchController.searchBar.frame.size.width = searchView.frame.size.width

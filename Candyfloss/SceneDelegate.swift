@@ -19,9 +19,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.tintColor = GlobalStruct.baseTint
         
         if UIDevice.current.userInterfaceIdiom == .pad {
-            let nav1 = PadScrollViewController.shared
+            let nav1 = GlobalStruct.padScrollViewController
             var arrToUse: [UIViewController] = []
-            let vc1 = TabBarController()
+            let vc1 = GlobalStruct.vc1
             arrToUse.append(vc1)
             let vc2 = ActivityViewController()
             arrToUse.append(SloppySwipingNav(rootViewController: vc2))
@@ -31,6 +31,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         } else {
             window?.rootViewController = TabBarController()
             window?.makeKeyAndVisible()
+        }
+    }
+    
+    func windowScene(_ windowScene: UIWindowScene, didUpdate previousCoordinateSpace: any UICoordinateSpace, interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation, traitCollection previousTraitCollection: UITraitCollection) {
+        if UIDevice.current.userInterfaceIdiom == .phone {} else {
+            handleTraitCollectionUpdate(windowScene: windowScene)
+        }
+    }
+    
+    private func handleTraitCollectionUpdate(windowScene: UIWindowScene) {
+        guard let window = window else { return }
+        if UIApplication.shared.windowMode().contains("slide") {
+            if !(window.rootViewController is TabBarController) {
+                window.rootViewController = TabBarController()
+                window.makeKeyAndVisible()
+            }
+        } else {
+            let nav1 = GlobalStruct.padScrollViewController
+            var arrToUse: [UIViewController] = []
+            let vc1 = GlobalStruct.vc1
+            arrToUse.append(vc1)
+            let vc2 = ActivityViewController()
+            arrToUse.append(SloppySwipingNav(rootViewController: vc2))
+            nav1.viewControllers = arrToUse
+            self.window?.rootViewController = nav1
+            self.window?.makeKeyAndVisible()
         }
     }
 

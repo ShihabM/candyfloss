@@ -127,11 +127,26 @@ extension UIStackView {
 
 extension UIApplication {
     func pushToCurrentNavigationController(_ viewController: UIViewController, animated: Bool = true) {
-        if let tabBarController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first(where: { $0.isKeyWindow })?.rootViewController as? UITabBarController,
-           let selectedNavController = tabBarController.selectedViewController as? UINavigationController {
-            selectedNavController.pushViewController(viewController, animated: animated)
-        } else if let navController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first(where: { $0.isKeyWindow })?.rootViewController as? UINavigationController {
-            navController.pushViewController(viewController, animated: animated)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }),
+                  let rootVC = keyWindow.rootViewController else {
+                return
+            }
+            if let padScrollVC = rootVC as? PadScrollViewController,
+               let tabBarController = padScrollVC.viewControllers.first as? TabBarController,
+               let selectedNavController = tabBarController.selectedViewController as? UINavigationController {
+                selectedNavController.pushViewController(viewController, animated: animated)
+            } else if let navController = rootVC as? UINavigationController {
+                navController.pushViewController(viewController, animated: animated)
+            }
+        } else {
+            if let tabBarController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first(where: { $0.isKeyWindow })?.rootViewController as? UITabBarController,
+               let selectedNavController = tabBarController.selectedViewController as? UINavigationController {
+                selectedNavController.pushViewController(viewController, animated: animated)
+            } else if let navController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first(where: { $0.isKeyWindow })?.rootViewController as? UINavigationController {
+                navController.pushViewController(viewController, animated: animated)
+            }
         }
     }
     

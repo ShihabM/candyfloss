@@ -108,6 +108,10 @@ struct GlobalStruct {
     
     static var updatedPost: AppBskyLexicon.Feed.PostViewDefinition? = nil
     
+    // iPad views
+    static var padScrollViewController = PadScrollViewController.shared
+    static var vc1 = TabBarController()
+    
     // views
     static var currentSwitchableViewAtSpot3 = SwitchableViews(title: "Explore", icon: "magnifyingglass", iconSelected: "magnifyingglass", view: ExploreViewController())
     static var currentSwitchableViewAtSpot4 = SwitchableViews(title: "Bookmarks", icon: "bookmark", iconSelected: "bookmark.fill", view: BookmarksViewController())

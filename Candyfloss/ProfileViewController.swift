@@ -456,6 +456,18 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.avatar.sd_setImage(with: url, for: .normal)
                     cell.avatar.tag = indexPath.row
                     cell.avatar.addTarget(self, action: #selector(expandAvatar(_:)), for: .touchUpInside)
+                    cell.avatar.backgroundColor = GlobalStruct.detailQuoteCell
+                    cell.avatar.imageView?.contentMode = .scaleAspectFill
+                    cell.avatar.contentHorizontalAlignment = .fill
+                    cell.avatar.contentVerticalAlignment = .fill
+                } else {
+                    let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: 80, weight: .semibold)
+                    let avatarImage = UIImage(systemName: "person.fill", withConfiguration: symbolConfig1)?.withTintColor(.white, renderingMode: .alwaysOriginal)
+                    cell.avatar.setImage(avatarImage, for: .normal)
+                    cell.avatar.backgroundColor = GlobalStruct.baseTint
+                    cell.avatar.imageView?.contentMode = .center
+                    cell.avatar.contentHorizontalAlignment = .center
+                    cell.avatar.contentVerticalAlignment = .center
                 }
                 if let url = currentAccount.bannerImageURL {
                     cell.headerImage.sd_imageTransition = .fade

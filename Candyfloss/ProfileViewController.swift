@@ -341,7 +341,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     allPosts = x.feed.filter({ post in
                         post.reply == nil
                     }) + allPosts
-                    if let pinned = allPosts.first(where: { post in
+                    if let pinned = allPosts.last(where: { post in
                         if let pinned = post.reason {
                             switch pinned {
                             case .reasonPin( _):

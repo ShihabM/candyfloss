@@ -144,22 +144,34 @@ func configureActivityCell(_ cell: ActivityCell, with notification: [AppBskyLexi
     }
     if let url = notification.first?.author.avatarImageURL {
         cell.avatar1.sd_setImage(with: url, for: .normal)
+        cell.avatar1.backgroundColor = GlobalStruct.pollBar.withAlphaComponent(0.25)
     } else {
-        cell.avatar1.setImage(UIImage(), for: .normal)
+        let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
+        let avatarImage = UIImage(systemName: "person.fill", withConfiguration: symbolConfig1)?.withTintColor(.white, renderingMode: .alwaysOriginal)
+        cell.avatar1.setImage(avatarImage, for: .normal)
+        cell.avatar1.backgroundColor = GlobalStruct.baseTint
     }
     if notification.count > 1 {
         if let url = notification[1].author.avatarImageURL {
             cell.avatar2.sd_setImage(with: url, for: .normal)
+            cell.avatar2.backgroundColor = GlobalStruct.pollBar.withAlphaComponent(0.25)
         } else {
-            cell.avatar2.setImage(UIImage(), for: .normal)
+            let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
+            let avatarImage = UIImage(systemName: "person.fill", withConfiguration: symbolConfig1)?.withTintColor(.white, renderingMode: .alwaysOriginal)
+            cell.avatar2.setImage(avatarImage, for: .normal)
+            cell.avatar2.backgroundColor = GlobalStruct.baseTint
         }
         user = "\(resolveUser(notification.first?.author)) and \(resolveUser(notification[1].author))"
     }
     if notification.count > 2 {
         if let url = notification[2].author.avatarImageURL {
             cell.avatar3.sd_setImage(with: url, for: .normal)
+            cell.avatar3.backgroundColor = GlobalStruct.pollBar.withAlphaComponent(0.25)
         } else {
-            cell.avatar3.setImage(UIImage(), for: .normal)
+            let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
+            let avatarImage = UIImage(systemName: "person.fill", withConfiguration: symbolConfig1)?.withTintColor(.white, renderingMode: .alwaysOriginal)
+            cell.avatar3.setImage(avatarImage, for: .normal)
+            cell.avatar3.backgroundColor = GlobalStruct.baseTint
         }
         user = "\(resolveUser(notification.first?.author)), \(resolveUser(notification[1].author)), and \(resolveUser(notification[2].author))"
     }

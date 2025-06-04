@@ -232,8 +232,12 @@ class LikesRepostsViewController: UIViewController, UITableViewDataSource, UITab
             cell.avatar.sd_imageTransition = .fade
             cell.avatar.sd_setImage(with: url, for: .normal)
             cell.avatar.tag = indexPath.row
+            cell.avatar.backgroundColor = GlobalStruct.pollBar.withAlphaComponent(0.25)
         } else {
-            cell.avatar.setImage(UIImage(), for: .normal)
+            let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: 22, weight: .semibold)
+            let avatarImage = UIImage(systemName: "person.fill", withConfiguration: symbolConfig1)?.withTintColor(.white, renderingMode: .alwaysOriginal)
+            cell.avatar.setImage(avatarImage, for: .normal)
+            cell.avatar.backgroundColor = GlobalStruct.baseTint
         }
         cell.username.text = user?.displayName ?? ""
         cell.usertag.text = "@\(user?.actorHandle ?? "")"

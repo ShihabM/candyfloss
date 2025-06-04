@@ -1173,7 +1173,7 @@ func createActionButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = n
                             let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
                             let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost.uri)
                             let x = try await atProtoBluesky.createRepostRecord(strongReferenceResult)
-                            let _ = try await atProtoBluesky.deleteRepostRecord(.recordURI(atURI: x.recordURI))
+//                            let _ = try await atProtoBluesky.deleteRepostRecord(.recordURI(atURI: x.recordURI))
                             try await Task.sleep(nanoseconds: 300_000_000)
                             let y = try await atProto.getPosts([currentPost.uri])
                             if let post = y.posts.first {
@@ -1222,7 +1222,7 @@ func createActionButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = n
                             let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
                             let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost.uri)
                             let x = try await atProtoBluesky.createLikeRecord(strongReferenceResult)
-                            let _ = try await atProtoBluesky.deleteLikeRecord(.recordURI(atURI: x.recordURI))
+//                            let _ = try await atProtoBluesky.deleteLikeRecord(.recordURI(atURI: x.recordURI))
                             try await Task.sleep(nanoseconds: 300_000_000)
                             let y = try await atProto.getPosts([currentPost.uri])
                             if let post = y.posts.first {
@@ -1278,7 +1278,7 @@ func createRepostButtonsMenu(_ post: AppBskyLexicon.Feed.PostViewDefinition? = n
                             let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
                             let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost.uri)
                             let x = try await atProtoBluesky.createRepostRecord(strongReferenceResult)
-                            let _ = try await atProtoBluesky.deleteRepostRecord(.recordURI(atURI: x.recordURI))
+//                            let _ = try await atProtoBluesky.deleteRepostRecord(.recordURI(atURI: x.recordURI))
                             try await Task.sleep(nanoseconds: 300_000_000)
                             let y = try await atProto.getPosts([currentPost.uri])
                             if let post = y.posts.first {
@@ -1528,7 +1528,8 @@ func createListMenu(_ listURI: String = "", listName: String = "", listDescripti
             do {
                 if let atProto = GlobalStruct.atProto {
                     let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
-                    let _ = try await atProtoBluesky.deleteListRecord(.recordURI(atURI: listURI))
+//                    let _ = try await atProtoBluesky.deleteListRecord(.recordURI(atURI: listURI))
+                    
                     DispatchQueue.main.async {
                         GlobalStruct.listURIToDelete = listURI
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "deleteList"), object: nil)
@@ -1814,7 +1815,7 @@ func createMoreProfileMenu(_ profile: AppBskyLexicon.Actor.ProfileViewDetailedDe
                     if followers.contains(where: { x in
                         x.actorDID == profile?.actorDID ?? basicProfile?.actorDID ?? defaultProfile?.actorDID ?? messageProfile?.actorDID ?? ""
                     }) {
-                        let _ = try await atProtoBluesky.deleteListItemRecord(.recordURI(atURI: record.recordURI))
+//                        let _ = try await atProtoBluesky.deleteListItemRecord(.recordURI(atURI: record.recordURI))
                     }
                 }
             } catch {

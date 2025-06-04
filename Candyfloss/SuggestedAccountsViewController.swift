@@ -14,6 +14,8 @@ class SuggestedAccountsViewController: UIViewController, UITableViewDataSource, 
     var whoToFollow: [AppBskyLexicon.Actor.ProfileViewDefinition] = []
     var currentCursor: String? = nil
     var isFetching: Bool = false
+    var currentCategory: String = "For You"
+    var allCategories: [String] = ["For You", "Art", "Sports", "Comics", "Music", "Politics", "Photography", "Science", "News", "Animals", "Books", "Comedy", "Culture", "Education", "Food", "Journalism", "Movies", "Nature", "Pets", "Tech", "TV", "Writers"]
     
     // inline search
     var searchView: UIView = UIView()
@@ -108,7 +110,7 @@ class SuggestedAccountsViewController: UIViewController, UITableViewDataSource, 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = GlobalStruct.backgroundTint
-        navigationItem.title = "Suggested Accounts"
+        navigationItem.title = "For You"
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateTint), name: NSNotification.Name(rawValue: "updateTint"), object: nil)
         
@@ -125,6 +127,62 @@ class SuggestedAccountsViewController: UIViewController, UITableViewDataSource, 
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
+        
+        setupListDropdown()
+    }
+    
+    @objc func setupListDropdown() {
+        let theTitle: String = currentCategory
+        let titleLabel = UIButton()
+        titleLabel.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
+        let attachment1 = NSTextAttachment()
+        let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold)
+        let downImage1 = UIImage(systemName: "chevron.down", withConfiguration: symbolConfig1)
+        let downImage2 = imageWithImage(image: downImage1 ?? UIImage(), scaledToSize: CGSize(width: downImage1?.size.width ?? 0, height: (downImage1?.size.height ?? 0) - 3))
+        attachment1.image = downImage2.withTintColor(GlobalStruct.secondaryTextColor, renderingMode: .alwaysOriginal)
+        let attStringNewLine000 = NSMutableAttributedString()
+        let attStringNewLine00 = NSMutableAttributedString(string: "\(theTitle) ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .semibold),NSAttributedString.Key.foregroundColor : UIColor.label])
+        let attString00 = NSAttributedString(attachment: attachment1)
+        attStringNewLine000.append(attStringNewLine00)
+        attStringNewLine000.append(attString00)
+        titleLabel.setAttributedTitle(attStringNewLine000, for: .normal)
+        self.navigationItem.titleView = titleLabel
+        var allActions0: [UIAction] = []
+        for category in allCategories {
+            let menuItem = UIAction(title: category, identifier: nil) { [weak self] action in
+                guard let self else { return }
+                currentCategory = category
+                fetchUsers(currentCategory)
+                tableView.reloadData()
+                setupListDropdown()
+            }
+            if currentCategory == category {
+                menuItem.state = .on
+            } else {
+                menuItem.state = .off
+            }
+            allActions0.append(menuItem)
+        }
+        let menu = UIMenu(title: "", options: [.displayInline], children: allActions0)
+        titleLabel.menu = menu
+        titleLabel.showsMenuAsPrimaryAction = true
+    }
+    
+    func fetchUsers(_ category: String = "") {
+        Task {
+            do {
+                if let atProto = GlobalStruct.atProto {
+                    let x = try await atProto.getSuggestedUsers(category: category)
+                    whoToFollow = x.actors
+                    DispatchQueue.main.async {
+                        self.tableView.reloadData()
+                    }
+                }
+            } catch {
+                print("Error fetching suggested users: \(error)")
+                tableView.reloadData()
+            }
+        }
     }
     
     func setUpTable() {

@@ -360,7 +360,14 @@ class DetailActionBarCell: UITableViewCell, UISheetPresentationControllerDelegat
                         let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
                         let strongReferenceResult = try await ATProtoTools.createStrongReference(from: currentPost?.uri ?? "")
                         let x = try await atProtoBluesky.createLikeRecord(strongReferenceResult)
-                        let _ = try await atProtoBluesky.deleteLikeRecord(.recordURI(atURI: x.recordURI))
+//                        let _ = try await atProtoBluesky.deleteLikeRecord(.recordURI(atURI: x.recordURI))
+                        
+//                        let _ = try await atProtoBluesky.deleteRecord(x.recordURI)
+                        
+//                        let session = try await GlobalStruct.atProto?.getUserSession()
+//                        let recordKey = try ATProtoTools().parseURI(x.recordURI).recordKey
+//                        _ = try await atProto.deleteRecord(repositoryDID: session?.sessionDID ?? "", collection: "app.bsky.feed.like", recordKey: recordKey)
+                        
                         try await Task.sleep(nanoseconds: 300_000_000)
                         let y = try await atProto.getPosts([currentPost?.uri ?? ""])
                         if let post = y.posts.first {

@@ -9,9 +9,10 @@
 import Foundation
 
 struct RegexParser {
-    static let hashtagPattern = "(?:|$)#[\\p{L}0-9_]+"
+    static let hashtagPattern = "(?:|$)#[\\p{L}0-9_-]+"
     static let mentionPattern = "\\B\\@([a-zA-Z0-9_.-]{1,})(@[\\w.-]+)?"
-    static let urlPattern = "(https?://)?(www\\.)?(?!\\d+\\.\\d+$)([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}(/[a-zA-Z0-9\\-_'#:,\\.@%&;=+~?/]*)?"
+//    static let urlPattern = "(https?://)?(www\\.)?(?!\\d+\\.\\d+$)([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}(/[a-zA-Z0-9\\-_'#:,\\.@%&;=+~?/]*)?"
+    static let urlPattern = "(https?://)?(www\\.)?(?!\\d+\\.\\d+$)([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,}(/[a-zA-Z0-9\\-_'#:,\\.@%&;=+~/?]*)?(\\?[a-zA-Z0-9=&%_\\-]*)?(#[a-zA-Z0-9\\-]*)?"
     static let emailPattern = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
     
     static let hashtagRegex = try! NSRegularExpression(pattern: hashtagPattern, options: [.caseInsensitive])

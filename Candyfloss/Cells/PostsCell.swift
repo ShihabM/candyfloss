@@ -1541,7 +1541,7 @@ class PostsCell: UITableViewCell, SKPhotoBrowserDelegate, UITableViewDataSource,
                         let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
                         let strongReferenceResult = try await ATProtoTools.createStrongReference(from: self.post?.uri ?? "")
                         let x = try await atProtoBluesky.createLikeRecord(strongReferenceResult)
-                        let _ = try await atProtoBluesky.deleteLikeRecord(.recordURI(atURI: x.recordURI))
+//                        let _ = try await atProtoBluesky.deleteLikeRecord(.recordURI(atURI: x.recordURI))
                         try await Task.sleep(nanoseconds: 300_000_000)
                         let y = try await atProto.getPosts([self.post?.uri ?? ""])
                         if let post = y.posts.first {

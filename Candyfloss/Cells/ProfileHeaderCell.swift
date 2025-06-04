@@ -487,7 +487,7 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
                 if let atProto = GlobalStruct.atProto {
                     let atProtoBluesky = ATProtoBluesky(atProtoKitInstance: atProto)
                     let followRecord = try await atProtoBluesky.createFollowRecord(actorDID: self.currentProfile?.actorDID ?? "")
-                    _ = try await atProtoBluesky.deleteFollowRecord(ATProtoBluesky.RecordIdentifier.recordURI(atURI: followRecord.recordURI))
+//                    _ = try await atProtoBluesky.deleteFollowRecord(.recordURI(atURI: followRecord.recordURI))
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "updateProfileHeader"), object: nil)
                     }

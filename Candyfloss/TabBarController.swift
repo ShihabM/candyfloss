@@ -445,6 +445,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     
     @objc func showNewPostButton() {
         if GlobalStruct.readerMode == false {
+            GlobalStruct.isPostButtonInNavBar = true
             UIView.animate(withDuration: 0.05) { [weak self] in
                 guard let self else { return }
                 self.newPostButton.alpha = 1
@@ -454,6 +455,7 @@ class TabBarController: AnimateTabController, UITabBarControllerDelegate, UIGest
     
     @objc func hideNewPostButton() {
         if GlobalStruct.startLocation == 0 {
+            GlobalStruct.isPostButtonInNavBar = false
             UIView.animate(withDuration: 0.05) { [weak self] in
                 guard let self else { return }
                 self.newPostButton.alpha = 0

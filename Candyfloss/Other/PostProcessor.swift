@@ -172,24 +172,24 @@ func configureActivityCell(_ cell: ActivityCell, with notification: [AppBskyLexi
     cell.postContents.text = text.trimmingCharacters(in: .whitespacesAndNewlines)
     
     // activity header and icons
-    if notification.first?.reason ?? .none == .like {
+    if notification.first?.reason.rawValue ?? .none == "like" {
         cell.username.text = "\(user) liked:"
         cell.typeIndicator.setImage(UIImage(systemName: "heart.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemPink, renderingMode: .alwaysOriginal), for: .normal)
     }
-    if notification.first?.reason ?? .none == .repost {
+    if notification.first?.reason.rawValue ?? .none == "repost" {
         cell.username.text = "\(user) reposted:"
         cell.typeIndicator.setImage(UIImage(systemName: "arrow.2.squarepath", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemGreen, renderingMode: .alwaysOriginal), for: .normal)
     }
-    if notification.first?.reason ?? .none == .follow {
+    if notification.first?.reason.rawValue ?? .none == "follow" {
         cell.username.text = followersText
         cell.typeIndicator.setImage(UIImage(systemName: "person.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemBlue, renderingMode: .alwaysOriginal), for: .normal)
         cell.postContents.text = user
     }
-    if notification.first?.reason ?? .none == .quote {
+    if notification.first?.reason.rawValue ?? .none == "quote" {
         cell.username.text = "\(user) quoted:"
         cell.typeIndicator.setImage(UIImage(systemName: "quote.bubble.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemMint, renderingMode: .alwaysOriginal), for: .normal)
     }
-    if notification.first?.reason ?? .none == .starterpackjoined {
+    if notification.first?.reason.rawValue ?? .none == "starterpackjoined" {
         cell.username.text = "\(user) joined your starter pack"
         cell.typeIndicator.setImage(UIImage(systemName: "star.fill", withConfiguration: symbolConfig)?.withTintColor(UIColor.systemOrange, renderingMode: .alwaysOriginal), for: .normal)
     }

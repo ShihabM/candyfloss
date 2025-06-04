@@ -366,7 +366,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             let navigationBarButtonItem = UIBarButtonItem(customView: moreButton)
             navigationBarButtonItem.accessibilityLabel = "More"
             if GlobalStruct.isPostButtonInNavBar {
-                navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
+                navigationItem.rightBarButtonItems = [UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), UIBarButtonItem(), navigationBarButtonItem]
             } else {
                 navigationItem.rightBarButtonItems = [navigationBarButtonItem]
             }

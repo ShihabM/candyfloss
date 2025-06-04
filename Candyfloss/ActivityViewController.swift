@@ -261,7 +261,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
             UserDefaults.standard.set(notificationsSection, forKey: "notificationsSection")
             filteredNotifications = allNotifications.filter({ notification in
                 notification.contains { n in
-                    n.reason == .reply || n.reason == .mention
+                    n.reason.rawValue == "reply" || n.reason.rawValue == "mention"
                 }
             })
             updateSearchBar(text: "Mentions")
@@ -332,7 +332,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                     var currentGroup: [AppBskyLexicon.Notification.Notification] = []
                     var previousReason: AppBskyLexicon.Notification.Notification.Reason? = nil
                     for notification in x.notifications {
-                        if notification.reason == previousReason {
+                        if notification.reason.rawValue == previousReason?.rawValue ?? "" {
                             if currentGroup.contains(where: { x in
                                 x.author.actorDID == notification.author.actorDID
                             }) {} else {
@@ -352,7 +352,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                     
                     var uris: [String] = []
                     for notification in x.notifications {
-                        if notification.reason == .reply || notification.reason == .mention {
+                        if notification.reason.rawValue == "reply" || notification.reason.rawValue == "mention" {
                             uris.append(notification.uri)
                         } else if let uri = notification.reasonSubjectURI {
                             uris.append(uri)
@@ -368,7 +368,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                         } else {
                             self.filteredNotifications = self.allNotifications.filter({ notification in
                                 notification.contains { n in
-                                    n.reason == .reply || n.reason == .mention
+                                    n.reason.rawValue == "reply" || n.reason.rawValue == "mention"
                                 }
                             })
                         }
@@ -403,7 +403,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                             break
                         }
 
-                        if notification.reason == previousReason {
+                        if notification.reason.rawValue == previousReason?.rawValue ?? "" {
                             if !group.contains(where: { $0.author.actorDID == notification.author.actorDID }) {
                                 group.insert(notification, at: 0)
                             }
@@ -419,7 +419,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
                     var uris: [String] = []
                     for notification in latest.notifications {
-                        if notification.reason == .reply || notification.reason == .mention {
+                        if notification.reason.rawValue == "reply" || notification.reason.rawValue == "mention" {
                             uris.append(notification.uri)
                         } else if let uri = notification.reasonSubjectURI {
                             uris.append(uri)
@@ -435,7 +435,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                             self.filteredNotifications = self.allNotifications
                         } else {
                             self.filteredNotifications = self.allNotifications.filter {
-                                $0.contains { $0.reason == .reply || $0.reason == .mention }
+                                $0.contains { $0.reason.rawValue == "reply" || $0.reason.rawValue == "mention" }
                             }
                         }
 
@@ -500,7 +500,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if filteredNotifications[indexPath.row].first?.reason ?? .none == .reply || filteredNotifications[indexPath.row].first?.reason ?? .none == .mention {
+        if filteredNotifications[indexPath.row].first?.reason.rawValue ?? .none == "reply" || filteredNotifications[indexPath.row].first?.reason.rawValue ?? .none == "mention" {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PostsCell", for: indexPath) as! PostsCell
             
             cell.avatar.tag = indexPath.row
@@ -649,7 +649,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
             }
         }
-        if filteredNotifications[indexPath.row].first?.reason ?? .none == .follow {
+        if filteredNotifications[indexPath.row].first?.reason.rawValue ?? .none == "follow" {
             let vc = FriendsViewController()
             vc.profile = ""
             vc.isShowingFollowers = true
@@ -670,7 +670,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        if self.filteredNotifications[indexPath.row].first?.reason ?? .none == .reply || self.filteredNotifications[indexPath.row].first?.reason ?? .none == .mention {
+        if self.filteredNotifications[indexPath.row].first?.reason.rawValue ?? .none == "reply" || self.filteredNotifications[indexPath.row].first?.reason.rawValue ?? .none == "mention" {
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
                 if let post = self.allSubjectPosts.first(where: { post in
                     post.uri == self.filteredNotifications[indexPath.row].first?.uri ?? ""
@@ -680,7 +680,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
                     return nil
                 }
             }
-        } else if self.filteredNotifications[indexPath.row].first?.reason ?? .none == .follow {
+        } else if self.filteredNotifications[indexPath.row].first?.reason.rawValue ?? .none == "follow" {
             return nil
         } else {
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in

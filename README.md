@@ -1,6 +1,6 @@
 # Candyfloss
 
-A Bluesky app for iOS built using Swift and UIKit. This is still in early stages, but a lot of the core features are now there. Happy to hear thoughts, and accept issues/suggestions/PRs.
+A Bluesky app for iOS and iPadOS built using Swift and UIKit. This is still in early stages, but a lot of the core features are now there. Happy to hear thoughts, and accept issues/suggestions/PRs.
 
 ![Simulator Screenshot - iPhone 16 Pro - 2025-06-04 at 18 20 01](https://github.com/user-attachments/assets/69a62316-4b71-4456-8022-3613c74b2705)
 ![Simulator Screenshot - iPhone 16 Pro - 2025-06-04 at 18 20 04](https://github.com/user-attachments/assets/b31b763b-3466-4b1a-b089-5c1aa218bafc)

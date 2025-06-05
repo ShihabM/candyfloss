@@ -165,10 +165,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 Task {
                     do {
                         if let atProto = GlobalStruct.atProto {
-                            let post = try await atProto.getFeed(by: GlobalStruct.updatedPost?.uri ?? "")
-                            DispatchQueue.main.async {
-                                if let feedPost = post.feed.first {
-                                    self.allPosts[index] = feedPost
+                            if let sessionConfig = atProto.sessionConfiguration {
+                                let _ = try await self.allPosts[index].refresh(with: sessionConfig)
+                                DispatchQueue.main.async {
                                     self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                                 }
                             }

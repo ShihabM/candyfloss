@@ -499,6 +499,93 @@ class MessagesListViewController: UIViewController, UITableViewDataSource, UITab
         }
     }
     
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        if messageSection == 0 {
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+                var menuActions: [UIAction] = []
+                let menuItem1 = UIAction(title: "Mute", image: UIImage(systemName: "speaker.slash"), identifier: nil) { action in
+                    Task {
+                        do {
+                            if let atProto = GlobalStruct.atProto {
+                                let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+                                let _ = try await atProtoBluesky.muteConversation(from: self.filteredMessages[indexPath.row].conversationID)
+                                self.allMessages = []
+                                self.filteredMessages = []
+                                self.fetchMessages()
+                            }
+                        } catch {
+                            print("Error muting message: \(error)")
+                        }
+                    }
+                }
+                menuItem1.attributes = .destructive
+                menuActions.append(menuItem1)
+                return UIMenu(title: "", options: [.displayInline], children: menuActions)
+            }
+        } else if messageSection == 1 {
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+                var menuActions: [UIAction] = []
+                let menuItem1 = UIAction(title: "Unmute", image: UIImage(systemName: "speaker.wave.2"), identifier: nil) { action in
+                    Task {
+                        do {
+                            if let atProto = GlobalStruct.atProto {
+                                let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+                                let _ = try await atProtoBluesky.unmuteConversation(by: self.filteredMessages[indexPath.row].conversationID)
+                                self.allMessages = []
+                                self.filteredMessages = []
+                                self.fetchMessages()
+                            }
+                        } catch {
+                            print("Error unmuting message: \(error)")
+                        }
+                    }
+                }
+                menuActions.append(menuItem1)
+                return UIMenu(title: "", options: [.displayInline], children: menuActions)
+            }
+        } else if messageSection == 2 {
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+                var menuActions: [UIAction] = []
+                let menuItem1 = UIAction(title: "Accept", image: UIImage(systemName: "checkmark"), identifier: nil) { action in
+                    Task {
+                        do {
+                            if let atProto = GlobalStruct.atProto {
+                                let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+                                let _ = try await atProtoBluesky.acceptConversation(by: self.filteredMessages[indexPath.row].conversationID)
+                                self.allMessages = []
+                                self.filteredMessages = []
+                                self.fetchMessages()
+                            }
+                        } catch {
+                            print("Error accepting message: \(error)")
+                        }
+                    }
+                }
+                menuActions.append(menuItem1)
+                let menuItem2 = UIAction(title: "Mute", image: UIImage(systemName: "speaker.slash"), identifier: nil) { action in
+                    Task {
+                        do {
+                            if let atProto = GlobalStruct.atProto {
+                                let atProtoBluesky = ATProtoBlueskyChat(atProtoKitInstance: atProto)
+                                let _ = try await atProtoBluesky.muteConversation(from: self.filteredMessages[indexPath.row].conversationID)
+                                self.allMessages = []
+                                self.filteredMessages = []
+                                self.fetchMessages()
+                            }
+                        } catch {
+                            print("Error rejecting message: \(error)")
+                        }
+                    }
+                }
+                menuItem2.attributes = .destructive
+                menuActions.append(menuItem2)
+                return UIMenu(title: "", options: [.displayInline], children: menuActions)
+            }
+        } else {
+            return nil
+        }
+    }
+    
     @objc func profileTapped(_ sender: UIButton) {
         defaultHaptics()
         let vc = ProfileViewController()

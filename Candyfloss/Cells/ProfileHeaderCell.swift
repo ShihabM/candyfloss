@@ -372,19 +372,33 @@ class ProfileHeaderCell: UITableViewCell, MFMailComposeViewControllerDelegate, U
         }
         
         if mutuals.count > 0 {
+            let symbolConfig1 = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
+            let avatarImage = UIImage(systemName: "person.fill", withConfiguration: symbolConfig1)?.withTintColor(.white, renderingMode: .alwaysOriginal)
             avatar1.alpha = 1
             if let url = mutuals.first?.avatarImageURL {
                 avatar1.sd_setImage(with: url, for: .normal)
+                avatar1.backgroundColor = GlobalStruct.detailQuoteCell
+            } else {
+                avatar1.setImage(avatarImage, for: .normal)
+                avatar1.backgroundColor = GlobalStruct.baseTint
             }
             if mutuals.count > 1 {
                 avatar2.alpha = 1
                 if let url = mutuals[1].avatarImageURL {
                     avatar2.sd_setImage(with: url, for: .normal)
+                    avatar2.backgroundColor = GlobalStruct.detailQuoteCell
+                } else {
+                    avatar2.setImage(avatarImage, for: .normal)
+                    avatar2.backgroundColor = GlobalStruct.baseTint
                 }
                 if mutuals.count > 2 {
                     avatar3.alpha = 1
                     if let url = mutuals[2].avatarImageURL {
                         avatar3.sd_setImage(with: url, for: .normal)
+                        avatar3.backgroundColor = GlobalStruct.detailQuoteCell
+                    } else {
+                        avatar3.setImage(avatarImage, for: .normal)
+                        avatar3.backgroundColor = GlobalStruct.baseTint
                     }
                 }
             }

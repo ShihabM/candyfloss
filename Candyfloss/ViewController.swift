@@ -165,11 +165,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 Task {
                     do {
                         if let atProto = GlobalStruct.atProto {
-                            if let sessionConfig = atProto.sessionConfiguration {
-                                let _ = try await self.allPosts[index].refresh(with: sessionConfig)
-                                DispatchQueue.main.async {
-                                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                                }
+                            let _ = try await self.allPosts[index].refresh(with: atProto, from: self.allPosts, at: index, feedURI: self.currentFeedURI)
+                            DispatchQueue.main.async {
+                                self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                             }
                         }
                     } catch {
@@ -234,10 +232,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 //                    allPosts = try Disk.retrieve("allPosts.json", from: .documents, as: [AppBskyLexicon.Feed.FeedViewPostDefinition].self)
 //                    currentCursor = UserDefaults.standard.value(forKey: "currentCursor") as? String ?? ""
 //                    tableView.reloadData()
-//                    print("allPosts: \(allPosts.first?.post.record.getRecord(ofType: AppBskyLexicon.Feed.PostRecord.self)?.text)")
+//                    print("allPosts: \(allPosts.first?.post.record.getRecord(ofType: AppBskyLexicon.Feed.PostRecord.self)?.text ?? "No data")")
 //                } catch {
 //                    print("error fetching from Disk")
 //                }
+                
                 if let x = UserDefaults.standard.value(forKey: "isShowingFeeds") as? Bool {
                     GlobalStruct.isShowingFeeds = x
                 }
@@ -747,6 +746,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                                 }
                                 return toReturn || (post.reply == nil)
                             })
+//                            await saveToDisk()
                             
                             currentCursor = x.cursor
                             DispatchQueue.main.async {
@@ -754,7 +754,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                                 self.tableView.reloadData()
                                 self.isFetching = false
                             }
-                            saveToDisk()
                             
                             // prefetch feeds and lists
                             fetchFeeds()
@@ -1000,13 +999,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         present(alert, animated: true)
     }
     
-    func saveToDisk() {
-//        do {
-//            try Disk.save(allPosts, to: .documents, as: "allPosts.json")
-//            UserDefaults.standard.set(currentCursor, forKey: "currentCursor")
-//        } catch {
-//            print("error saving to Disk")
-//        }
+    func saveToDisk() async {
+        do {
+            try Disk.save(allPosts, to: .documents, as: "allPosts.json")
+            UserDefaults.standard.set(currentCursor, forKey: "currentCursor")
+        } catch {
+            print("error saving to Disk")
+        }
     }
     
     func fetchFeeds() {
